@@ -8,11 +8,12 @@
             "program": "${workspaceFolder}/bin/debug/server.app",
             "args": [],
             "stopAtEntry": false,
-            "miDebuggerPath": "/usr/bin/gdb",
-            "cwd": "${workspaceFolder}",
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -20,7 +21,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build-debug-server",
+            "preLaunchTask": "build-debug-server"
         }
     ]
 }

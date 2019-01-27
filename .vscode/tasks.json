@@ -7,8 +7,8 @@
             "command": "g++",
             "args": [
                 "-g",                                               // include debugging data, symbols, etc
-                "-c",                                               // compile
                 "-O0",                                              // no optimization
+                "-Wall", "-Wextra", "-Wconversion", "-pedantic",    // compiler complaints and grievances
                 "-o", "${workspaceFolder}/bin/debug/server.app",    // app path
                 "-I${workspaceFolder}/inc/",                        // include subdirectory
                 "${workspaceFolder}/src/server.cpp",                // source file to compile
