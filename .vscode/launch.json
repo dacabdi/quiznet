@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/debug/server.app",
-            "args": [],
+            "args": ["8080"],
             "stopAtEntry": false,
             "miDebuggerPath": "gdb",
             "cwd": "${workspaceFolder}/bin/debug/",

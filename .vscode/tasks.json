@@ -11,7 +11,7 @@
                 "-Wall", "-Wextra", "-Wconversion", "-pedantic",    // compiler complaints and grievances
                 "-o", "${workspaceFolder}/bin/debug/server.app",    // app path
                 "-I${workspaceFolder}/inc/",                        // include subdirectory
-                "${workspaceFolder}/src/server.cpp",                // source file to compile
+                "${workspaceFolder}/src/server.cpp"                 // source file to compile
             ],
             "group": {
                 "kind": "build",
