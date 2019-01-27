@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-debug-server",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",                                               // include debugging data, symbols, etc
+                "-c",                                               // compile
+                "-O0",                                              // no optimization
+                "-o", "${workspaceFolder}/bin/debug/server.app",    // app path
+                "-I${workspaceFolder}/inc/",                        // include subdirectory
+                "${workspaceFolder}/src/server.cpp",                // source file to compile
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
