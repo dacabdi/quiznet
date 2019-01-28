@@ -17,6 +17,23 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-debug-client",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-g",                                               // include debugging data, symbols, etc
+                "-O0",                                              // no optimization
+                "-Wall", "-Wextra", "-Wconversion", "-pedantic",    // compiler complaints and grievances
+                "-o", "${workspaceFolder}/bin/debug/client.app",    // app path
+                "-I${workspaceFolder}/inc/",                        // include subdirectory
+                "${workspaceFolder}/src/client.cpp"                 // source file to compile
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
