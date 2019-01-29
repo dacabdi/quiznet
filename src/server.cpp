@@ -1,9 +1,9 @@
 #include <iostream>
-#include "Server.h"
+#include "EchoServer.h"
 
 int main(void)
 {
-    Server server("8080");
+    EchoServer server;
     server.run();
 
     return 0;

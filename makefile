@@ -28,18 +28,22 @@ endif
 
 all: clean server.app client.app
 
+
+subdirs:
+	mkdir -p $(BINSUBDIR)
+
 clean:
-	rm -vf $(BINBASEDIR)/$(DEBUGSUBDIR)/*
-	rm -vf $(BINBASEDIR)/$(RELEASESUBDIR)/*
+	rm -rvf $(BINBASEDIR)/
 
 
 # SERVER
 
 # link server
-server.app : server.o Server.o
+server.app : subdirs server.o Server.o EchoServer.o
 	$(CC) \
 	$(BINSUBDIR)/server.o \
 	$(BINSUBDIR)/Server.o \
+	$(BINSUBDIR)/EchoServer.o \
 	-I$(INCLUDE) \
 	-o $(BINSUBDIR)/server.app
 
@@ -49,6 +53,9 @@ server.o:
 
 Server.o:
 	$(CCFULL)/Server.cpp
+
+EchoServer.o:
+	$(CCFULL)/EchoServer.cpp
 
 
 # CLIENT
