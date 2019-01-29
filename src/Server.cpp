@@ -70,14 +70,24 @@ void Server::acceptConnection(void)
     //   connects to the server
 
     onConnection(connectionFd, clientAddress);
+
+    // close the connection descriptor
+    close(connectionFd);
 }
 
-void Server::error(void)
+void Server::error(std::string errmsg)
 {
     bzero(errBuffer, ERR_BUFFER_LENGTH);
     strerror_r(errno, errBuffer, ERR_BUFFER_LENGTH);
+    
+    // close the socket fd
     close(socketFd);
-    throw std::runtime_error(errBuffer);
+    
+    // prepare error message
+    errmsg.append("/");
+    errmsg.append(errBuffer);
+
+    throw std::runtime_error(errmsg);
 }
 
 void Server::run(void)

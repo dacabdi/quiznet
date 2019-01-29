@@ -61,7 +61,7 @@ class Server
             #endif
         };
 
-        void error(void);
+        void error(std::string errmsg = "");
 
     public:                            
 
