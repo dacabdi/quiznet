@@ -1,6 +1,7 @@
 #include "EchoServer.h"
 
-EchoServer::EchoServer(const std::string userPort)
+EchoServer::EchoServer(const std::string userPort) 
+: Server(userPort)
 {
 
 }
@@ -16,7 +17,7 @@ const sockaddr_in& clientAddress)
 
     // create a buffer to read the message
     char *buffer = new char[bufferSize];
-    ssize_t bytesRead = readConn(conn, buffer);
+    readConn(conn, buffer);
     std::string response = reply(buffer);
     send(conn, response);
 
