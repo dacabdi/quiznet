@@ -1,11 +1,10 @@
 #include <iostream>
-#include "header.h"
-
-using namespace std;
+#include "Server.h"
 
 int main(void)
 {
-    cout << "test" << endl;
+    Server server("8080");
+    server.run();
 
     return 0;
 }
