@@ -1,19 +1,11 @@
 #ifndef __QUIZBOOK__H__
 #define __QUIZBOOK__H__
 
-#include "Question.h"
+#include "IQuizbook.h"
 
-class Quizbook
+class Quizbook : public IQuizbook 
 {
-    saveToFile()
-    loadFromFile()
-    serialize()
-    
-    
 
-    map of Question objets
-        (id) : (question)
 };
 
-
-#endif // __QUIZBOOK__H__
+#endif
