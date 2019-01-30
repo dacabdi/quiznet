@@ -31,5 +31,15 @@
                 "isDefault": true
             }
         }
+        {
+            "label": "build-test-choice",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-choice.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
     ]
 }

@@ -44,6 +44,28 @@
                 }
             ],
             "preLaunchTask": "build-debug-client"
+        },
+        {
+            "name": "launch-test-choice",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/test-choice.test",
+            "args": [""],
+            "stopAtEntry": false,
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-test-choice"
         }
     ]
 }

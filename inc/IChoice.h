@@ -13,7 +13,7 @@ class IChoice
 
     protected:
 
-        IChoice(){};
+        //IChoice(){};
 };
 
 #endif // __ICHOICE__H__

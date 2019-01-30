@@ -3,9 +3,17 @@
 
 #include "IChoice.h"
 #include <sstream>
+#include <stdexcept>
 
 class Choice : public IChoice
 {
+    private:
+
+        char id;
+        std::string text;
+        
+        bool validate(const std::string& str);
+
     public:
         
         Choice(const char id, const std::string& text);
@@ -14,11 +22,6 @@ class Choice : public IChoice
         std::string getText() override;
         char getId() override;
         std::string serialize(void) override;
-
-    private:
-
-        const std::string text;
-        const char id;
 };
 
 #endif // __CHOICE__H__
