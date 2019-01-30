@@ -61,11 +61,15 @@ EchoServer.o:
 # CLIENT
 
 # link server
-client.app : subdirs client.o
+client.app : subdirs client.o Client.o
 	$(CC) \
 	$(BINSUBDIR)/client.o \
+	$(BINSUBDIR)/Client.o \
 	-I$(INCLUDE) \
 	-o $(BINSUBDIR)/client.app
 
 client.o :
 	$(CCFULL)/client.cpp
+
+Client.o :
+	$(CCFULL)/Client.cpp

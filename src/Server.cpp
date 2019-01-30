@@ -13,16 +13,16 @@ Server::Server(const std::string userPort)
 
 void Server::createSocket(void)
 {
-    logTerm("Creating socket... ");
+    logTerm("Opening socket... ");
 
     socketFd = socket(
         socketSettings.addressDomain, 
-        socketSettings.socketType, 
+        socketSettings.socketType,
         socketSettings.protocol
     );
     
     if (socketFd < 0)
-        error();
+        error("Error opening socket");
 
     logTerm("[OK]\n");
 }

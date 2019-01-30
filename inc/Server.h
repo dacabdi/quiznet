@@ -20,17 +20,11 @@
 #include <errno.h>  // C error numbers for sys libraries
 #include <string.h> // strerror_r
 #include <unistd.h>
-//#include <stdlib.h>
 
 #include <string>
 #include <stdexcept>
 
-struct socketSettings 
-{
-    sa_family_t addressDomain = AF_INET;
-    int socketType = SOCK_STREAM;
-    int protocol = 0; // let the OS choose
-};
+#include "Socket.h"
 
 class Server                                                                  
 {                                                                                
