@@ -41,8 +41,11 @@ clean:
 
 
 
+
+
 # TESTS
 
+#choice
 test-choice.test: subdirs test-choice.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-choice.o \
@@ -54,14 +57,35 @@ test-choice.o:
 	$(CCFULL)/test-choice.cpp
 
 
+#question
+test-question.test: subdirs test-question.o Question.o Choice.o utils.o
+	$(CC) \
+	$(BINSUBDIR)/test-question.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/utils.o \
+	-I$(INCLUDE) \
+	-o $(BINSUBDIR)/test-question.test
+
+test-question.o:
+	$(CCFULL)/test-question.cpp
+
+
+
 
 # MODELS
 
 Choice.o:
 	$(CCFULL)/Choice.cpp
 
+Question.o:
+	$(CCFULL)/Question.cpp
 
 
+# UTILS
+
+utils.o:
+	$(CCFULL)/utils.cpp
 
 
 # SERVER
@@ -84,6 +108,8 @@ Server.o:
 
 EchoServer.o:
 	$(CCFULL)/EchoServer.cpp
+
+
 
 
 # CLIENT

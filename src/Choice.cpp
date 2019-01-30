@@ -41,7 +41,7 @@ std::string Choice::getText(void)
     return text;
 }
 
-std::string Choice::serialize(void)
+std::string Choice::serialize(void) const
 {
     std::stringstream ss;
     ss << "(" << id << ")";

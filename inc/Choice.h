@@ -21,7 +21,7 @@ class Choice : public IChoice
 
         std::string getText() override;
         char getId() override;
-        std::string serialize(void) override;
+        std::string serialize(void) const override;
 };
 
 #endif // __CHOICE__H__

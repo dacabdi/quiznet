@@ -11,17 +11,18 @@ class IQuestion
 {
     public:
         
-        virtual uint32_t getId() = 0;
-        virtual std::vector<std::string> getTags() = 0;
-        virtual std::string getQuestion() = 0;
-        virtual std::map<char, Choice> getAllChoices() = 0;
-        virtual Choice getChoiceById() = 0;                        
-        virtual char getSolution(void) = 0;
-        virtual std::string serialize(void) = 0;
+        virtual uint32_t getId() const = 0;
+        virtual std::vector<std::string> getTags() const = 0;
+        virtual std::string getQuestion() const = 0;
+        virtual std::map<const char, Choice> getAllChoices() const = 0;
+        virtual Choice getChoiceById(char id) const = 0;                        
+        virtual char getSolution(void) const = 0;
+        virtual std::string serialize(void) const = 0;
 
     protected:
 
         IQuestion(){};
+        ~IQuestion(){};
 };
 
 #endif // __IQUESTION__H__

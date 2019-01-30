@@ -2,7 +2,7 @@
 
 std::vector<std::string> utils::split(
     const std::string& str, 
-    const std::string& delimiter
+    const std::string& delimiter)
 {
     std::string s = str;
     std::vector<std::string> output;

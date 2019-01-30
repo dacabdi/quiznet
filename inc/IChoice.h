@@ -9,7 +9,7 @@ class IChoice
         
         virtual std::string getText() = 0;
         virtual char getId() = 0;
-        virtual std::string serialize(void) = 0;
+        virtual std::string serialize(void) const = 0;
 
     protected:
 

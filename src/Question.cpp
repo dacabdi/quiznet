@@ -4,9 +4,9 @@ Question::Question(
     uint32_t id, 
     std::vector<std::string> tags,
     std::string question,
-    std::map<char, std::string> choices,
+    std::map<const char, Choice> choices,
     char solution)
-: 
+:
 tags(tags), 
 question(question), 
 choices(choices), 
@@ -15,16 +15,18 @@ solution(solution)
 
 Question::Question(uint32_t id, const std::string& str)
 {
-    std::istringstream iss(str);
-    Question(id, iss);
+    std::stringstream ss(str);
+    Question(id, ss);
 }
 
-Question::Question(uint32_t id, const std::stringstream& ss)
+Question::Question(uint32_t id, std::stringstream& ss)
 {   
     // temp fields
+    uint32_t _id;
     std::vector<std::string> _tags;
     std::string _question;
-    std::map<char, Choice> _choices;
+    std::map<const char, Choice> _choices;
+    char _solution;
 
     _id = id;
     _tags = deserializeTag(ss);
@@ -32,11 +34,10 @@ Question::Question(uint32_t id, const std::stringstream& ss)
     _choices = deserializeChoices(ss);
     _solution = deserializeSolution(ss);
 
-    Question(_id, _tags, _question, _choices_, _solution);
+    Question(_id, _tags, _question, _choices, _solution);
 }
 
-std::vector<std::string> Question::deserializeTag(
-    const std::istringstream& ss)
+std::vector<std::string> Question::deserializeTag(std::stringstream& ss) const
 {
     std::string buffer;
     std::getline(ss, buffer);
@@ -44,39 +45,38 @@ std::vector<std::string> Question::deserializeTag(
 }
 
 std::vector<std::string> Question::deserializeTag(
-    const std::string& s)
+    const std::string& s) const
 {
-    return split(s);   
+    return utils::split(s);   
 }
 
-std::string Question::deserializeQuestion(const std::stringstream& ss)
+std::string Question::deserializeQuestion(std::stringstream& ss) const
 {
     std::string buffer;
     std::getline(ss, buffer);
     return deserializeQuestion(buffer);
 }
 
-std::string Question::deserializeQuestion(const std::string& s)
+std::string Question::deserializeQuestion(const std::string& s) const
 {
     // allows for more complex formatting if needed
     return question;
 }
 
-std::map<char, Choice> Question::deserializeChoices(const std::stringstream& ss)
+std::map<const char, Choice> Question::deserializeChoices(
+    std::stringstream& ss) const
 {
     // TODO validate
 
-    std::map<char, Choice> _choices;
+    std::map<const char, Choice> _choices;
     std::string buffer;
 
     std::getline(ss, buffer);
 
     if(!(buffer == "."))
-        std::cout << "WRONG FORMAT! (throw exception here)" << std::endl
-        //TODO throw some exception, malformed
+        throw std::invalid_argument("Choices missing initial period.");
 
-    bool firstPeriod = true, 
-         secondPeriod = false;
+    bool firstPeriod = true, secondPeriod = false;
     
     while(!secondPeriod)
     {
@@ -99,13 +99,14 @@ std::map<char, Choice> Question::deserializeChoices(const std::stringstream& ss)
     return _choices;
 }
 
-std::map<char, Choice> Question::deserializeChoices(const std::string s)
+std::map<const char, Choice> Question::deserializeChoices(
+    const std::string& s) const
 {
-    std::sstream ss(s);
+    std::stringstream ss(s);
     return deserializeChoices(ss);
 }
 
-char Question::deserializeSolution(const std::stringstream& ss)
+char Question::deserializeSolution(std::stringstream& ss) const
 {
     // TODO validate
 
@@ -114,7 +115,7 @@ char Question::deserializeSolution(const std::stringstream& ss)
     return deserializeSolution(buffer);
 }
 
-char Question::deserializeSolution(const std::string& s)
+char Question::deserializeSolution(const std::string& s) const
 {
     // TODO validate
 
@@ -122,63 +123,69 @@ char Question::deserializeSolution(const std::string& s)
     return s.front();
 }
 
-std::vector<std::string> Question::getTags(void)
+std::vector<std::string> Question::getTags(void) const
 {
     return tags;
 }
 
-std::string Question::getQuestion(void)
+std::string Question::getQuestion(void) const
 {
     return question;
 }
 
-std::map<char, Choice> Question::getAllChoices(void)
+std::map<const char, Choice> Question::getAllChoices(void) const
 {
     return choices;
 }
 
-std::string Question::getChoiceById(char id)
+Choice Question::getChoiceById(char id) const
 {
     return choices.at(id);
 }
 
-char getSolution(void)
+char Question::getSolution(void) const
 {
     return solution;
 }
 
-std::string Question::serializeTags(const std::vector<std::string>& tags)
+std::string Question::serializeId(const uint32_t id) const
+{
+    return std::to_string(id);
+}
+
+std::string Question::serializeTags(const std::vector<std::string>& tags) const
 {
     std::stringstream ss;
 
-    std::vector<std::string>::iterator it = tags.begin();
+    std::vector<std::string>::const_iterator it = tags.begin();
     
     // consider no tags
     if (it != tags.end())
         ss << *it;
 
-    for(it; it != tags.end(); ++it)
+    for(; it != tags.end(); ++it)
     {
         // TODO strip spaces and then fix this
-        ss << "," << tag;
+        ss << "," << *it;
     }
 
     return ss.str();
 }
 
-std::string Question::serializeQuestion(const std::string& question)
+std::string Question::serializeQuestion(const std::string& question) const
 {
     return question;
 }
 
-std::string Question::serializeChoices(const map<char, Choice>& choices)
+std::string Question::serializeChoices(const std::map<const char, Choice>& choices) const
 {
     std::stringstream ss;
     ss << "." << std::endl;
 
-    for (std::pair<char, Choice>& _choice : choices) 
+    for (const std::pair<const char, Choice>& kv : choices) 
     {
-        ss << _choice.second.serialize() 
+        const Choice& _choice = kv.second;
+        ss << _choice.serialize()
            << std::endl << "." << std::endl;
     }
 
@@ -187,11 +194,16 @@ std::string Question::serializeChoices(const map<char, Choice>& choices)
     return ss.str();        
 }
 
-std::string Question::serialize(void)
+std::string Question::serializeSolution(const char solution) const
+{
+    return std::string(1, solution);
+}
+
+std::string Question::serialize(void) const
 {
     std::stringstream ss;
 
-    ss << id << std::endl;
+    ss << serializeId(id) << std::endl;
     ss << serializeTags(tags) << std::endl;
     ss << serializeQuestion(question) << std::endl;
     ss << serializeChoices(choices) << std::endl;
