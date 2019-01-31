@@ -1,6 +1,7 @@
 #include "Server.h"
 
-Server::Server(const std::string userPort) : port(atoi(userPort.c_str()))
+Server::Server(const std::string userPort) 
+: port((uint16_t)std::stoul(userPort))
 {
     // 1. CREATE SOCKET
     createSocket();
@@ -12,16 +13,16 @@ Server::Server(const std::string userPort) : port(atoi(userPort.c_str()))
 
 void Server::createSocket(void)
 {
-    logTerm("Creating socket... ");
+    logTerm("Opening socket... ");
 
     socketFd = socket(
         socketSettings.addressDomain, 
-        socketSettings.socketType, 
+        socketSettings.socketType,
         socketSettings.protocol
     );
     
     if (socketFd < 0)
-        error();
+        error("Error opening socket");
 
     logTerm("[OK]\n");
 }
@@ -54,74 +55,45 @@ void Server::startListening(void)
     logTerm("[OK]\n");
 }
 
-void Server::error(void)
+void Server::acceptConnection(void)
+{
+    struct sockaddr_in clientAddress;
+    socklen_t cliendAddressLength = sizeof(clientAddress);
+
+    logTerm("\n\tWaiting for incoming connection: \n");
+    int connectionFd = accept(
+        socketFd, 
+        (struct sockaddr *) &clientAddress, 
+        &cliendAddressLength
+    );
+    // ^ accept causes the proc to block until a client
+    //   connects to the server
+
+    onConnection(connectionFd, clientAddress);
+
+    // close the connection descriptor
+    close(connectionFd);
+}
+
+void Server::error(std::string errmsg)
 {
     bzero(errBuffer, ERR_BUFFER_LENGTH);
     strerror_r(errno, errBuffer, ERR_BUFFER_LENGTH);
+    
+    // close the socket fd
     close(socketFd);
-    throw std::runtime_error(errBuffer);
-}
+    
+    // prepare error message
+    errmsg.append("/");
+    errmsg.append(errBuffer);
 
-inline void Server::logTerm(const std::string& str)
-{
-    #ifdef VERBOSE
-        std::cout << str << std::flush;
-    #endif
+    throw std::runtime_error(errmsg);
 }
 
 void Server::run(void)
 {
-    while(1)
+    while(true)
     {
-        // accept next waiting connection, block until some comes in
-        struct sockaddr_in clientAddress;
-        socklen_t cliendAddressLength = sizeof(clientAddress);
-
-        std::cout << "\n\tWaiting for incoming connection: " << std::endl;
-        int connectionSocketFd = accept(
-            socketFd, 
-            (struct sockaddr *) &clientAddress, 
-            &cliendAddressLength
-        );
-        // ^ accept causes the proc to block until a client
-        //   connects to the server
-
-
-        // rx/tx data
-        std::cout << "\tIncoming connection from " 
-                << inet_ntoa(clientAddress.sin_addr) 
-                << std::endl;
-
-        char *buffer = new char[bufferSize];
-
-        bzero(buffer, bufferSize);
-        std::cout << "\tReading message... " << std::flush;
-        ssize_t bytesRead = read(connectionSocketFd, buffer, bufferSize - 1);
-        if (bytesRead < 0) 
-        {
-            delete [] buffer;
-            close(socketFd);
-            error();
-        }
-        else std::cout << "[OK]" << std::endl;
-
-        std::cout << "\tLength: " << bytesRead << std::endl;
-        std::cout << "\tContent: " << buffer << std::endl;
-
-        ssize_t bytesWritten = write(connectionSocketFd, 
-            "Hey there, I gotcha!", 
-            18
-        );
-
-        if (bytesWritten < 0) 
-        {
-            delete [] buffer;
-            close(socketFd);
-            error();
-        }
-
-        delete [] buffer;
-
-        close(connectionSocketFd);
+        acceptConnection();
     }
 }

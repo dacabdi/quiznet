@@ -23,6 +23,17 @@
         "string_view": "cpp",
         "system_error": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "sstream": "cpp",
+        "string": "cpp",
+        "array": "c",
+        "unordered_map": "c",
+        "vector": "c",
+        "fstream": "c",
+        "optional": "c",
+        "tuple": "c",
+        "utility": "c",
+        "deque": "cpp"
+    },
+    "editor.fontSize": 16
 }

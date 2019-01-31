@@ -9,37 +9,93 @@ SRCDIR=src
 # binary subdirectories
 BINSUBDIR=
 BINBASEDIR=bin
-DEBUGSUBDIR=debug
-RELEASESUBDIR=release
+DEBUGSUBDIR=$(BINBASEDIR)/debug
+RELEASESUBDIR=$(BINBASEDIR)/release
 
 # selector for compilation mode
 ifeq ($(MODE),debug)
 	#Setting environment for debug session
-	BINSUBDIR=$(BINBASEDIR)/$(DEBUGSUBDIR)
+	BINSUBDIR=$(DEBUGSUBDIR)
 	CFLAGS=-g -Wall -Wextra -O0 -Wconversion -pedantic
-	CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c $(SRCDIR)
 else
 	#Setting environment for release
-	BINSUBDIR=$(BINBASEDIR)/$(RELEASESUBDIR)
+	BINSUBDIR=$(RELEASESUBDIR)
 	CFLAGS=-Wall
-	CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c $(SRCDIR)
 endif
 
+CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c $(SRCDIR)
 
 all: clean server.app client.app
 
+subdirs:
+	mkdir -p $(BINSUBDIR)
+
+subdirs-release:
+	mkdir -p $(RELEASESUBDIR)
+
+subdirs-debug:
+	mkdir -p $(DEBUGSUBDIR)
+
 clean:
-	rm -vf $(BINBASEDIR)/$(DEBUGSUBDIR)/*
-	rm -vf $(BINBASEDIR)/$(RELEASESUBDIR)/*
+	rm -rvf $(BINBASEDIR)/
+
+
+
+
+
+# TESTS
+
+#choice
+test-choice.test: subdirs test-choice.o Choice.o
+	$(CC) \
+	$(BINSUBDIR)/test-choice.o \
+	$(BINSUBDIR)/Choice.o \
+	-I$(INCLUDE) \
+	-o $(BINSUBDIR)/test-choice.test
+
+test-choice.o:
+	$(CCFULL)/test-choice.cpp
+
+
+#question
+test-question.test: subdirs test-question.o Question.o Choice.o utils.o
+	$(CC) \
+	$(BINSUBDIR)/test-question.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/utils.o \
+	-I$(INCLUDE) \
+	-o $(BINSUBDIR)/test-question.test
+
+test-question.o:
+	$(CCFULL)/test-question.cpp
+
+
+
+
+# MODELS
+
+Choice.o:
+	$(CCFULL)/Choice.cpp
+
+Question.o:
+	$(CCFULL)/Question.cpp
+
+
+# UTILS
+
+utils.o:
+	$(CCFULL)/utils.cpp
 
 
 # SERVER
 
 # link server
-server.app : server.o Server.o
+server.app: subdirs server.o Server.o EchoServer.o
 	$(CC) \
 	$(BINSUBDIR)/server.o \
 	$(BINSUBDIR)/Server.o \
+	$(BINSUBDIR)/EchoServer.o \
 	-I$(INCLUDE) \
 	-o $(BINSUBDIR)/server.app
 
@@ -50,7 +106,23 @@ server.o:
 Server.o:
 	$(CCFULL)/Server.cpp
 
+EchoServer.o:
+	$(CCFULL)/EchoServer.cpp
+
+
+
 
 # CLIENT
 
-client.app:
+client.app: subdirs client.o Client.o
+	$(CC) \
+	$(BINSUBDIR)/client.o \
+	$(BINSUBDIR)/Client.o \
+	-I$(INCLUDE) \
+	-o $(BINSUBDIR)/client.app
+
+client.o:
+	$(CCFULL)/client.cpp
+
+Client.o:
+	$(CCFULL)/Client.cpp

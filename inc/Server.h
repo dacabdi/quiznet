@@ -3,6 +3,7 @@
 
 #define DEFAULT_PORT "8080"
 #define ERR_BUFFER_LENGTH 256
+#define DEFAULT_READ_BUFFER_LENGTH 1024
 
 #define VERBOSE
 
@@ -19,41 +20,42 @@
 #include <errno.h>  // C error numbers for sys libraries
 #include <string.h> // strerror_r
 #include <unistd.h>
-//#include <stdlib.h>
 
 #include <string>
 #include <stdexcept>
 
-struct socketSettings 
-{
-    int addressDomain = AF_INET;
-    int socketType = SOCK_STREAM;
-    int protocol = 0; // let the OS choose
-};
+#include "Socket.h"
 
 class Server                                                                  
 {                                                                                
-    private:                                              
+    protected:                                              
 
-        const int port;
+        const uint16_t port;
         
         int socketFd = -1;
         struct socketSettings socketSettings;
-        struct sockaddr_in address = {0};
+        struct sockaddr_in address;
 
         bool isListening = false;
         uint backlogLength = 10; // arbitrary
-        size_t bufferSize = 10; // arbitrary
+        size_t bufferSize = DEFAULT_READ_BUFFER_LENGTH; // arbitrary
 
         char errBuffer[ERR_BUFFER_LENGTH];
 
         void createSocket(void);
         void bindSocket(void);
-        void startListening();
+        void startListening(void);
+        void acceptConnection(void);
 
-        inline void logTerm(const std::string& str);
+        virtual void onConnection(const int& conn, const sockaddr_in& clientAddress) = 0;
 
-        void error(void);
+        inline void logTerm(const std::string& str) {
+            #ifdef VERBOSE
+                std::cout << str << std::flush;
+            #endif
+        };
+
+        void error(std::string errmsg = "");
 
     public:                            
 
