@@ -2,18 +2,20 @@
 #define __ICHOICE__H__
 
 #include <string>
+#include <ostream>
 
 class IChoice
 {
     public:
         
-        virtual std::string getText() = 0;
-        virtual char getId() = 0;
+        virtual std::string getText() const = 0;
         virtual std::string serialize(void) const = 0;
+
+        virtual ~IChoice(){};
 
     protected:
 
-        //IChoice(){};
+        IChoice(){};
 };
 
 #endif // __ICHOICE__H__

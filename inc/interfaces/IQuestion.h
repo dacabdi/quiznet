@@ -14,6 +14,7 @@
 
 #include "Choice.h"
 
+#include <ostream>
 #include <string>
 #include <vector>
 #include <map>
@@ -22,9 +23,9 @@ class IQuestion
 {
     public:
 
-        virtual std::vector<std::string> getTags(void) const = 0;
+        virtual TagCollection getTags(void) const = 0;
         virtual std::string getQuestion(void) const = 0;
-        virtual std::map<const char, Choice> getAllChoices(void) const = 0;
+        virtual ChoiceCollection getAllChoices(void) const = 0;
         virtual Choice getChoiceById(char id) const = 0;                        
         virtual std::string serialize(void) const = 0;
 

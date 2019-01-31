@@ -216,3 +216,24 @@ std::string Question::serialize(void) const
     
     return ss.str();
 }
+
+std::ostream& operator<<(std::ostream &os, const Question& question)
+{
+    os << question.serialize();
+    return os;
+}
+/*
+bool Question::operator==(const Question& ref) const
+{
+    return (
+           this->tags == tags; 
+        && this->text == ref.text
+        && this->
+    )
+}
+
+bool Question::operator!=(const Question& ref) const
+{
+    return !operator==(ref);
+}
+*/

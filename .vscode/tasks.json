@@ -50,6 +50,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-test-quizbook",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-quizbook.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

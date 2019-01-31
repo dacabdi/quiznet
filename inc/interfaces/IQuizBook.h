@@ -6,7 +6,7 @@
 
 #include <string>
 
-class IQuizbook
+class IQuizBook
 {
     public:
         
@@ -31,7 +31,10 @@ class IQuizbook
         // stringify the entire quizbook
         virtual std::string serialize() const = 0;
 
-        virtual ~IQuizbook(){};
+        // number of questions
+        virtual size_t size(void) const = 0;
+
+        virtual ~IQuizBook(){};
 };
 
 

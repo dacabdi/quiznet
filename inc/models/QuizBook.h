@@ -1,13 +1,13 @@
 #ifndef __QUIZBOOK__H__
 #define __QUIZBOOK__H__
 
-#include "IQuizbook.h"
+#include "IQuizBook.h"
 
-class Quizbook : public IQuizbook 
+class QuizBook : public IQuizBook 
 {
     public:
 
-        Quizbook();
+        QuizBook();
         
 };
 

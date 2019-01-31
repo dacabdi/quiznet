@@ -7,8 +7,6 @@
 #include <sstream> // serialize/unserialize
 #include <string>
 
-#include <iostream> // TODO delete this
-
 class Question : public IQuestion
 {
     protected:
@@ -78,6 +76,11 @@ class Question : public IQuestion
 
         // serialize the entire question
         std::string serialize(void) const override;
+
+        friend std::ostream& operator<<(
+            std::ostream &os, const Question& question);
+        virtual bool operator==(const Question& ref) const = 0;
+        virtual bool operator!=(const Question& ref) const = 0;
 };
 
 #endif // __QUESTION__H__

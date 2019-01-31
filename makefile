@@ -1,10 +1,15 @@
 CC=g++
 CFLAGS=
-INCLUDE=inc/
-CCFULL=
+INCLUDE=-Iinc/ -Iinc/client -Iinc/interfaces -Iinc/misc -Iinc/models -Iinc/server
 
 # sources subdirectories
 SRCDIR=src
+SRCCLIENT=$(SRCDIR)/client
+SRCMISC=$(SRCDIR)/misc
+SRCMODELS=$(SRCDIR)/models
+SRCSERVER=$(SRCDIR)/server
+SRCTESTS=$(SRCDIR)/tests
+
 
 # binary subdirectories
 BINSUBDIR=
@@ -23,9 +28,15 @@ else
 	CFLAGS=-Wall
 endif
 
-CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c $(SRCDIR)
+CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
+
+
+
+
+
 
 all: clean server.app client.app
+
 
 subdirs:
 	mkdir -p $(BINSUBDIR)
@@ -46,15 +57,16 @@ clean:
 # TESTS
 
 #choice
-test-choice.test: subdirs test-choice.o Choice.o
+test-choice.test: subdirs test-choice.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-choice.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
-	-I$(INCLUDE) \
+	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-choice.test
 
 test-choice.o:
-	$(CCFULL)/test-choice.cpp
+	$(CCFULL) $(SRCTESTS)/test-choice.cpp
 
 
 #question
@@ -65,25 +77,47 @@ test-question.test: subdirs test-question.o FullQuestion.o Question.o Choice.o u
 	$(BINSUBDIR)/Question.o \
 	$(BINSUBDIR)/Choice.o \
 	$(BINSUBDIR)/utils.o \
-	-I$(INCLUDE) \
+	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-question.test
 
 test-question.o:
 	$(CCFULL)/test-question.cpp
 
 
+#quizbook
+test-quizbook.test: subdirs test-quizbook.o QuizBook.o FullQuestion.o Question.o Choice.o utils.o
+	$(CC) \
+	$(BINSUBDIR)/test-quizbook.o \
+	$(BINSUBDIR)/QuizBook.o \
+	$(BINSUBDIR)/FullQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/utils.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-quizbook.test
+
+test-quizbook.o:
+	$(CCFULL)/test-quizbook.cpp
 
 
 # MODELS
 
 Choice.o:
-	$(CCFULL)/Choice.cpp
+	$(CCFULL) $(SRCMODELS)/Choice.cpp
+
+ChoiceCollection.o:
+	$(CCFULL) $(SRCMODELS)/ChoiceCollection.cpp
 
 Question.o:
 	$(CCFULL)/Question.cpp
 
 FullQuestion.o:
 	$(CCFULL)/FullQuestion.cpp
+
+QuizBook.o:
+	$(CCFULL)/QuizBook.cpp
+
+
 
 
 # UTILS
@@ -100,7 +134,7 @@ server.app: subdirs server.o Server.o EchoServer.o
 	$(BINSUBDIR)/server.o \
 	$(BINSUBDIR)/Server.o \
 	$(BINSUBDIR)/EchoServer.o \
-	-I$(INCLUDE) \
+	$(INCLUDE) \
 	-o $(BINSUBDIR)/server.app
 
 # dependencies
@@ -122,7 +156,7 @@ client.app: subdirs client.o Client.o
 	$(CC) \
 	$(BINSUBDIR)/client.o \
 	$(BINSUBDIR)/Client.o \
-	-I$(INCLUDE) \
+	$(INCLUDE) \
 	-o $(BINSUBDIR)/client.app
 
 client.o:
