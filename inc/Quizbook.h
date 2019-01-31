@@ -5,7 +5,10 @@
 
 class Quizbook : public IQuizbook 
 {
+    public:
 
+        Quizbook();
+        
 };
 
 #endif

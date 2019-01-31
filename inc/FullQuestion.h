@@ -26,10 +26,7 @@ class FullQuestion : public IFullQuestion
 
         void init(const std::string& str);
         void init(std::stringstream& ss);
-        void init(const uint32_t id, const std::string& str);
-        void init(const uint32_t id, std::stringstream& ss);
-        void init(uint32_t id, 
-                  std::vector<std::string> tags,
+        void init(std::vector<std::string> tags,
                   std::string question,
                   std::map<const char, Choice> choices,
                   const char solution);
@@ -37,17 +34,12 @@ class FullQuestion : public IFullQuestion
         
     public:
 
-        // create from a string reading id
-        FullQuestion(const std::string& str);
-        // create from stream reading id
-        FullQuestion(std::stringstream& ss);
         // create from a string
-        FullQuestion(uint32_t id, const std::string& str);
+        FullQuestion(const std::string& str);
         // create from stream
-        FullQuestion(uint32_t id, std::stringstream& ss);
+        FullQuestion(std::stringstream& ss);
         // create from pieces
-        FullQuestion(uint32_t id,
-                     std::vector<std::string> tags,
+        FullQuestion(std::vector<std::string> tags,
                      std::string question,
                      std::map<const char, Choice> choices,
                      char solution);
@@ -59,7 +51,7 @@ class FullQuestion : public IFullQuestion
         char getSolution(void) const;
 
         // gets the underlying question without solution
-        const Question& getQuestionObj(void) const override;
+        const Question& getQuestion(void) const override;
 
         std::string serialize(void) const override;
 };

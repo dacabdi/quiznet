@@ -2,6 +2,7 @@
 #define __IQUIZBOOK__H__
 
 #include "Question.h"
+#include "FullQuestion.h"
 
 #include <string>
 
@@ -9,17 +10,28 @@ class IQuizbook
 {
     public:
         
+        // obtain question
+        virtual const FullQuestion& getQuestionById(
+            uint32_t id) const = 0;
+        virtual const FullQuestion& getRandomQuestion(void) const = 0;
+        
+        // insert a new question
+        virtual uint32_t insertQuestion(const FullQuestion fQuestion) = 0;
+
+        // delete a question
+        virtual bool deleteQuestionById(const uint32_t id) = 0;
+        
+        // delete all questions
+        virtual void clear(void) = 0;
+
+        // save and load
         virtual bool saveToFile(const std::string& path) = 0;
         virtual bool loadFromFile(const std::string& path) = 0;
 
-        virtual Question getRandomQuestion(void) = 0;
-        virtual Question getQuestionById(uint32_t id) = 0;
-        
-        virtual uint32_t insertQuestion(Question question) = 0;
+        // stringify the entire quizbook
+        virtual std::string serialize() const = 0;
 
-        virtual bool deleteQuestionById(uint32_t id) = 0;
-
-        virtual std::string serialize() = 0;
+        virtual ~IQuizbook(){};
 };
 
 

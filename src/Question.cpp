@@ -10,23 +10,11 @@ Question::Question(std::stringstream& ss)
     init(ss);
 }
 
-Question::Question(uint32_t id, const std::string& str)
+Question::Question(std::vector<std::string> tags,
+                   std::string question,
+                   std::map<const char, Choice> choices)
 {
-    init(id, str);
-}
-
-Question::Question(uint32_t id, std::stringstream& ss)
-{   
-    init(id, ss);
-}
-
-Question::Question(
-    uint32_t id, 
-    std::vector<std::string> tags,
-    std::string question,
-    std::map<const char, Choice> choices)
-{
-    init(id, tags, question, choices);
+    init(tags, question, choices);
 }
 
 void Question::init(const std::string& str)
@@ -37,36 +25,22 @@ void Question::init(const std::string& str)
 
 void Question::init(std::stringstream& ss)
 {
-    uint32_t id = deserializeId(ss);
-    init(id, ss);
-}
-
-void Question::init(uint32_t id, const std::string& str)
-{
-    std::stringstream ss(str);
-    init(id, ss);
-}
-
-void Question::init(int32_t id, std::stringstream& ss)
-{
     // temp fields
     std::vector<std::string> tags = deserializeTag(ss);
     std::string question = deserializeQuestion(ss);
     std::map<const char, Choice> choices = deserializeChoices(ss);
 
-    init(id, tags, question, choices);
+    init(tags, question, choices);
 }
 
-void Question::init(uint32_t id, 
-    std::vector<std::string> tags,
-    std::string question,
-    std::map<const char, Choice> choices)
+void Question::init(std::vector<std::string> tags,
+                    std::string question,
+                    std::map<const char, Choice> choices)
 {
     
     validate(choices);
 
     // if it validated, it is safe to set
-    _id = id;
     _tags = tags;
     _question = question;
     _choices = choices;
@@ -86,18 +60,6 @@ void Question::validate(std::map<const char,Choice> choices)
                 "Choices are non consecutive or do not start wit 'a'");
         else
             choiceId++;
-}
-
-uint32_t Question::deserializeId(std::stringstream& ss) const
-{
-    std::string buffer;
-    std::getline(ss, buffer);
-    return deserializeId(buffer);  
-}
-
-uint32_t Question::deserializeId(const std::string& s) const
-{
-    return (uint32_t)std::stoul(s);
 }
 
 std::vector<std::string> Question::deserializeTag(std::stringstream& ss) const
@@ -179,11 +141,6 @@ std::map<const char, Choice> Question::deserializeChoices(
     return deserializeChoices(ss);
 }
 
-uint32_t Question::getId(void) const
-{
-    return _id;
-}
-
 std::vector<std::string> Question::getTags(void) const
 {
     return _tags;
@@ -204,11 +161,6 @@ Choice Question::getChoiceById(char id) const
     return _choices.at(id);
 }
 
-std::string Question::serializeId(const uint32_t id) const
-{
-    return std::to_string(id);
-}
-
 std::string Question::serializeTags(const std::vector<std::string>& tags) const
 {
     std::stringstream ss;
@@ -224,7 +176,7 @@ std::string Question::serializeTags(const std::vector<std::string>& tags) const
         // do the remaining with preceding commas
         for(; it != tags.end(); ++it)
         {
-            // TODO strip spaces and then fix this
+            // TODO should strip spaces? and then fix this
             ss << "," << *it;
         }
     }
@@ -258,7 +210,6 @@ std::string Question::serialize(void) const
 {
     std::stringstream ss;
 
-    ss << serializeId(_id) << std::endl;
     ss << serializeTags(_tags) << std::endl;
     ss << serializeQuestion(_question) << std::endl;
     ss << serializeChoices(_choices) << std::endl;

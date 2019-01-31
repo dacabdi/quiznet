@@ -37,13 +37,6 @@ bool createFullQuestionFromStreamNotEnoughChoices(void);
 bool createFullQuestionFromStreamNonConsecutiveChoices(void);
 bool createFullQuestionFromStreamNonAStartingChoices(void);
 
-// from string and passing id
-bool createFullQuestionFromStringAndIdGoldenCase(void);
-bool createFullQuestionFromStringAndIdWithTwoChoices(void);
-bool createFullQuestionFromStringAndIdSolutionNotFound(void);
-bool createFullQuestionFromStringAndIdNotEnoughChoices(void);
-bool createFullQuestionFromStringAndIdNonConsecutiveChoices(void);
-bool createFullQuestionFromStringAndIdNonAStartingChoices(void);
 
 
 int main(void)
@@ -86,19 +79,6 @@ int main(void)
             createFullQuestionFromStreamNonConsecutiveChoices);
     runTest("createFullQuestionFromStreamNonAStartingChoices", 
             createFullQuestionFromStreamNonAStartingChoices);
-
-    runTest("createFullQuestionFromStringAndIdGoldenCase", 
-            createFullQuestionFromStringAndIdGoldenCase);
-    runTest("createFullQuestionFromStringAndIdWithTwoChoices", 
-            createFullQuestionFromStringAndIdWithTwoChoices);
-    runTest("createFullQuestionFromStringAndIdSolutionNotFound", 
-            createFullQuestionFromStringAndIdSolutionNotFound);
-    runTest("createFullQuestionFromStringAndIdNotEnoughChoices", 
-            createFullQuestionFromStringAndIdNotEnoughChoices);
-    runTest("createFullQuestionFromStringAndIdNonConsecutiveChoices", 
-            createFullQuestionFromStringAndIdNonConsecutiveChoices);
-    runTest("createFullQuestionFromStringAndIdNonAStartingChoices", 
-            createFullQuestionFromStringAndIdNonAStartingChoices);
 
     return 0;
 }
@@ -146,7 +126,6 @@ bool compareMaps(const std::map<const char, Choice>& m1,
 
 bool createFullQuestionProgrammaticallyGoldenCase(void)
 {
-    uint32_t id = 23;
     std::vector<std::string> tags({"presidents", " US history"});
     std::string questionPrompt = "Which is the first president of the USA";
     std::map<const char, Choice> choices;
@@ -157,8 +136,7 @@ bool createFullQuestionProgrammaticallyGoldenCase(void)
     choices.emplace('c', Choice("(c) George Washington"));
     choices.emplace('d', Choice("(d) Benjamin Franklin"));
 
-    const char * expectedSerialization = "23\n"
-        "presidents, US history\n"
+    const char * expectedSerialization = "presidents, US history\n"
         "Which is the first president of the USA\n"
         ".\n"
         "(a) Thomas Jefferson\n"
@@ -172,8 +150,7 @@ bool createFullQuestionProgrammaticallyGoldenCase(void)
         ".\n"
         "c\n";
 
-    const char * expectedSerializationQuestion = "23\n"
-        "presidents, US history\n"
+    const char * expectedSerializationQuestion = "presidents, US history\n"
         "Which is the first president of the USA\n"
         ".\n"
         "(a) Thomas Jefferson\n"
@@ -186,12 +163,9 @@ bool createFullQuestionProgrammaticallyGoldenCase(void)
         ".\n"
         ".\n";
 
-    FullQuestion fullQuestion(id, tags, questionPrompt, choices, solution);
-    Question question = fullQuestion.getQuestionObj();
+    FullQuestion fullQuestion(tags, questionPrompt, choices, solution);
+    Question question = fullQuestion.getQuestion();
 
-    if(question.getId() != id)
-        return false;
-    
     if(!compareVectors(tags, question.getTags()))
         return false;
 
@@ -218,7 +192,6 @@ bool createFullQuestionProgrammaticallyGoldenCase(void)
 
 bool createFullQuestionProgrammaticallyWithTwoChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -228,11 +201,8 @@ bool createFullQuestionProgrammaticallyWithTwoChoices(void)
     choices.emplace('a', Choice("(a) TCP"));
     choices.emplace('b', Choice("(b) UDP"));
 
-    FullQuestion fullQuestion(id, tags, questionPrompt, choices, solution);
-    Question question = fullQuestion.getQuestionObj();
-
-    if(question.getId() != id)
-        return false;
+    FullQuestion fullQuestion(tags, questionPrompt, choices, solution);
+    Question question = fullQuestion.getQuestion();
     
     if(!compareVectors(tags, question.getTags()))
         return false;
@@ -255,7 +225,6 @@ bool createFullQuestionProgrammaticallyWithTwoChoices(void)
 
 bool createFullQuestionProgrammaticallySolutionNotFound(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -267,7 +236,7 @@ bool createFullQuestionProgrammaticallySolutionNotFound(void)
 
     try
     {
-        FullQuestion question(id, tags, questionPrompt, choices, solution);
+        FullQuestion question(tags, questionPrompt, choices, solution);
         return false;
     }
     catch(const std::exception& e)
@@ -278,7 +247,6 @@ bool createFullQuestionProgrammaticallySolutionNotFound(void)
 
 bool createFullQuestionProgrammaticallyNotEnoughChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -289,7 +257,7 @@ bool createFullQuestionProgrammaticallyNotEnoughChoices(void)
 
     try
     {
-        FullQuestion question(id, tags, questionPrompt, choices, solution);
+        FullQuestion question(tags, questionPrompt, choices, solution);
         return false;
     }
     catch(const std::exception& e)
@@ -300,7 +268,6 @@ bool createFullQuestionProgrammaticallyNotEnoughChoices(void)
 
 bool createFullQuestionProgrammaticallyNonConsecutiveChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -312,7 +279,7 @@ bool createFullQuestionProgrammaticallyNonConsecutiveChoices(void)
 
     try
     {
-        FullQuestion question(id, tags, questionPrompt, choices, solution);
+        FullQuestion question(tags, questionPrompt, choices, solution);
         return false;
     }
     catch(const std::exception& e)
@@ -323,7 +290,6 @@ bool createFullQuestionProgrammaticallyNonConsecutiveChoices(void)
 
 bool createFullQuestionProgrammaticallyNonAStartingChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -335,7 +301,7 @@ bool createFullQuestionProgrammaticallyNonAStartingChoices(void)
 
     try
     {
-        FullQuestion question(id, tags, questionPrompt, choices, solution);
+        FullQuestion question(tags, questionPrompt, choices, solution);
         return false;
     }
     catch(const std::exception& e)
@@ -346,7 +312,6 @@ bool createFullQuestionProgrammaticallyNonAStartingChoices(void)
 
 bool createFullQuestionFromStringGoldenCase(void)
 {
-    uint32_t id = 23;
     std::vector<std::string> tags({"presidents", " US history"});
     std::string questionPrompt = "Which is the first president of the USA";
     std::map<const char, Choice> choices;
@@ -357,8 +322,7 @@ bool createFullQuestionFromStringGoldenCase(void)
     choices.emplace('c', Choice("(c) George Washington"));
     choices.emplace('d', Choice("(d) Benjamin Franklin"));
 
-    const char *body = "23\n"
-        "presidents, US history\n"
+    const char *body = "presidents, US history\n"
         "Which is the first president of the USA\n"
         ".\n"
         "(a) Thomas Jefferson\n"
@@ -372,8 +336,7 @@ bool createFullQuestionFromStringGoldenCase(void)
         ".\n"
         "c\n";
 
-    const char *bodyQuestion = "23\n"
-        "presidents, US history\n"
+    const char *bodyQuestion = "presidents, US history\n"
         "Which is the first president of the USA\n"
         ".\n"
         "(a) Thomas Jefferson\n"
@@ -387,10 +350,7 @@ bool createFullQuestionFromStringGoldenCase(void)
         ".\n";
 
     FullQuestion fullQuestion(body);
-    Question question = fullQuestion.getQuestionObj();
-
-    if(question.getId() != id)
-        return false;
+    Question question = fullQuestion.getQuestion();
     
     if(!compareVectors(tags, question.getTags()))
         return false;
@@ -420,7 +380,6 @@ bool createFullQuestionFromStringGoldenCase(void)
 
 bool createFullQuestionFromStringWithTwoChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -430,8 +389,7 @@ bool createFullQuestionFromStringWithTwoChoices(void)
     choices.emplace('a', Choice("(a) TCP"));
     choices.emplace('b', Choice("(b) UDP"));
 
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
+    const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
         "(a) TCP\n"
@@ -442,10 +400,7 @@ bool createFullQuestionFromStringWithTwoChoices(void)
         "a\n";
 
     FullQuestion fullQuestion(body);
-    Question question = fullQuestion.getQuestionObj();
-
-    if(question.getId() != id)
-        return false;
+    Question question = fullQuestion.getQuestion();
     
     if(!compareVectors(tags, question.getTags()))
         return false;
@@ -468,8 +423,7 @@ bool createFullQuestionFromStringWithTwoChoices(void)
 
 bool createFullQuestionFromStringSolutionNotFound(void)
 {
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
+    const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
         "(a) TCP\n"
@@ -492,8 +446,7 @@ bool createFullQuestionFromStringSolutionNotFound(void)
 
 bool createFullQuestionFromStringNotEnoughChoices(void)
 {
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
+    const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
         "(a) TCP\n"
@@ -514,8 +467,7 @@ bool createFullQuestionFromStringNotEnoughChoices(void)
 
 bool createFullQuestionFromStringNonConsecutiveChoices(void)
 {
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
+    const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
         "(a) TCP\n"
@@ -538,8 +490,7 @@ bool createFullQuestionFromStringNonConsecutiveChoices(void)
 
 bool createFullQuestionFromStringNonAStartingChoices(void)
 {
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
+    const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
         "(a) TCP\n"
@@ -562,214 +513,6 @@ bool createFullQuestionFromStringNonAStartingChoices(void)
 
 bool createFullQuestionFromStreamGoldenCase(void)
 {
-    uint32_t id = 23;
-    std::vector<std::string> tags({"presidents", " US history"});
-    std::string questionPrompt = "Which is the first president of the USA";
-    std::map<const char, Choice> choices;
-    char solution = 'c';
-
-    choices.emplace('a', Choice("(a) Thomas Jefferson"));
-    choices.emplace('b', Choice("(b) Abraham Lincoln"));
-    choices.emplace('c', Choice("(c) George Washington"));
-    choices.emplace('d', Choice("(d) Benjamin Franklin"));
-
-    const char *body = "23\n"
-        "presidents, US history\n"
-        "Which is the first president of the USA\n"
-        ".\n"
-        "(a) Thomas Jefferson\n"
-        ".\n"
-        "(b) Abraham Lincoln\n"
-        ".\n"
-        "(c) George Washington\n"
-        ".\n"
-        "(d) Benjamin Franklin\n"
-        ".\n"
-        ".\n"
-        "c\n";
-
-    std::stringstream ss(body);
-
-    FullQuestion fullQuestion(ss);
-    Question question = fullQuestion.getQuestionObj();
-
-    if(question.getId() != id)
-        return false;
-    
-    if(!compareVectors(tags, question.getTags()))
-        return false;
-
-    if(question.getQuestion() != questionPrompt)
-        return false;
-
-    if(!compareMaps(choices, question.getAllChoices()))
-        return false;
-
-    if(question.getChoiceById('a') != choices.at('a'))
-        return false;
-
-    if(solution != fullQuestion.getSolution())
-        return false;
-
-    return true;
-}
-
-
-bool createFullQuestionFromStreamWithTwoChoices(void)
-{
-    uint32_t id = 2;
-    std::vector<std::string> tags({"network", "protocols", 
-                                   "transport", "delivery"});
-    std::string questionPrompt = "Which protocol guarantees delivery?";
-    std::map<const char, Choice> choices;
-    char solution = 'a';
-
-    choices.emplace('a', Choice("(a) TCP"));
-    choices.emplace('b', Choice("(b) UDP"));
-
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        "(b) UDP\n"
-        ".\n"
-        ".\n"
-        "a\n";
-
-    std::stringstream ss(body);
-
-    FullQuestion fullQuestion(ss);
-    Question question = fullQuestion.getQuestionObj();
-
-    if(question.getId() != id)
-        return false;
-    
-    if(!compareVectors(tags, question.getTags()))
-        return false;
-
-    if(question.getQuestion() != questionPrompt)
-        return false;
-
-    if(!compareMaps(choices, question.getAllChoices()))
-        return false;
-
-    if(question.getChoiceById('a') != choices.at('a'))
-        return false;
-
-    if(solution != fullQuestion.getSolution())
-        return false;
-
-
-    return true;
-}
-
-bool createFullQuestionFromStreamSolutionNotFound(void)
-{
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        "(b) UDP\n"
-        ".\n"
-        ".\n"
-        "c\n";
-
-    std::stringstream ss(body);
-
-    try
-    {
-        FullQuestion fullQuestion(ss);
-        return false;
-    }
-    catch(const std::exception& e)
-    {}
-
-    return true;
-}
-
-bool createFullQuestionFromStreamNotEnoughChoices(void)
-{
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        ".\n"
-        "a\n";
-
-    std::stringstream ss(body);
-
-    try
-    {
-        FullQuestion fullQuestion(ss);
-        return false;
-    }
-    catch(const std::exception& e)
-    {}
-
-    return true;
-}
-
-bool createFullQuestionFromStreamNonConsecutiveChoices(void)
-{
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        "(c) UDP\n"
-        ".\n"
-        ".\n"
-        "a\n";
-
-    std::stringstream ss(body);
-
-    try
-    {
-        FullQuestion fullQuestion(ss);
-        return false;
-    }
-    catch(const std::exception& e)
-    {}
-
-    return true;
-}
-
-bool createFullQuestionFromStreamNonAStartingChoices(void)
-{
-    const char *body = "2\n"
-        "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        "(c) UDP\n"
-        ".\n"
-        ".\n"
-        "a\n";
-
-    std::stringstream ss(body);
-
-    try
-    {
-        FullQuestion fullQuestion(ss);
-        return false;
-    }
-    catch(const std::exception& e)
-    {}
-
-    return true;
-}
-
-bool createFullQuestionFromStringAndIdGoldenCase(void)
-{
-    uint32_t id = 23;
     std::vector<std::string> tags({"presidents", " US history"});
     std::string questionPrompt = "Which is the first president of the USA";
     std::map<const char, Choice> choices;
@@ -794,11 +537,10 @@ bool createFullQuestionFromStringAndIdGoldenCase(void)
         ".\n"
         "c\n";
 
-    FullQuestion fullQuestion(id, body);
-    Question question = fullQuestion.getQuestionObj();
+    std::stringstream ss(body);
 
-    if(question.getId() != id)
-        return false;
+    FullQuestion fullQuestion(ss);
+    Question question = fullQuestion.getQuestion();
     
     if(!compareVectors(tags, question.getTags()))
         return false;
@@ -819,9 +561,8 @@ bool createFullQuestionFromStringAndIdGoldenCase(void)
 }
 
 
-bool createFullQuestionFromStringAndIdWithTwoChoices(void)
+bool createFullQuestionFromStreamWithTwoChoices(void)
 {
-    uint32_t id = 2;
     std::vector<std::string> tags({"network", "protocols", 
                                    "transport", "delivery"});
     std::string questionPrompt = "Which protocol guarantees delivery?";
@@ -841,11 +582,10 @@ bool createFullQuestionFromStringAndIdWithTwoChoices(void)
         ".\n"
         "a\n";
 
-    FullQuestion fullQuestion(id, body);
-    Question question = fullQuestion.getQuestionObj();
+    std::stringstream ss(body);
 
-    if(question.getId() != id)
-        return false;
+    FullQuestion fullQuestion(ss);
+    Question question = fullQuestion.getQuestion();
     
     if(!compareVectors(tags, question.getTags()))
         return false;
@@ -866,10 +606,8 @@ bool createFullQuestionFromStringAndIdWithTwoChoices(void)
     return true;
 }
 
-bool createFullQuestionFromStringAndIdSolutionNotFound(void)
+bool createFullQuestionFromStreamSolutionNotFound(void)
 {
-    uint32_t id = 2;
-
     const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
@@ -880,9 +618,11 @@ bool createFullQuestionFromStringAndIdSolutionNotFound(void)
         ".\n"
         "c\n";
 
+    std::stringstream ss(body);
+
     try
     {
-        FullQuestion question(id, body);
+        FullQuestion fullQuestion(ss);
         return false;
     }
     catch(const std::exception& e)
@@ -891,10 +631,8 @@ bool createFullQuestionFromStringAndIdSolutionNotFound(void)
     return true;
 }
 
-bool createFullQuestionFromStringAndIdNotEnoughChoices(void)
+bool createFullQuestionFromStreamNotEnoughChoices(void)
 {
-    uint32_t id = 2;
-
     const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
@@ -903,9 +641,11 @@ bool createFullQuestionFromStringAndIdNotEnoughChoices(void)
         ".\n"
         "a\n";
 
+    std::stringstream ss(body);
+
     try
     {
-        FullQuestion question(id, body);
+        FullQuestion fullQuestion(ss);
         return false;
     }
     catch(const std::exception& e)
@@ -914,35 +654,8 @@ bool createFullQuestionFromStringAndIdNotEnoughChoices(void)
     return true;
 }
 
-bool createFullQuestionFromStringAndIdNonConsecutiveChoices(void)
+bool createFullQuestionFromStreamNonConsecutiveChoices(void)
 {
-    uint32_t id = 2;
-
-    const char *body = "network,protocols,transport,delivery\n"
-        "Which protocol guarantees delivery?\n"
-        ".\n"
-        "(a) TCP\n"
-        ".\n"
-        "(c) UDP\n"
-        ".\n"
-        ".\n"
-        "a\n";
-
-    try
-    {
-        FullQuestion question(id, body);
-        return false;
-    }
-    catch(const std::exception& e)
-    {}
-
-    return true;
-}
-
-bool createFullQuestionFromStringAndIdNonAStartingChoices(void)
-{
-    uint32_t id = 2;
-
     const char *body = "network,protocols,transport,delivery\n"
         "Which protocol guarantees delivery?\n"
         ".\n"
@@ -953,9 +666,36 @@ bool createFullQuestionFromStringAndIdNonAStartingChoices(void)
         ".\n"
         "a\n";
 
+    std::stringstream ss(body);
+
     try
     {
-        FullQuestion question(id, body);
+        FullQuestion fullQuestion(ss);
+        return false;
+    }
+    catch(const std::exception& e)
+    {}
+
+    return true;
+}
+
+bool createFullQuestionFromStreamNonAStartingChoices(void)
+{
+    const char *body = "network,protocols,transport,delivery\n"
+        "Which protocol guarantees delivery?\n"
+        ".\n"
+        "(a) TCP\n"
+        ".\n"
+        "(c) UDP\n"
+        ".\n"
+        ".\n"
+        "a\n";
+
+    std::stringstream ss(body);
+
+    try
+    {
+        FullQuestion fullQuestion(ss);
         return false;
     }
     catch(const std::exception& e)

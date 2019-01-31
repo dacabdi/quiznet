@@ -18,7 +18,7 @@ class IFullQuestion
     public:
 
         virtual char getSolution(void) const = 0;
-        virtual const Question& getQuestionObj(void) const = 0;
+        virtual const Question& getQuestion(void) const = 0;
         virtual std::string serialize(void) const = 0;
 
         virtual ~IFullQuestion(){};

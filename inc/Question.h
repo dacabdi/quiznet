@@ -15,15 +15,11 @@ class Question : public IQuestion
 
         // data model
 
-        uint32_t _id;
         std::vector<std::string> _tags;
         std::string _question;
         std::map<const char, Choice> _choices;
 
         // deserialization methods
-
-        uint32_t deserializeId(std::stringstream& ss) const;
-        uint32_t deserializeId(const std::string& s) const;
 
         std::vector<std::string> deserializeTag(
             std::stringstream& s) const;
@@ -40,7 +36,6 @@ class Question : public IQuestion
 
         // serialization methods
 
-        std::string serializeId(const uint32_t id) const;
         std::string serializeTags(
             const std::vector<std::string>& tags) const;
         std::string serializeQuestion(const std::string& question) const;
@@ -55,10 +50,7 @@ class Question : public IQuestion
 
         void init(const std::string& str);
         void init(std::stringstream& ss);
-        void init(uint32_t id, const std::string& str);
-        void init(int32_t id, std::stringstream& ss);
-        void init(uint32_t id, 
-                  std::vector<std::string> tags,
+        void init(std::vector<std::string> tags,
                   std::string question,
                   std::map<const char, Choice> choices);
 
@@ -71,22 +63,14 @@ class Question : public IQuestion
         // create from stream reading id
         Question(std::stringstream& ss);
         
-        // create from a string
-        Question(uint32_t id, const std::string& str);
-        
-        // create from stream
-        Question(uint32_t id, std::stringstream& ss);
-
         // create from pieces
-        Question(uint32_t id,
-                 std::vector<std::string> tags,
+        Question(std::vector<std::string> tags,
                  std::string question,
                  std::map<const char, Choice> choices);
 
         ~Question(){};
 
         // public interface
-        uint32_t getId(void) const override;
         std::vector<std::string> getTags(void) const override;
         std::string getQuestion(void) const override;
         std::map<const char, Choice> getAllChoices(void) const override;

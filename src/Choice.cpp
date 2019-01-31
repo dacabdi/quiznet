@@ -10,8 +10,8 @@ Choice::Choice(const std::string& str)
     if(!validate(str))
         throw std::invalid_argument("Malformed choice string.");
 
-    char _id = str[1];                  // TODO validate
-    std::string _text = str.substr(4);  // TODO validate
+    char _id = str[1];                  
+    std::string _text = str.substr(4);
 
     this->id = _id;
     this->text = _text;
