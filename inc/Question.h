@@ -11,7 +11,7 @@
 
 class Question : public IQuestion
 {
-    private:
+    protected:
 
         // data model
 
@@ -19,7 +19,6 @@ class Question : public IQuestion
         std::vector<std::string> _tags;
         std::string _question;
         std::map<const char, Choice> _choices;
-        char _solution;
 
         // deserialization methods
 
@@ -39,9 +38,6 @@ class Question : public IQuestion
         std::map<const char, Choice> deserializeChoices(
             const std::string& s) const;
 
-        char deserializeSolution(std::stringstream& ss) const;
-        char deserializeSolution(const std::string& s) const;
-
         // serialization methods
 
         std::string serializeId(const uint32_t id) const;
@@ -50,11 +46,10 @@ class Question : public IQuestion
         std::string serializeQuestion(const std::string& question) const;
         std::string serializeChoices(
             const std::map<const char, Choice>& choices) const;
-        std::string serializeSolution(const char solution) const;
 
         // validation
 
-        void validate(std::map<const char,Choice> choices, char solution);
+        void validate(std::map<const char,Choice> choices);
 
         // initialization
 
@@ -65,12 +60,11 @@ class Question : public IQuestion
         void init(uint32_t id, 
                   std::vector<std::string> tags,
                   std::string question,
-                  std::map<const char, Choice> choices,
-                  char solution);
+                  std::map<const char, Choice> choices);
 
 
     public:
-
+    
         // create from a string reading id
         Question(const std::string& str);
 
@@ -87,8 +81,7 @@ class Question : public IQuestion
         Question(uint32_t id,
                  std::vector<std::string> tags,
                  std::string question,
-                 std::map<const char, Choice> choices,
-                 char solution);
+                 std::map<const char, Choice> choices);
 
         ~Question(){};
 
@@ -98,7 +91,6 @@ class Question : public IQuestion
         std::string getQuestion(void) const override;
         std::map<const char, Choice> getAllChoices(void) const override;
         Choice getChoiceById(char id) const override;
-        char getSolution(void) const override;
 
         // serialize the entire question
         std::string serialize(void) const override;

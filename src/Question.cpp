@@ -24,10 +24,9 @@ Question::Question(
     uint32_t id, 
     std::vector<std::string> tags,
     std::string question,
-    std::map<const char, Choice> choices,
-    char solution)
+    std::map<const char, Choice> choices)
 {
-    init(id, tags, question, choices, solution);
+    init(id, tags, question, choices);
 }
 
 void Question::init(const std::string& str)
@@ -54,29 +53,26 @@ void Question::init(int32_t id, std::stringstream& ss)
     std::vector<std::string> tags = deserializeTag(ss);
     std::string question = deserializeQuestion(ss);
     std::map<const char, Choice> choices = deserializeChoices(ss);
-    char solution = deserializeSolution(ss);
 
-    init(id, tags, question, choices, solution);
+    init(id, tags, question, choices);
 }
 
 void Question::init(uint32_t id, 
     std::vector<std::string> tags,
     std::string question,
-    std::map<const char, Choice> choices,
-    char solution)
+    std::map<const char, Choice> choices)
 {
     
-    validate(choices, solution);
+    validate(choices);
 
     // if it validated, it is safe to set
     _id = id;
     _tags = tags;
     _question = question;
     _choices = choices;
-    _solution = solution;
 }
 
-void Question::validate(std::map<const char,Choice> choices,char solution)
+void Question::validate(std::map<const char,Choice> choices)
 {
     if (choices.size() < 2)
         throw std::invalid_argument(
@@ -90,14 +86,6 @@ void Question::validate(std::map<const char,Choice> choices,char solution)
                 "Choices are non consecutive or do not start wit 'a'");
         else
             choiceId++;
-
-    // NOTE: no need to check for solution being an
-    //       non [a-z] character, the Choice that would
-    //       match with it would fail to instantiate
-    //       hence the next check would take care of it
-    if (choices.find(solution) == choices.end())
-        throw std::invalid_argument(
-            "Provided solution is not in the set of choices.");
 }
 
 uint32_t Question::deserializeId(std::stringstream& ss) const
@@ -191,19 +179,6 @@ std::map<const char, Choice> Question::deserializeChoices(
     return deserializeChoices(ss);
 }
 
-char Question::deserializeSolution(std::stringstream& ss) const
-{
-    std::string buffer;
-    std::getline(ss, buffer);
-    return deserializeSolution(buffer);
-}
-
-char Question::deserializeSolution(const std::string& s) const
-{
-    // allows for more complex formatting if needed
-    return s.front();
-}
-
 uint32_t Question::getId(void) const
 {
     return _id;
@@ -229,11 +204,6 @@ Choice Question::getChoiceById(char id) const
     return _choices.at(id);
 }
 
-char Question::getSolution(void) const
-{
-    return _solution;
-}
-
 std::string Question::serializeId(const uint32_t id) const
 {
     return std::to_string(id);
@@ -242,19 +212,23 @@ std::string Question::serializeId(const uint32_t id) const
 std::string Question::serializeTags(const std::vector<std::string>& tags) const
 {
     std::stringstream ss;
-
     std::vector<std::string>::const_iterator it = tags.begin();
     
     // consider no tags
     if (it != tags.end())
-        ss << *it;
-
-    for(; it != tags.end(); ++it)
     {
-        // TODO strip spaces and then fix this
-        ss << "," << *it;
+        // take in the first one without preceding comma
+        ss << *it;
+        ++it;
+        
+        // do the remaining with preceding commas
+        for(; it != tags.end(); ++it)
+        {
+            // TODO strip spaces and then fix this
+            ss << "," << *it;
+        }
     }
-
+    
     return ss.str();
 }
 
@@ -280,11 +254,6 @@ std::string Question::serializeChoices(const std::map<const char, Choice>& choic
     return ss.str();        
 }
 
-std::string Question::serializeSolution(const char solution) const
-{
-    return std::string(1, solution);
-}
-
 std::string Question::serialize(void) const
 {
     std::stringstream ss;
@@ -293,7 +262,6 @@ std::string Question::serialize(void) const
     ss << serializeTags(_tags) << std::endl;
     ss << serializeQuestion(_question) << std::endl;
     ss << serializeChoices(_choices) << std::endl;
-    ss << serializeSolution(_solution) << std::endl;
     
     return ss.str();
 }

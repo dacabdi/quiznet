@@ -58,9 +58,10 @@ test-choice.o:
 
 
 #question
-test-question.test: subdirs test-question.o Question.o Choice.o utils.o
+test-question.test: subdirs test-question.o FullQuestion.o Question.o Choice.o utils.o
 	$(CC) \
 	$(BINSUBDIR)/test-question.o \
+	$(BINSUBDIR)/FullQuestion.o \
 	$(BINSUBDIR)/Question.o \
 	$(BINSUBDIR)/Choice.o \
 	$(BINSUBDIR)/utils.o \
@@ -80,6 +81,9 @@ Choice.o:
 
 Question.o:
 	$(CCFULL)/Question.cpp
+
+FullQuestion.o:
+	$(CCFULL)/FullQuestion.cpp
 
 
 # UTILS
