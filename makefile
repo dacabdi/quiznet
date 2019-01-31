@@ -69,6 +69,19 @@ test-choice.o:
 	$(CCFULL) $(SRCTESTS)/test-choice.cpp
 
 
+#taq
+test-tag.test: subdirs test-tag.o TagCollection.o Tag.o
+	$(CC) \
+	$(BINSUBDIR)/test-tag.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-tag.test
+
+test-tag.o:
+	$(CCFULL) $(SRCTESTS)/test-tag.cpp
+
+
 #question
 test-question.test: subdirs test-question.o FullQuestion.o Question.o Choice.o utils.o
 	$(CC) \
@@ -107,6 +120,12 @@ Choice.o:
 
 ChoiceCollection.o:
 	$(CCFULL) $(SRCMODELS)/ChoiceCollection.cpp
+
+Tag.o:
+	$(CCFULL) $(SRCMODELS)/Tag.cpp
+
+TagCollection.o:
+	$(CCFULL) $(SRCMODELS)/TagCollection.cpp
 
 Question.o:
 	$(CCFULL)/Question.cpp

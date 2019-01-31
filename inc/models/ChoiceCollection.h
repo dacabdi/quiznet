@@ -31,7 +31,7 @@ class ChoiceCollection : public IChoiceCollection
             std::ostream &os, const ChoiceCollection& ref);
 
 
-    private:
+    protected:
 
         // data
 
