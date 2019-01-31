@@ -30,12 +30,22 @@
                 "kind": "build",
                 "isDefault": true
             }
-        }
+        },
         {
             "label": "build-test-choice",
             "type": "shell",
             "command": "make",
             "args": ["MODE=debug", "test-choice.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-question",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-question.test"],
             "group": {
                 "kind": "build",
                 "isDefault": true

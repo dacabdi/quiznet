@@ -15,5 +15,7 @@ std::vector<std::string> utils::split(
         s.erase(0, pos + delimiter.length());
     }
 
+    output.push_back(s);
+
     return output;
 }

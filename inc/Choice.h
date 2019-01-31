@@ -22,6 +22,9 @@ class Choice : public IChoice
         std::string getText() override;
         char getId() override;
         std::string serialize(void) const override;
+
+        bool operator==(const Choice& ref) const;
+        bool operator!=(const Choice& ref) const;
 };
 
 #endif // __CHOICE__H__

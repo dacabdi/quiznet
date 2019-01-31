@@ -5,6 +5,8 @@
 
 // Only used for display purposes
 
+// TODO move to utils
+
 struct EscapedString
 {
     const char* str;

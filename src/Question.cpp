@@ -1,40 +1,115 @@
 #include "Question.h"
 
+Question::Question(const std::string& str)
+{
+    init(str);
+}
+
+Question::Question(std::stringstream& ss)
+{
+    init(ss);
+}
+
+Question::Question(uint32_t id, const std::string& str)
+{
+    init(id, str);
+}
+
+Question::Question(uint32_t id, std::stringstream& ss)
+{   
+    init(id, ss);
+}
+
 Question::Question(
     uint32_t id, 
     std::vector<std::string> tags,
     std::string question,
     std::map<const char, Choice> choices,
     char solution)
-:
-tags(tags), 
-question(question), 
-choices(choices), 
-solution(solution)
-{}
-
-Question::Question(uint32_t id, const std::string& str)
 {
-    std::stringstream ss(str);
-    Question(id, ss);
+    init(id, tags, question, choices, solution);
 }
 
-Question::Question(uint32_t id, std::stringstream& ss)
-{   
+void Question::init(const std::string& str)
+{
+    std::stringstream ss(str);
+    init(ss);
+}
+
+void Question::init(std::stringstream& ss)
+{
+    uint32_t id = deserializeId(ss);
+    init(id, ss);
+}
+
+void Question::init(uint32_t id, const std::string& str)
+{
+    std::stringstream ss(str);
+    init(id, ss);
+}
+
+void Question::init(int32_t id, std::stringstream& ss)
+{
     // temp fields
-    uint32_t _id;
-    std::vector<std::string> _tags;
-    std::string _question;
-    std::map<const char, Choice> _choices;
-    char _solution;
+    std::vector<std::string> tags = deserializeTag(ss);
+    std::string question = deserializeQuestion(ss);
+    std::map<const char, Choice> choices = deserializeChoices(ss);
+    char solution = deserializeSolution(ss);
 
+    init(id, tags, question, choices, solution);
+}
+
+void Question::init(uint32_t id, 
+    std::vector<std::string> tags,
+    std::string question,
+    std::map<const char, Choice> choices,
+    char solution)
+{
+    
+    validate(choices, solution);
+
+    // if it validated, it is safe to set
     _id = id;
-    _tags = deserializeTag(ss);
-    _question = deserializeQuestion(ss);
-    _choices = deserializeChoices(ss);
-    _solution = deserializeSolution(ss);
+    _tags = tags;
+    _question = question;
+    _choices = choices;
+    _solution = solution;
+}
 
-    Question(_id, _tags, _question, _choices, _solution);
+void Question::validate(std::map<const char,Choice> choices,char solution)
+{
+    if (choices.size() < 2)
+        throw std::invalid_argument(
+            "Cannot create question with less than 2 choices.");
+    
+    char choiceId = 'a';
+    for(std::map<const char, Choice>::const_iterator it = choices.begin();
+        it != choices.end(); ++it)
+        if((*it).first != choiceId)
+            throw std::invalid_argument(
+                "Choices are non consecutive or do not start wit 'a'");
+        else
+            choiceId++;
+
+    // NOTE: no need to check for solution being an
+    //       non [a-z] character, the Choice that would
+    //       match with it would fail to instantiate
+    //       hence the next check would take care of it
+    if (choices.find(solution) == choices.end())
+        throw std::invalid_argument(
+            "Provided solution is not in the set of choices.");
+}
+
+uint32_t Question::deserializeId(std::stringstream& ss) const
+{
+    std::string buffer;
+    std::getline(ss, buffer);
+    return deserializeId(buffer);  
+}
+
+uint32_t Question::deserializeId(const std::string& s) const
+{
+    return (uint32_t)std::stoul(s);
 }
 
 std::vector<std::string> Question::deserializeTag(std::stringstream& ss) const
@@ -53,11 +128,29 @@ std::vector<std::string> Question::deserializeTag(
 std::string Question::deserializeQuestion(std::stringstream& ss) const
 {
     std::string buffer;
-    std::getline(ss, buffer);
+    std::string line;
+    std::stringstream ssbuff();
+
+    // if the first line is '.', no question, malformed message? TODO ASK!
+    std::getline(ss, line);
+    if(line == ".")
+        throw std::invalid_argument("Empty question."); 
+    
+    buffer.append(line);
+    std::getline(ss, line);
+    
+    while(line != ".")
+    {
+        buffer.append("\n");
+        buffer.append(line);
+        std::getline(ss, line);
+    }
+    
     return deserializeQuestion(buffer);
 }
 
-std::string Question::deserializeQuestion(const std::string& s) const
+std::string Question::deserializeQuestion(
+    const std::string& question) const
 {
     // allows for more complex formatting if needed
     return question;
@@ -66,17 +159,9 @@ std::string Question::deserializeQuestion(const std::string& s) const
 std::map<const char, Choice> Question::deserializeChoices(
     std::stringstream& ss) const
 {
-    // TODO validate
-
     std::map<const char, Choice> _choices;
     std::string buffer;
-
-    std::getline(ss, buffer);
-
-    if(!(buffer == "."))
-        throw std::invalid_argument("Choices missing initial period.");
-
-    bool firstPeriod = true, secondPeriod = false;
+    bool firstPeriod = false, secondPeriod = false;
     
     while(!secondPeriod)
     {
@@ -108,8 +193,6 @@ std::map<const char, Choice> Question::deserializeChoices(
 
 char Question::deserializeSolution(std::stringstream& ss) const
 {
-    // TODO validate
-
     std::string buffer;
     std::getline(ss, buffer);
     return deserializeSolution(buffer);
@@ -117,35 +200,38 @@ char Question::deserializeSolution(std::stringstream& ss) const
 
 char Question::deserializeSolution(const std::string& s) const
 {
-    // TODO validate
-
     // allows for more complex formatting if needed
     return s.front();
 }
 
+uint32_t Question::getId(void) const
+{
+    return _id;
+}
+
 std::vector<std::string> Question::getTags(void) const
 {
-    return tags;
+    return _tags;
 }
 
 std::string Question::getQuestion(void) const
 {
-    return question;
+    return _question;
 }
 
 std::map<const char, Choice> Question::getAllChoices(void) const
 {
-    return choices;
+    return _choices;
 }
 
 Choice Question::getChoiceById(char id) const
 {
-    return choices.at(id);
+    return _choices.at(id);
 }
 
 char Question::getSolution(void) const
 {
-    return solution;
+    return _solution;
 }
 
 std::string Question::serializeId(const uint32_t id) const
@@ -203,11 +289,11 @@ std::string Question::serialize(void) const
 {
     std::stringstream ss;
 
-    ss << serializeId(id) << std::endl;
-    ss << serializeTags(tags) << std::endl;
-    ss << serializeQuestion(question) << std::endl;
-    ss << serializeChoices(choices) << std::endl;
-    ss << serializeSolution(solution) << std::endl;
+    ss << serializeId(_id) << std::endl;
+    ss << serializeTags(_tags) << std::endl;
+    ss << serializeQuestion(_question) << std::endl;
+    ss << serializeChoices(_choices) << std::endl;
+    ss << serializeSolution(_solution) << std::endl;
     
     return ss.str();
 }

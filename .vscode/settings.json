@@ -32,7 +32,8 @@
         "fstream": "c",
         "optional": "c",
         "tuple": "c",
-        "utility": "c"
+        "utility": "c",
+        "deque": "cpp"
     },
     "editor.fontSize": 16
 }

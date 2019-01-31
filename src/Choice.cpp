@@ -48,3 +48,13 @@ std::string Choice::serialize(void) const
     ss << " " << text;
     return ss.str();
 }
+
+bool Choice::operator==(const Choice& ref) const
+{
+    return this->id == ref.id && this->text == ref.text;
+}
+
+bool Choice::operator!=(const Choice& ref) const
+{
+    return !operator==(ref);
+}
