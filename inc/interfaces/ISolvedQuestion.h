@@ -13,7 +13,7 @@
     that the server handles.
 */
 
-class IFullQuestion
+class ISolvedQuestion
 {
     public:
 
@@ -21,7 +21,7 @@ class IFullQuestion
         virtual const Question& getQuestion(void) const = 0;
         virtual std::string serialize(void) const = 0;
 
-        virtual ~IFullQuestion(){};
+        virtual ~ISolvedQuestion(){};
 };
 
 #endif // __ISOLVEDQUESTION__H__

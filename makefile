@@ -111,6 +111,24 @@ test-question.o:
 	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
 
+#solvedquestion
+test-solvedquestion.test: subdirs test-solvedquestion.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+	$(CC) \
+	$(BINSUBDIR)/test-solvedquestion.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-solvedquestion.test
+
+test-solvedquestion.o:
+	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp
+
+
 #quizbook
 test-quizbook.test: subdirs test-quizbook.o QuizBook.o FullQuestion.o Question.o Choice.o utils.o
 	$(CC) \
@@ -147,11 +165,11 @@ QuestionTitle.o:
 Question.o:
 	$(CCFULL) $(SRCMODELS)/Question.cpp
 
-FullQuestion.o:
-	$(CCFULL)/FullQuestion.cpp
+SolvedQuestion.o:
+	$(CCFULL) $(SRCMODELS)/SolvedQuestion.cpp
 
 QuizBook.o:
-	$(CCFULL)/QuizBook.cpp
+	$(CCFULL) $(SRCMODELS)/QuizBook.cpp
 
 
 

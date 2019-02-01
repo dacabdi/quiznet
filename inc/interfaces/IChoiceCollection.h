@@ -13,6 +13,8 @@ class IChoiceCollection
         virtual const std::map<const char, const Choice>&
             getAllChoices(void) const = 0;
         
+        virtual bool hasChoice(const char id) const = 0; 
+
         // accounting
         virtual size_t size(void) const = 0;
         virtual char lastChoiceLetter(void) const = 0; 

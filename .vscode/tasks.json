@@ -72,6 +72,16 @@
             }
         },
         {
+            "label": "build-test-solvedquestion",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-solvedquestion.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build-test-quizbook",
             "type": "shell",
             "command": "make",

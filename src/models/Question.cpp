@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream &os, const Question& ref)
     return os;
 }
 
-bool Question::operator==(const Question& ref)
+bool Question::operator==(const Question& ref) const
 {
     return (
            _tags == ref._tags
@@ -61,7 +61,7 @@ bool Question::operator==(const Question& ref)
     );
 }
 
-bool Question::operator!=(const Question& ref)
+bool Question::operator!=(const Question& ref) const
 {
     return !operator==(ref);
 }

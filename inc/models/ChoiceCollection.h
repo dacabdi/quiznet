@@ -18,6 +18,8 @@ class ChoiceCollection : public IChoiceCollection
         const std::map<const char, const Choice>& 
             getAllChoices(void) const override;
 
+        bool hasChoice(const char id) const override;
+
         // accounting
         size_t size(void) const override;
         char lastChoiceLetter(void) const override; 

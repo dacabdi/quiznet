@@ -26,6 +26,11 @@ const std::map<const char, const Choice>&
     return _choices;
 }
 
+bool ChoiceCollection::hasChoice(const char id) const
+{
+    return _choices.find(id) != _choices.end();
+}
+
 size_t ChoiceCollection::size(void) const
 {
     return _choices.size();

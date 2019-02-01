@@ -35,8 +35,8 @@ class Question : public IQuestion
 
         friend std::ostream& operator<<(
             std::ostream &os, const Question& ref);
-        bool operator==(const Question& ref);
-        bool operator!=(const Question& ref);
+        bool operator==(const Question& ref) const;
+        bool operator!=(const Question& ref) const;
 
     protected:
 

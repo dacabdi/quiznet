@@ -19,8 +19,6 @@ bool questionStringNoChoices(void);
 bool questionStringUnterminatedQuestionTitle(void);
 bool questionStringUnterminatedChoices(void);
 
-
-
 void runTest(const std::string& name, bool test(void));
 
 int main(void)
