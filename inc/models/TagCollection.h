@@ -11,6 +11,7 @@ class TagCollection : public ITagCollection
 {
     public: 
 
+        TagCollection(){};
         TagCollection(const std::string& str);
         TagCollection(std::stringstream& ss);
 

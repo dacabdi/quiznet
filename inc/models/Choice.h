@@ -13,6 +13,7 @@ class Choice : public IChoice
 
     public:
         
+        Choice(){};
         Choice(const std::string& text);
 
         std::string getText() const override;

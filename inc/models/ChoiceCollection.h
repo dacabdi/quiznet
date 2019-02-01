@@ -8,6 +8,7 @@ class ChoiceCollection : public IChoiceCollection
 {
     public: 
 
+        ChoiceCollection(){};
         ChoiceCollection(const std::string& str);
         ChoiceCollection(std::stringstream& ss);
         ~ChoiceCollection(){};

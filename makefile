@@ -95,18 +95,20 @@ test-questiontitle.o:
 
 
 #question
-test-question.test: subdirs test-question.o FullQuestion.o Question.o Choice.o utils.o
+test-question.test: subdirs test-question.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-question.o \
-	$(BINSUBDIR)/FullQuestion.o \
 	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
-	$(BINSUBDIR)/utils.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-question.test
 
 test-question.o:
-	$(CCFULL)/test-question.cpp
+	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
 
 #quizbook
@@ -143,7 +145,7 @@ QuestionTitle.o:
 	$(CCFULL) $(SRCMODELS)/QuestionTitle.cpp
 
 Question.o:
-	$(CCFULL)/Question.cpp
+	$(CCFULL) $(SRCMODELS)/Question.cpp
 
 FullQuestion.o:
 	$(CCFULL)/FullQuestion.cpp

@@ -9,6 +9,7 @@ class Tag : public ITag
 {
     public:
         
+        Tag(){};
         Tag(const std::string& tag);
 
         const std::string& getText(void) const override;
@@ -23,7 +24,7 @@ class Tag : public ITag
 
     private:
 
-        const std::string _tag;
+        std::string _tag;
 };
 
 #endif // __TAG__H__

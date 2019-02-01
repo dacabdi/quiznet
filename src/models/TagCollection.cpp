@@ -52,6 +52,8 @@ std::string TagCollection::serialize(void) const
         }
     }
     
+    ss << std::endl;
+
     return ss.str();
 }
 

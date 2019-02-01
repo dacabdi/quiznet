@@ -55,7 +55,7 @@ bool tagCollectionGoldenCase(void)
     if(tc.size() != 3)
         return false;
 
-    if(tc.serialize() != input)
+    if(tc.serialize() != (input + "\n"))
         return false;
 
     return true;

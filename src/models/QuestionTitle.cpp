@@ -34,12 +34,12 @@ std::ostream& operator<<(std::ostream &os, const QuestionTitle& question)
     return os;
 }
 
-bool QuestionTitle::operator==(const QuestionTitle& ref)
+bool QuestionTitle::operator==(const QuestionTitle& ref) const
 {
     return _title == ref._title;
 }
 
-bool QuestionTitle::operator!=(const QuestionTitle& ref)
+bool QuestionTitle::operator!=(const QuestionTitle& ref) const
 {
     return !operator==(ref);
 }

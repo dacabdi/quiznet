@@ -11,9 +11,6 @@ class ITag
         virtual std::string serialize(void) const = 0;
 
         virtual ~ITag(){};
-
-    protected:
-
         ITag(){};
 };
 

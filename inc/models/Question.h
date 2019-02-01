@@ -1,10 +1,11 @@
 #ifndef __QUESTION__H__
 #define __QUESTION__H__
 
-#include "Choice.h"
-#include "ChoiceCollection.h"
 #include "Tag.h"
 #include "TagCollection.h"
+#include "Choice.h"
+#include "ChoiceCollection.h"
+#include "QuestionTitle.h"
 #include "IQuestion.h"
 #include <stdexcept>
 
@@ -20,33 +21,32 @@ class Question : public IQuestion
         
         // create from pieces
         Question(TagCollection tags,
-                 std::string question,
+                 QuestionTitle question,
                  ChoiceCollection choices);
 
         ~Question(){};
 
         const TagCollection& getTags(void) const override;
-        const std::string& getQuestion(void) const override;
-        const ChoiceCollection& getAllChoices(void) const override;
-        const Choice& getChoiceById(char id) const override;
+        const QuestionTitle& getQuestionTitle(void) const override;
+        const ChoiceCollection& getChoices(void) const override;
         std::string serialize(void) const override;
 
         friend std::ostream& operator<<(
-            std::ostream &os, const Question& question);
-        virtual bool operator==(const Question& ref);
-        virtual bool operator!=(const Question& ref);
+            std::ostream &os, const Question& ref);
+        bool operator==(const Question& ref);
+        bool operator!=(const Question& ref);
 
     protected:
 
         TagCollection _tags;
-        std::string question;
+        QuestionTitle _questionTitle;
         ChoiceCollection _choices;
 
-        void init(const std::string& str);
         void init(std::stringstream& ss);
         void init(TagCollection tags,
-                  std::string question,
+                  QuestionTitle questionTitel,
                   ChoiceCollection choices);
+
 };
 
 #endif // __QUESTION__H__
