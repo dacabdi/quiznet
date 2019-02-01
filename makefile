@@ -81,6 +81,18 @@ test-tag.test: subdirs test-tag.o TagCollection.o Tag.o
 test-tag.o:
 	$(CCFULL) $(SRCTESTS)/test-tag.cpp
 
+#questiontitle
+test-questiontitle.test: subdirs test-questiontitle.o QuestionTitle.o
+	$(CC) \
+	$(BINSUBDIR)/test-questiontitle.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-questiontitle.test
+
+test-questiontitle.o:
+	$(CCFULL) $(SRCTESTS)/test-questiontitle.cpp
+
+
 
 #question
 test-question.test: subdirs test-question.o FullQuestion.o Question.o Choice.o utils.o
@@ -126,6 +138,9 @@ Tag.o:
 
 TagCollection.o:
 	$(CCFULL) $(SRCMODELS)/TagCollection.cpp
+
+QuestionTitle.o:
+	$(CCFULL) $(SRCMODELS)/QuestionTitle.cpp
 
 Question.o:
 	$(CCFULL)/Question.cpp

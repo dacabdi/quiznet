@@ -52,6 +52,16 @@
             }
         },
         {
+            "label": "build-test-questiontitle",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-questiontitle.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build-test-question",
             "type": "shell",
             "command": "make",
