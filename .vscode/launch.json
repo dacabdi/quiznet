@@ -68,6 +68,50 @@
             "preLaunchTask": "build-test-choice"
         },
         {
+            "name": "launch-test-tag",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/test-tag.test",
+            "args": [""],
+            "stopAtEntry": false,
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-test-tag"
+        },
+        {
+            "name": "launch-test-questiontitle",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/test-questiontitle.test",
+            "args": [""],
+            "stopAtEntry": false,
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-test-questiontitle"
+        },
+        {
             "name": "launch-test-question",
             "type": "cppdbg",
             "request": "launch",
@@ -88,6 +132,28 @@
                 }
             ],
             "preLaunchTask": "build-test-question"
+        },
+        {
+            "name": "launch-test-quizbook",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/test-quizbook.test",
+            "args": [""],
+            "stopAtEntry": false,
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-test-quizbook"
         }
     ]
 }

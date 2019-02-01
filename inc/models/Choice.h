@@ -9,20 +9,18 @@ class Choice : public IChoice
 {
     private:
 
-        char id;
-        std::string text;
-        
-        bool validate(const std::string& str);
+        std::string _text;
 
     public:
         
-        Choice(const char id, const std::string& text);
-        Choice(const std::string& str);
+        Choice(){};
+        Choice(const std::string& text);
 
-        std::string getText() override;
-        char getId() override;
+        std::string getText() const override;
         std::string serialize(void) const override;
 
+        friend std::ostream& operator<<(
+            std::ostream &os, const Choice& choice);
         bool operator==(const Choice& ref) const;
         bool operator!=(const Choice& ref) const;
 };
