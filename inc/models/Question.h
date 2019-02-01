@@ -13,6 +13,8 @@ class Question : public IQuestion
 {
     public:
 
+        Question(){};
+
         // create from a string reading id
         Question(const std::string& str);
 
