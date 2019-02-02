@@ -7,7 +7,10 @@
 #include "ChoiceCollection.h"
 #include "QuestionTitle.h"
 #include "IQuestion.h"
-#include <stdexcept>
+
+#include <istream>
+#include <ostream>
+#include <sstream>
 
 class Question : public IQuestion
 {
@@ -19,7 +22,7 @@ class Question : public IQuestion
         Question(const std::string& str);
 
         // create from stream reading id
-        Question(std::stringstream& ss);
+        Question(std::istream& is);
         
         // create from pieces
         Question(TagCollection tags,
@@ -44,7 +47,7 @@ class Question : public IQuestion
         QuestionTitle _questionTitle;
         ChoiceCollection _choices;
 
-        void init(std::stringstream& ss);
+        void init(std::istream& is);
         void init(TagCollection tags,
                   QuestionTitle questionTitel,
                   ChoiceCollection choices);

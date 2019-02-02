@@ -7,6 +7,7 @@
 
 #include <stdexcept>
 #include <functional>
+#include <istream>
 
 class QuizBook : public IQuizBook 
 {
@@ -28,6 +29,8 @@ class QuizBook : public IQuizBook
         
         // insert a new question
         uint32_t insertQuestion(const SolvedQuestion fQuestion);
+        uint32_t insertQuestion(uint32_t id, 
+            const SolvedQuestion question);
 
         // delete a question
         SolvedQuestion deleteQuestionById(const uint32_t id);
@@ -53,9 +56,10 @@ class QuizBook : public IQuizBook
         std::map<const uint32_t, const SolvedQuestion> _questions;
 
         void init(const std::string& str);
-        void init(std::stringstream ss);
+        void init(std::istream& is);
 
-        uint32_t findFreeId(const uint32_t start) const;
+        uint32_t findFreeId(const uint32_t start = 0) const;
+        
 };
 
 #endif

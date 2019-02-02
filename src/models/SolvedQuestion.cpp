@@ -7,9 +7,9 @@ SolvedQuestion::SolvedQuestion(const std::string& s)
     init(s);
 }
 
-SolvedQuestion::SolvedQuestion(std::stringstream& ss)
+SolvedQuestion::SolvedQuestion(std::istream& is)
 {
-    init(ss);
+    init(is);
 }
 
 SolvedQuestion::SolvedQuestion(Question question, char solution)
@@ -31,23 +31,23 @@ const Question& SolvedQuestion::getQuestion(void) const
 
 std::string SolvedQuestion::serialize(void) const
 {
-    std::stringstream ss;
-    ss << _question << _solution << std::flush;
-    return ss.str();
+    std::ostringstream oss;
+    oss << _question << _solution << std::flush;
+    return oss.str();
 }
 
 // -------------- PROTECTED METHODS -----------
 
-void SolvedQuestion::init(const std::string& s)
+void SolvedQuestion::init(const std::string& str)
 {
-    std::stringstream ss(s);
-    init(ss);
+    std::istringstream iss(str);
+    init(iss);
 }
 
-void SolvedQuestion::init(std::stringstream& ss)
+void SolvedQuestion::init(std::istream& is)
 {
-    Question question(ss);
-    char solution = deserializeSolution(ss);
+    Question question(is);
+    char solution = deserializeSolution(is);
 
     init(question, solution);
 }
@@ -56,17 +56,18 @@ void SolvedQuestion::init(Question question, char solution)
 {
     if(!question.getChoices().hasChoice(solution))
         throw std::invalid_argument(
+            "SolvedQuestion::init():"
             "Provided solution is not in the question: " + solution); 
 
     _question = question;
     _solution = solution;
 }
 
-char SolvedQuestion::deserializeSolution(std::stringstream& ss) const
+char SolvedQuestion::deserializeSolution(std::istream& is) const
 {
     // allows for more complex formatting if needed
     char solution;
-    ss.get(solution);
+    is.get(solution);
     return solution;
 }
 

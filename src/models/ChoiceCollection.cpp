@@ -4,13 +4,13 @@
 
 ChoiceCollection::ChoiceCollection(const std::string& str)
 {
-    std::stringstream ss(str);
-    init(ss);
+    std::istringstream iss(str);
+    init(iss);
 }
 
-ChoiceCollection::ChoiceCollection(std::stringstream& ss)
+ChoiceCollection::ChoiceCollection(std::istream& is)
 {
-    init(ss);
+    init(is);
 }
 
 // ------------- PUBLIC INTERFACE ---------------
@@ -45,29 +45,29 @@ char ChoiceCollection::lastChoiceLetter(void) const
 
 std::string ChoiceCollection::serialize(void) const
 {
-    std::stringstream ss;
+    std::ostringstream oss;
 
     for (const std::pair<const char, const Choice>& pair : _choices)
     {
-        ss << "(" << pair.first << ") ";
-        ss << pair.second.serialize() << std::endl;
-        ss << "." << std::endl;
+        oss << "(" << pair.first << ") ";
+        oss << pair.second.serialize() << std::endl;
+        oss << "." << std::endl;
     }
 
-    ss << "." << std::endl;
+    oss << "." << std::endl;
 
-    return ss.str();
+    return oss.str();
 }
 
 // ------------- PRIVATE METHODS ---------------
 
-void ChoiceCollection::init(std::stringstream& ss)
+void ChoiceCollection::init(std::istream& is)
 {
-    _choices = deserializeAllChoices(ss);
+    _choices = deserializeAllChoices(is);
 }
 
 std::map<const char, const Choice>
-    ChoiceCollection::deserializeAllChoices(std::stringstream& ss) const 
+    ChoiceCollection::deserializeAllChoices(std::istream& is) const 
 {
     std::map<const char, const Choice> choices;
     bool firstPeriod = false, 
@@ -78,7 +78,7 @@ std::map<const char, const Choice>
 
     while(!secondPeriod)
     {
-        std::getline(ss, buffer);
+        std::getline(is, buffer);
         
         if (buffer == "." && !firstPeriod)
             firstPeriod = true;
@@ -95,14 +95,15 @@ std::map<const char, const Choice>
             // check not repeated
             if (choices.find(pair.first) != choices.end())
                 throw std::invalid_argument(
+                    "ChoiceCollection::deserializeAllChoices():"
                     "Repeated choice letter:" + pair.first);
 
             if (pair.first != currentLetter)
                 throw std::invalid_argument(
-                     std::string("Choice letter out of order. ") + 
+                     "ChoiceCollection::deserializeAllChoices():"
+                     "Choice letter out of order. "
                      "Expected (" + std::to_string(currentLetter) +
-                     ") and received (" +
-                      std::to_string(pair.first) + ").");
+                     ") and received (" + pair.first + ").");
 
             // all checks passed
             choices.insert(pair);
@@ -113,8 +114,8 @@ std::map<const char, const Choice>
 
     if (count < 2)
         throw std::invalid_argument(
-            std::string("A collection of choices must have at ") + 
-            "least 2 choices, Only " + 
+            "ChoiceCollection::deserializeAllChoices():"
+            "Must have at least 2 choices, Only " + 
             std::to_string(count) + " were provided.");
 
     return choices;
@@ -125,6 +126,7 @@ const std::pair<const char, const Choice>
 {
     if(!validateChoice(str))
         throw std::invalid_argument(
+            "ChoiceCollection::deserializeAllChoices():"
             "Invalid choice format: [" + str + "]");
 
     const std::pair<const char, const Choice> 

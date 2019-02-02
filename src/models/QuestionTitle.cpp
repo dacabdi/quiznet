@@ -7,9 +7,9 @@ QuestionTitle::QuestionTitle(const std::string& title)
     _title = deserialize(title);
 }
 
-QuestionTitle::QuestionTitle(std::stringstream& ss)
+QuestionTitle::QuestionTitle(std::istream& is)
 {
-    _title = deserialize(ss);
+    _title = deserialize(is);
 }
 
 // ----------- PUBLIC INTERFACE ----------------
@@ -21,9 +21,9 @@ const std::string& QuestionTitle::getText(void) const
 
 std::string QuestionTitle::serialize(void) const
 {
-    std::stringstream ss;
-    ss << _title << std::endl << "." << std::endl;
-    return ss.str();
+    std::ostringstream oss;
+    oss << _title << std::endl << "." << std::endl;
+    return oss.str();
 }
 
 // ---------- OPERATORS -------------------
@@ -46,24 +46,26 @@ bool QuestionTitle::operator!=(const QuestionTitle& ref) const
 
 // ----------- PRIVATE METHODS ----------------
 
-std::string QuestionTitle::deserialize(std::stringstream& ss)
+std::string QuestionTitle::deserialize(std::istream& is)
 {
     std::string title;
     std::string line;
 
     // if the first line is '.', no question, malformed message? TODO ASK!
-    std::getline(ss, line);
+    std::getline(is, line);
     if(line == ".")
-        throw std::invalid_argument("Empty question title."); 
+        throw std::invalid_argument(
+            "QuestionTitle::deserialize():"
+            "Empty question title."); 
     
     title.append(line);
-    std::getline(ss, line);
+    std::getline(is, line);
     
     while(line != ".")
     {
         title.append("\n");
         title.append(line);
-        std::getline(ss, line);
+        std::getline(is, line);
     }
     
     return title;
@@ -74,6 +76,7 @@ std::string QuestionTitle::deserialize(const std::string& str)
     size_t pos = str.find("\n.\n");
     if(pos == std::string::npos)
         throw std::invalid_argument(
+            "QuestionTitle::deserialize():"
             "Title format does not end on \\n.\\n");
 
     return str.substr(0, pos);

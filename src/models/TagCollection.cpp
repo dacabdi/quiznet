@@ -7,10 +7,10 @@ TagCollection::TagCollection(const std::string& str)
     _tags = deserialize(str);
 }
 
-TagCollection::TagCollection(std::stringstream& ss)
+TagCollection::TagCollection(std::istream& is)
 {
     std::string str;
-    std::getline(ss, str);
+    std::getline(is, str);
     _tags = deserialize(str);
 }
 
@@ -34,27 +34,27 @@ size_t TagCollection::size(void) const
 
 std::string TagCollection::serialize(void) const
 {
-    std::stringstream ss;
+    std::ostringstream oss;
     std::vector<Tag>::const_iterator it = _tags.begin();
     
     // consider no tags
     if (it != _tags.end())
     {
         // take in the first one without preceding comma
-        ss << (*it).serialize();
+        oss << (*it).serialize();
         ++it;
         
         // do the remaining with preceding commas
         for(; it != _tags.end(); ++it)
         {
             // TODO should strip spaces? and then fix this
-            ss << "," << (*it).serialize();
+            oss << "," << (*it).serialize();
         }
     }
     
-    ss << std::endl;
+    oss << std::endl;
 
-    return ss.str();
+    return oss.str();
 }
 
 // ----------- OPERATORS ------------
@@ -88,12 +88,6 @@ std::ostream& operator<<(std::ostream &os, const TagCollection& ref)
     os << ref.serialize();
     return os;
 }
-
-/*const Tag& TagCollection::operator[](const size_t idx) const
-{
-    return at(idx);
-}*/
-
 
 // ----------- PRIVATE METHODS ------------
 

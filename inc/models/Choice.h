@@ -2,7 +2,6 @@
 #define __CHOICE__H__
 
 #include "IChoice.h"
-#include <sstream>
 #include <stdexcept>
 
 class Choice : public IChoice

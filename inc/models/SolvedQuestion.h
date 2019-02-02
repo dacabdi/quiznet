@@ -11,7 +11,7 @@ class SolvedQuestion : public ISolvedQuestion
 
         SolvedQuestion(){};
         SolvedQuestion(const std::string& s);
-        SolvedQuestion(std::stringstream& ss);
+        SolvedQuestion(std::istream& is);
         SolvedQuestion(Question question, char solution);
 
         ~SolvedQuestion(){};
@@ -31,10 +31,10 @@ class SolvedQuestion : public ISolvedQuestion
         Question _question;
 
         void init(const std::string& s);
-        void init(std::stringstream& ss);
+        void init(std::istream& is);
         void init(Question question, char solution);
 
-        char deserializeSolution(std::stringstream& ss) const;
+        char deserializeSolution(std::istream& is) const;
 };
 
 #endif // __ISOLVEDQUESTION__H__

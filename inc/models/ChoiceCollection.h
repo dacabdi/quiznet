@@ -3,6 +3,9 @@
 
 #include "IChoiceCollection.h"
 #include "utils.h" // for map comparison
+#include <istream>
+#include <ostream>
+#include <sstream>
 
 class ChoiceCollection : public IChoiceCollection
 {
@@ -10,7 +13,7 @@ class ChoiceCollection : public IChoiceCollection
 
         ChoiceCollection(){};
         ChoiceCollection(const std::string& str);
-        ChoiceCollection(std::stringstream& ss);
+        ChoiceCollection(std::istream& is);
         ~ChoiceCollection(){};
 
         // get choices
@@ -42,10 +45,10 @@ class ChoiceCollection : public IChoiceCollection
 
         // methods
 
-        void init(std::stringstream& ss);
+        void init(std::istream& is);
 
         std::map<const char, const Choice>
-            deserializeAllChoices(std::stringstream& ss) const;
+            deserializeAllChoices(std::istream& is) const;
 
         const std::pair<const char, const Choice> 
             deserializeChoice(const std::string& str) const;
