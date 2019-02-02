@@ -4,6 +4,7 @@
 #include "SolvedQuestion.h"
 
 #include <string>
+#include <limits>
 
 class IQuizBook
 {

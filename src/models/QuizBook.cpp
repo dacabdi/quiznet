@@ -35,7 +35,11 @@ const SolvedQuestion& QuizBook::getRandomQuestion(void) const
 
 uint32_t QuizBook::insertQuestion(const SolvedQuestion fQuestion)
 {
+    for(uint32_t id = 0; id < std::numeric_limits<uint32_t>::max(); ++id)
+        if(!hasQuestion(id))
+            return id;
 
+    throw std::runtime_error("QuizBook maxed out");
 }
 
 SolvedQuestion QuizBook::deleteQuestionById(const uint32_t id)
@@ -61,7 +65,7 @@ void QuizBook::clear(void)
 
 std::ostream& QuizBook::writeTo(std::ostream& os) const
 {
-
+    
 }
 
 std::istream& QuizBook::readFrom(std::istream& is)
@@ -73,7 +77,6 @@ std::istream& QuizBook::readFrom(std::istream& is)
 std::string QuizBook::serialize(void) const
 {
     std::stringstream ss;
-    ss << 
 }
 
 // number of questions
@@ -93,4 +96,13 @@ void QuizBook::init(const std::string& str)
 void QuizBook::init(std::stringstream ss)
 {
 
+}
+
+uint32_t QuizBook::findFreeId(const uint32_t start) const
+{
+    for(uint32_t id = start; id < std::numeric_limits<uint32_t>::max(); ++id)
+        if(!hasQuestion(id))
+            return id;
+
+    throw std::runtime_error("QuizBook maxed out");
 }

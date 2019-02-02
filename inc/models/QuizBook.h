@@ -54,6 +54,8 @@ class QuizBook : public IQuizBook
 
         void init(const std::string& str);
         void init(std::stringstream ss);
+
+        uint32_t findFreeId(const uint32_t start) const;
 };
 
 #endif
