@@ -1,3 +1,5 @@
+#-------------------------- VARS -----------------------------------------
+
 CC=g++
 CFLAGS=
 INCLUDE=-Iinc/ -Iinc/client -Iinc/interfaces -Iinc/misc -Iinc/models -Iinc/server
@@ -9,7 +11,6 @@ SRCMISC=$(SRCDIR)/misc
 SRCMODELS=$(SRCDIR)/models
 SRCSERVER=$(SRCDIR)/server
 SRCTESTS=$(SRCDIR)/tests
-
 
 # binary subdirectories
 BINSUBDIR=
@@ -28,15 +29,12 @@ else
 	CFLAGS=-Wall
 endif
 
+# full compiler line
 CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
 
-
-
-
-
+#------------------------------GENERAL------------------------------------
 
 all: clean server.app client.app
-
 
 subdirs:
 	mkdir -p $(BINSUBDIR)
@@ -50,11 +48,22 @@ subdirs-debug:
 clean:
 	rm -rvf $(BINBASEDIR)/
 
+#------------------------------TESTS--------------------------------------
+
+# >> test-choice <<
+test-uniformrandom.test: subdirs test-uniformrandom.o UniformRandom.o
+	$(CC) \
+	$(BINSUBDIR)/test-uniformrandom.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-uniformrandom.test
+
+test-uniformrandom.o:
+	$(CCFULL) $(SRCTESTS)/test-uniformrandom.cpp
 
 
 
 
-# TESTS
 
 #choice
 test-choice.test: subdirs test-choice.o ChoiceCollection.o Choice.o
@@ -172,12 +181,13 @@ QuizBook.o:
 	$(CCFULL) $(SRCMODELS)/QuizBook.cpp
 
 
-
-
 # UTILS
 
 utils.o:
-	$(CCFULL)/utils.cpp
+	$(CCFULL) $(SRCMISC)/utils.cpp
+
+UniformRandom.o:
+	$(CCFULL) $(SRCMISC)/UniformRandom.cpp
 
 
 # SERVER

@@ -29,6 +29,17 @@ namespace utils
 
         return true;
     }
+
+    template<typename K, typename V>
+    std::vector<K> getAllKeys(const std::map<K,V>& m)
+    {
+        std::vector<K> v;
+        
+        for(const std::pair<K,V>& pair : m)
+            v.push_back(pair.first);
+
+        return v;
+    }
 }
 
 #endif

@@ -82,6 +82,16 @@
             }
         },
         {
+            "label": "build-test-uniformrandom",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-uniformrandom.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build-test-quizbook",
             "type": "shell",
             "command": "make",
