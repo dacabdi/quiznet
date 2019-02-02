@@ -102,13 +102,13 @@ std::ostream& QuizBook::writeTo(std::ostream& os) const
 
 std::istream& QuizBook::readFrom(std::istream& is)
 {   
-    std::string s;
+    std::string line;
 
     while(!is.eof())
     {
-        std::getline(is, s);
+        std::getline(is, line);
         
-        uint32_t id = std::stoul(s);
+        uint32_t id = std::stoul(line);
         SolvedQuestion question(is);
         
         _questions.emplace(id, question);

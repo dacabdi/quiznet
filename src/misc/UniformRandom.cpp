@@ -47,5 +47,3 @@ template class UniformRandom<unsigned short>;
 template class UniformRandom<unsigned int>;
 template class UniformRandom<unsigned long>;
 template class UniformRandom<unsigned long long>;
-
-template class UniformRandom<uint32_t>;

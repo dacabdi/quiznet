@@ -50,7 +50,7 @@ clean:
 
 #------------------------------TESTS--------------------------------------
 
-# >> test-choice <<
+# >> test-uniformrandom <<
 test-uniformrandom.test: subdirs test-uniformrandom.o UniformRandom.o
 	$(CC) \
 	$(BINSUBDIR)/test-uniformrandom.o \
@@ -61,11 +61,7 @@ test-uniformrandom.test: subdirs test-uniformrandom.o UniformRandom.o
 test-uniformrandom.o:
 	$(CCFULL) $(SRCTESTS)/test-uniformrandom.cpp
 
-
-
-
-
-#choice
+# >> test-choice <<
 test-choice.test: subdirs test-choice.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-choice.o \
@@ -77,8 +73,7 @@ test-choice.test: subdirs test-choice.o ChoiceCollection.o Choice.o
 test-choice.o:
 	$(CCFULL) $(SRCTESTS)/test-choice.cpp
 
-
-#taq
+# >> test-tag <<
 test-tag.test: subdirs test-tag.o TagCollection.o Tag.o
 	$(CC) \
 	$(BINSUBDIR)/test-tag.o \
@@ -90,7 +85,7 @@ test-tag.test: subdirs test-tag.o TagCollection.o Tag.o
 test-tag.o:
 	$(CCFULL) $(SRCTESTS)/test-tag.cpp
 
-#questiontitle
+# >> test-questiontitle <<
 test-questiontitle.test: subdirs test-questiontitle.o QuestionTitle.o
 	$(CC) \
 	$(BINSUBDIR)/test-questiontitle.o \
@@ -101,9 +96,7 @@ test-questiontitle.test: subdirs test-questiontitle.o QuestionTitle.o
 test-questiontitle.o:
 	$(CCFULL) $(SRCTESTS)/test-questiontitle.cpp
 
-
-
-#question
+# >> test-question <<
 test-question.test: subdirs test-question.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-question.o \
@@ -119,8 +112,7 @@ test-question.test: subdirs test-question.o Question.o TagCollection.o Tag.o Que
 test-question.o:
 	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
-
-#solvedquestion
+# >> test-solvedquestion <<
 test-solvedquestion.test: subdirs test-solvedquestion.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-solvedquestion.o \
@@ -137,24 +129,24 @@ test-solvedquestion.test: subdirs test-solvedquestion.o SolvedQuestion.o Questio
 test-solvedquestion.o:
 	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp
 
-
-#quizbook
-test-quizbook.test: subdirs test-quizbook.o QuizBook.o FullQuestion.o Question.o Choice.o utils.o
-	$(CC) \
+# >> test-quizbook <<
+test-quizbook.test: subdirs test-quizbook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(BINSUBDIR)/test-quizbook.o \
-	$(BINSUBDIR)/QuizBook.o \
-	$(BINSUBDIR)/FullQuestion.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
 	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
-	$(BINSUBDIR)/utils.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-quizbook.test
 
 test-quizbook.o:
-	$(CCFULL)/test-quizbook.cpp
+	$(CCFULL) $(SRCTESTS)/test-quizbook.cpp
 
-
-# MODELS
+#------------------------------MODELS-------------------------------------
 
 Choice.o:
 	$(CCFULL) $(SRCMODELS)/Choice.cpp
@@ -180,14 +172,17 @@ SolvedQuestion.o:
 QuizBook.o:
 	$(CCFULL) $(SRCMODELS)/QuizBook.cpp
 
-
-# UTILS
+#------------------------------EXTRA--------------------------------------
 
 utils.o:
 	$(CCFULL) $(SRCMISC)/utils.cpp
 
 UniformRandom.o:
 	$(CCFULL) $(SRCMISC)/UniformRandom.cpp
+
+
+
+
 
 
 # SERVER

@@ -18,10 +18,14 @@ class QuizBook : public IQuizBook
         QuizBook(std::istream& is);
          ~QuizBook(){};
 
-        // public event handlers
-        std::function<void(const SolvedQuestion&,QuizBook*)> onInsert;
-        std::function<void(SolvedQuestion,QuizBook*)> onDelete;
-        std::function<void(QuizBook*)> onClear;
+        // public event handlers (with do nothing stubs)
+        std::function<void(const SolvedQuestion&,QuizBook*)> onInsert = 
+        [](const SolvedQuestion& solvedQuestion, QuizBook* context){};
+
+        std::function<void(SolvedQuestion,QuizBook*)> onDelete =
+        [](SolvedQuestion solvedQuestion, QuizBook* context){};
+
+        std::function<void(QuizBook*)> onClear = [](QuizBook* context){};
 
         // obtain question
         const SolvedQuestion& getQuestionById(uint32_t id) const;
