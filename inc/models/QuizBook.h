@@ -19,20 +19,16 @@ class QuizBook : public IQuizBook
         ~QuizBook(){};
 
         // public event handlers (with do nothing stubs)
-        std::function<void(const SolvedQuestion&,QuizBook*)> onInsert = 
-        [](const SolvedQuestion& solvedQuestion, QuizBook* context){};
-
-        std::function<void(SolvedQuestion,QuizBook*)> onDelete =
-        [](SolvedQuestion solvedQuestion, QuizBook* context){};
-
-        std::function<void(QuizBook*)> onClear = [](QuizBook* context){};
+        std::function<void(const SolvedQuestion&,QuizBook*)> onInsert;
+        std::function<void(SolvedQuestion,QuizBook*)> onDelete;
+        std::function<void(QuizBook*)> onClear;
 
         // obtain question
         const SolvedQuestion& getQuestionById(uint32_t id) const override;
-        const SolvedQuestion& getRandomQuestion(void) override;
+        const SolvedQuestion& getRandomQuestion(void) const override;
         
         // insert a new question
-        uint32_t insertQuestion(const SolvedQuestion fQuestion) override;
+        uint32_t insertQuestion(const SolvedQuestion question) override;
         uint32_t insertQuestion(uint32_t id, 
             const SolvedQuestion question) override;
 
@@ -50,10 +46,16 @@ class QuizBook : public IQuizBook
         std::istream& readFrom(std::istream& is) override;
 
         // stringify the entire quizbook
-        std::string serialize() const override;
+        std::string serialize(void) const override;
+        std::ostream& serialize(std::ostream& os) const;
 
         // number of questions
         size_t size(void) const override;
+
+        bool operator==(const QuizBook &ref) const;
+        bool operator!=(const QuizBook &ref) const;
+        friend std::ostream& operator<<(std::ostream& os, 
+            const QuizBook& ref);
 
     protected:
 
@@ -63,7 +65,6 @@ class QuizBook : public IQuizBook
         void init(std::istream& is);
 
         uint32_t findFreeId(const uint32_t start = 0) const;
-        
 };
 
 #endif

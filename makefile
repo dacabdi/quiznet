@@ -132,7 +132,7 @@ test-solvedquestion.test: subdirs test-solvedquestion.o utils.o SolvedQuestion.o
 	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
 	$(INCLUDE) \
-	-o $(BINSUBDIR)/test-solvedquestion.test
+	-o $(BINSUBDIR)/test-solvedquestion.test 
 
 test-solvedquestion.o:
 	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp

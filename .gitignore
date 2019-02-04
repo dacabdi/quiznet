@@ -33,3 +33,6 @@
 
 # Build subdirs
 /bin
+
+# Discarded code
+/x

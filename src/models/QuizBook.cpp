@@ -19,7 +19,7 @@ const SolvedQuestion& QuizBook::getQuestionById(uint32_t id) const
     return _questions.at(id);
 }
 
-const SolvedQuestion& QuizBook::getRandomQuestion(void)
+const SolvedQuestion& QuizBook::getRandomQuestion(void) const
 {
     if(!size())
         throw std::out_of_range("QuizBook::getRandomQuestion():"
@@ -27,14 +27,13 @@ const SolvedQuestion& QuizBook::getRandomQuestion(void)
 
     // create a vector with all the keys
     std::vector<uint32_t> keys;
-    for(std::pair<const uint32_t, const SolvedQuestion>& pair 
-    : _questions)
-        keys.push_back(pair.first);
+    for(const std::pair<const uint32_t, const SolvedQuestion>& pair 
+    : _questions) keys.push_back(pair.first);
 
     // select an index of the vector randomly and use that key
     UniformRandom<uint32_t> uf(0, keys.size() - 1);
     uint32_t randKeyIdx = uf.generate();
-    getQuestionById(keys[randKeyIdx]);
+    return getQuestionById(keys[randKeyIdx]);
 }
 
 uint32_t QuizBook::insertQuestion(const SolvedQuestion question)
@@ -59,10 +58,12 @@ uint32_t QuizBook::insertQuestion(uint32_t id,
     
     // if completed then call event handler 
     // with reference to constructed question
-    onInsert((*placement.first).second, this);
+    if(onInsert) onInsert((*placement.first).second, this);
 
     return id; 
 }   
+
+#include <iostream>
 
 SolvedQuestion QuizBook::deleteQuestionById(const uint32_t id)
 {
@@ -75,31 +76,25 @@ SolvedQuestion QuizBook::deleteQuestionById(const uint32_t id)
             "Question id does not exist");
 
     // call onDelete handler with a copy of the question
-    onDelete(deletedQuestion, this);
+    if(onDelete) onDelete(deletedQuestion, this);
+
     return deletedQuestion;
 }
 
 bool QuizBook::hasQuestion(const uint32_t id) const
 {
-    return _questions.find(id) != _questions.end();
+    return (_questions.find(id) != _questions.end());
 }
 
 void QuizBook::clear(void)
 {
+    if(onClear) onClear(this);
     _questions.clear();
 }
 
 std::ostream& QuizBook::writeTo(std::ostream& os) const
 {
-    for(const std::pair<const uint32_t, 
-        const SolvedQuestion>& kv : _questions)
-            os << kv.first   // the id
-               << std::endl  // and end of line
-               << kv.second  // the question
-               << std::endl; // a terminating end of line
-
-    os << std::flush;
-    return os;
+    return serialize(os);
 }
 
 std::istream& QuizBook::readFrom(std::istream& is)
@@ -107,15 +102,46 @@ std::istream& QuizBook::readFrom(std::istream& is)
     std::string line;
 
     while(is >> line)
-        _questions.emplace(std::stoul(line), SolvedQuestion(is));
+    {
+        uint32_t id = std::stoul(line); is.get(); // get \n after id
+        SolvedQuestion sq(is);
+        
+        _questions.emplace(id, sq);
+    }
 
     return is;
 }
 
+
 // stringify the entire quizbook
 std::string QuizBook::serialize(void) const
 {
-    std::stringstream ss;
+    std::ostringstream oss;
+    serialize(oss);
+    return oss.str();
+}
+
+// put the entire quizbook into an output buffer
+std::ostream& QuizBook::serialize(std::ostream& os) const
+{
+    std::map<const uint32_t, const SolvedQuestion>::const_iterator it =
+    _questions.begin();
+
+    // NOTE: the entire set must not end on an empty line,
+    //       hence a special treatment is given to the first
+    //       question in the map
+
+    if(it != _questions.end())
+    {
+        os << it->first << std::endl << it->second;
+        while((++it) != _questions.end())
+            os << std::endl
+               << it->first
+               << std::endl
+               << it->second;
+    }
+
+    return os;
 }
 
 // number of questions
@@ -144,4 +170,34 @@ uint32_t QuizBook::findFreeId(const uint32_t start) const
             return id;
 
     throw std::runtime_error("QuizBook maxed out");
+}
+
+// ----------------OPERATORS--------------------------
+
+bool QuizBook::operator==(const QuizBook& ref) const
+{
+    std::map<const uint32_t, const SolvedQuestion>::const_iterator i1, i2;
+    
+    for(// init 
+        i1 = (*this)._questions.begin(), 
+        i2 = ref._questions.begin();
+        // condition
+            i1 != this->_questions.end() && i2 != ref._questions.end()
+        &&  i1->first  == i2->first      && i1->second == i2->second;
+        // maintenance
+        ++i1, ++i2);
+
+    // the iteration ended before hitting the end
+    return (i1 != this->_questions.end() || i2 != ref._questions.end());
+}
+
+bool QuizBook::operator!=(const QuizBook& ref) const
+{
+    return !operator==(ref);
+}
+
+std::ostream& operator<<(std::ostream& os, const QuizBook& ref)
+{
+    os << ref.serialize();
+    return os;
 }

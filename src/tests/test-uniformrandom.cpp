@@ -1,6 +1,6 @@
 #include "UniformRandom.h"
 #include <iostream>
-#include "utils.h"
+#include "Utils.h"
 
 int main(void)
 {

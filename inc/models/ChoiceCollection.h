@@ -2,7 +2,7 @@
 #define __CHOICECOLLECTION__H__
 
 #include "IChoiceCollection.h"
-#include "utils.h" // for map comparison
+#include "Utils.h" // for map comparison
 #include <istream>
 #include <ostream>
 #include <sstream>

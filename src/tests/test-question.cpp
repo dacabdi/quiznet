@@ -51,7 +51,6 @@ int main(void)
     runTest("questionStringUnterminatedChoices",
         questionStringUnterminatedChoices);
 
-
     return 0; 
 }
 

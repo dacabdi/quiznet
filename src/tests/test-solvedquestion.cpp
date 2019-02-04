@@ -5,6 +5,8 @@
 bool solvedQuestionProgrammaticallyGoldenCase(void);
 bool solvedQuestionProgrammaticallyTwoChoices(void);
 bool solvedQuestionProgrammaticallyMultilineTitle(void);
+bool solvedQuestionProgrammaticallyEquality(void);
+bool solvedQuestionProgrammaticallyUnequal(void);
 
 bool solvedQuestionProgrammaticallySolutionIsNotAChoice(void);
 
@@ -25,7 +27,11 @@ int main(void)
         solvedQuestionProgrammaticallyTwoChoices);
     runTest("solvedQuestionProgrammaticallyMultilineTitle", 
         solvedQuestionProgrammaticallyMultilineTitle);
-    
+    runTest("solvedQuestionProgrammaticallyEquality",
+        solvedQuestionProgrammaticallyEquality);
+    runTest("solvedQuestionProgrammaticallyUnequal",
+        solvedQuestionProgrammaticallyUnequal);
+
     runTest("solvedQuestionProgrammaticallySolutionIsNotAChoice",
         solvedQuestionProgrammaticallySolutionIsNotAChoice);
 
@@ -372,6 +378,60 @@ bool solvedQuestionStringSolutionIsNotAChoice(void)
     }
     catch(const std::exception& e)
     {}
+
+    return true;
+}
+
+bool solvedQuestionProgrammaticallyEquality(void)
+{
+    std::string s("presidents, US history\n"
+        "Which is the first president of the USA\n"
+        ".\n"
+        "(a) Thomas Jefferson\n"
+        ".\n"
+        "(b) Abraham Lincoln\n"
+        ".\n"
+        ".\n"
+        "a");
+    
+    SolvedQuestion sq1(s);
+    SolvedQuestion sq2(s);
+
+    if(sq1 != sq2 || sq2 != sq1)
+        return false;
+
+    return true;
+}
+
+bool solvedQuestionProgrammaticallyUnequal(void)
+{
+    std::string s1("presidents, US history\n"
+        "Which is the first president of the USA\n"
+        ".\n"
+        "(a) Thomas Jefferson\n"
+        ".\n"
+        "(b) Abraham Lincoln\n"
+        ".\n"
+        ".\n"
+        "a");
+    
+    std::string s2("presidents, US history\n"
+        "Which is the first president of the USA\n"
+        ".\n"
+        "(a) Thomas Jefferson\n"
+        ".\n"
+        "(b) Abraham Lincoln\n"
+        ".\n"
+        "(c) George Washington\n"
+        ".\n"
+        ".\n"
+        "a");
+    
+    SolvedQuestion sq1(s1);
+    SolvedQuestion sq2(s2);
+
+    if(sq1 == sq2 || sq2 == sq1)
+        return false;
 
     return true;
 }
