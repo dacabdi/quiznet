@@ -19,15 +19,17 @@ const SolvedQuestion& QuizBook::getQuestionById(uint32_t id) const
     return _questions.at(id);
 }
 
-const SolvedQuestion& QuizBook::getRandomQuestion(void) const
+const SolvedQuestion& QuizBook::getRandomQuestion(void)
 {
     if(!size())
         throw std::out_of_range("QuizBook::getRandomQuestion():"
                                 "Empty QuizBook.");
 
     // create a vector with all the keys
-    std::vector<const uint32_t> keys = utils::getAllKeys<const uint32_t, 
-                                        const SolvedQuestion>(_questions);
+    std::vector<uint32_t> keys;
+    for(std::pair<const uint32_t, const SolvedQuestion>& pair 
+    : _questions)
+        keys.push_back(pair.first);
 
     // select an index of the vector randomly and use that key
     UniformRandom<uint32_t> uf(0, keys.size() - 1);
@@ -104,15 +106,8 @@ std::istream& QuizBook::readFrom(std::istream& is)
 {   
     std::string line;
 
-    while(!is.eof())
-    {
-        std::getline(is, line);
-        
-        uint32_t id = std::stoul(line);
-        SolvedQuestion question(is);
-        
-        _questions.emplace(id, question);
-    }
+    while(is >> line)
+        _questions.emplace(std::stoul(line), SolvedQuestion(is));
 
     return is;
 }

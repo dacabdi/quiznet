@@ -13,14 +13,19 @@ class IQuizBook
         // obtain question
         virtual const SolvedQuestion& getQuestionById(
             uint32_t id) const = 0;
-        virtual const SolvedQuestion& getRandomQuestion(void) const = 0;
+        virtual const SolvedQuestion& getRandomQuestion(void) = 0;
         
         // insert a new question
         virtual uint32_t insertQuestion(
             const SolvedQuestion fQuestion) = 0;
+        virtual uint32_t insertQuestion(uint32_t id, 
+                    const SolvedQuestion question) = 0;
 
         // delete a question
         virtual SolvedQuestion deleteQuestionById(const uint32_t id) = 0;
+
+        // determine if has question
+        virtual bool hasQuestion(const uint32_t id) const = 0;
 
         // delete all questions
         virtual void clear(void) = 0;
@@ -36,6 +41,10 @@ class IQuizBook
         virtual size_t size(void) const = 0;
 
         virtual ~IQuizBook(){};
+
+    protected:
+
+        IQuizBook(){};
 };
 
 

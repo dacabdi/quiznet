@@ -9,14 +9,14 @@
 #include <functional>
 #include <istream>
 
-class QuizBook : public IQuizBook 
+class QuizBook : public IQuizBook
 {
     public:
 
-        QuizBook(){};
+        QuizBook(void){};
         QuizBook(const std::string& str);
         QuizBook(std::istream& is);
-         ~QuizBook(){};
+        ~QuizBook(){};
 
         // public event handlers (with do nothing stubs)
         std::function<void(const SolvedQuestion&,QuizBook*)> onInsert = 
@@ -28,32 +28,32 @@ class QuizBook : public IQuizBook
         std::function<void(QuizBook*)> onClear = [](QuizBook* context){};
 
         // obtain question
-        const SolvedQuestion& getQuestionById(uint32_t id) const;
-        const SolvedQuestion& getRandomQuestion(void) const;
+        const SolvedQuestion& getQuestionById(uint32_t id) const override;
+        const SolvedQuestion& getRandomQuestion(void) override;
         
         // insert a new question
-        uint32_t insertQuestion(const SolvedQuestion fQuestion);
+        uint32_t insertQuestion(const SolvedQuestion fQuestion) override;
         uint32_t insertQuestion(uint32_t id, 
-            const SolvedQuestion question);
+            const SolvedQuestion question) override;
 
         // delete a question
-        SolvedQuestion deleteQuestionById(const uint32_t id);
+        SolvedQuestion deleteQuestionById(const uint32_t id) override;
 
         // check if question exists
-        bool hasQuestion(const uint32_t id) const;
+        bool hasQuestion(const uint32_t id) const override;
 
         // delete all questions
-        void clear(void);
+        void clear(void) override;
 
         // save and load
-        std::ostream& writeTo(std::ostream& os) const;
-        std::istream& readFrom(std::istream& is);
+        std::ostream& writeTo(std::ostream& os) const override;
+        std::istream& readFrom(std::istream& is) override;
 
         // stringify the entire quizbook
-        std::string serialize() const;
+        std::string serialize() const override;
 
         // number of questions
-        size_t size(void) const;
+        size_t size(void) const override;
 
     protected:
 

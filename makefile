@@ -12,6 +12,9 @@ SRCMODELS=$(SRCDIR)/models
 SRCSERVER=$(SRCDIR)/server
 SRCTESTS=$(SRCDIR)/tests
 
+# test data subdir
+TESTDATA=$(SRCTESTS)/data
+
 # binary subdirectories
 BINSUBDIR=
 BINBASEDIR=bin
@@ -49,6 +52,10 @@ clean:
 	rm -rvf $(BINBASEDIR)/
 
 #------------------------------TESTS--------------------------------------
+
+# put test data in binary subdir
+copy-test-data:
+	cp $(TESTDATA)/* $(BINSUBDIR)
 
 # >> test-uniformrandom <<
 test-uniformrandom.test: subdirs test-uniformrandom.o UniformRandom.o
@@ -113,9 +120,10 @@ test-question.o:
 	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
 # >> test-solvedquestion <<
-test-solvedquestion.test: subdirs test-solvedquestion.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-solvedquestion.test: subdirs test-solvedquestion.o utils.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-solvedquestion.o \
+	$(BINSUBDIR)/utils.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
 	$(BINSUBDIR)/Question.o \
 	$(BINSUBDIR)/TagCollection.o \
@@ -130,8 +138,10 @@ test-solvedquestion.o:
 	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp
 
 # >> test-quizbook <<
-test-quizbook.test: subdirs test-quizbook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-quizbook.test: subdirs copy-test-data test-quizbook.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+	$(CC) \
 	$(BINSUBDIR)/test-quizbook.o \
+	$(BINSUBDIR)/QuizBook.o \
 	$(BINSUBDIR)/UniformRandom.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
 	$(BINSUBDIR)/Question.o \
