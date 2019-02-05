@@ -5,7 +5,9 @@
 #include <ostream>
 
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <netinet/in.h>
+
 
 // extend for other types
 
@@ -31,17 +33,20 @@ class ISocket
     public:
 
         virtual int getDescriptor(void) const = 0;
-        virtual ssize_t write(std::istream& is) = 0;
-        virtual ssize_t read(std::ostream& os) = 0;
+        virtual ssize_t writeToSocket(std::istream& is) = 0;
+        virtual ssize_t readFromSocket(std::ostream& os) = 0;
         virtual AddressDomain getAddressDomain(void) const = 0;
         virtual Protocol getProtocol(void) const = 0;
         virtual SocketType getSocketType(void) const = 0;
-        virtual void close(void) = 0;
-        virtual void shutdown(void) = 0; 
+        virtual void closeSocket(void) = 0;
+        virtual void shutdownSocket(void) = 0; 
+        virtual void bindSocket(const * IAddress address) = 0;
         
-        virtual ~ISocket();
+        virtual ~ISocket(){};
 
-        ISocket() = delete;
+        protected:
+
+            ISocket(){};
 };
 
 #endif // __ISOCKET__H__

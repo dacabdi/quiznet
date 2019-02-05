@@ -1,11 +1,15 @@
 #ifndef __EXCEPTION__H__
 #define __EXCEPTION__H__
 
-#include <stdexcept>
-#include <string>
-
+// ensures XSI version of strerror_r
+#ifdef _GNU_SOURCE
+    #undef _GNU_SOURCE
+#endif
 #include <errno.h>
 #include <string.h>
+
+#include <stdexcept>
+#include <string>
 
 class Exception : public std::runtime_error
 {
@@ -15,6 +19,7 @@ class Exception : public std::runtime_error
         const std::string _where;
         const std::string _extraMsg;
         const bool _displayErrno;
+        int _errnoInt;
         std::string _errno;
         std::string _errstr;
         
@@ -22,24 +27,22 @@ class Exception : public std::runtime_error
         
         void init(void)
         {
-            _errno = std::to_string(errno);
-
-            char buffer[1024];
-            bzero(buffer, 1024);
-            int r = strerror_r(errno, buffer, 1024);
-            if (r != 0)
-                _errstr = "Could not retrieve error message";
-            else
-                _errstr = buffer;
-            
-
-            _errno = std::
-
             _full = "Where: " + _where + "\n" 
                   + "What: " + _what + "\n"
-                  + "Extra: " + _extraMsg + "\n"
-                  + "Errno: " + _errno + "\n"
-                  + "Errstr: " + _errstr + "\n";
+                  + "Extra: " + _extraMsg + "\n";
+
+            _errnoInt = errno;
+            if(_displayErrno)
+            {
+                _errno = std::to_string(_errnoInt);
+                char buffer[1024];
+                bzero(buffer, 1024);
+                int r = strerror_r(_errnoInt, buffer, 1024);
+                _errstr = (!r ? buffer : "Could not retrieve error string"); 
+            
+                _full += "Errno: " + _errno + "\n"
+                      + "Errstr: " + _errstr + "\n";
+            } 
         }
 
     public:
@@ -47,7 +50,7 @@ class Exception : public std::runtime_error
         Exception(const std::string& what,
                   const std::string& where, 
                   const std::string& extraMsg = "", 
-                  bool displayErrno = false)
+                  bool displayErrno = true)
         :   std::runtime_error(""),
             _what(what), 
             _where(where), 
@@ -56,22 +59,15 @@ class Exception : public std::runtime_error
         {
             init();
         };
-        
-        Exception(const std::string& what,
-                  const std::string& where, 
-                  bool displayErrno = false)
-        :   std::runtime_error(what),
-            _what(what),
-            _where(where), 
-            _extraMsg(""), 
-            _displayErrno(displayErrno) 
-        {
-            init();
-        };
 
     	const char * what () const throw ()
         {
             return _full.c_str();
+        }
+
+        int errNo(void)
+        {
+            return _errnoInt;
         }
 };
 

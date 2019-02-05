@@ -1,16 +1,15 @@
 #-------------------------- VARS -----------------------------------------
 
 CC=g++
-CFLAGS=
-INCLUDE=-Iinc/ -Iinc/client -Iinc/interfaces -Iinc/misc -Iinc/models -Iinc/server
+CFLAGS= -D_POSIX_C_SOURCE=200112L
+INCLUDE=-Iinc/ -Iinc/interfaces -Iinc/misc -Iinc/models -Iinc/network
 
 # sources subdirectories
 SRCDIR=src
-SRCCLIENT=$(SRCDIR)/client
 SRCMISC=$(SRCDIR)/misc
 SRCMODELS=$(SRCDIR)/models
-SRCSERVER=$(SRCDIR)/server
 SRCTESTS=$(SRCDIR)/tests
+SRCNETWORK=$(SRCDIR)/network
 
 # test data subdir
 TESTDATA=$(SRCTESTS)/data
@@ -156,6 +155,17 @@ test-quizbook.test: subdirs copy-test-data test-quizbook.o QuizBook.o UniformRan
 test-quizbook.o:
 	$(CCFULL) $(SRCTESTS)/test-quizbook.cpp
 
+# >> test-socket <<
+test-socket.test: subdirs test-socket.o Socket.o
+	$(CC) \
+	$(BINSUBDIR)/test-socket.o \
+	$(BINSUBDIR)/Socket.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-socket.test
+
+test-socket.o:
+	$(CCFULL) $(SRCTESTS)/test-socket.cpp
+
 #------------------------------MODELS-------------------------------------
 
 Choice.o:
@@ -181,6 +191,10 @@ SolvedQuestion.o:
 
 QuizBook.o:
 	$(CCFULL) $(SRCMODELS)/QuizBook.cpp
+
+#------------------------------NETWORK------------------------------------
+Socket.o:
+	$(CCFULL) $(SRCNETWORK)/Socket.cpp
 
 #------------------------------EXTRA--------------------------------------
 
