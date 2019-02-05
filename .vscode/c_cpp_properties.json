@@ -4,11 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/inc",
-                "${workspaceFolder}/inc/client",
                 "${workspaceFolder}/inc/interfaces",
                 "${workspaceFolder}/inc/misc",
                 "${workspaceFolder}/inc/models",
-                "${workspaceFolder}/inc/server"
+                "${workspaceFolder}/inc/network"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
