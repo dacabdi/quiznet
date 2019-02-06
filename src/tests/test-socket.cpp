@@ -1,4 +1,5 @@
 #include "Socket.h"
+#include "Host.h"
 #include <iostream>
 #include <ostream>
 #include <istream>
@@ -6,13 +7,16 @@
 
 bool socketOpenAndClose(void);
 //bool socketWriteAndRead(void);
+bool hostCreate(void);
+bool socketBindLocalhost(void);
 
 void runTest(const std::string& name, bool test(void));
 
 int main(void)
 {
     runTest("socketOpenAndClose", socketOpenAndClose);
-    //runTest("socketWriteAndRead", socketWriteAndRead);
+    runTest("hostCreate", hostCreate);
+    runTest("socketBindLocalhost", socketBindLocalhost);
 
     return 0; 
 }
@@ -52,3 +56,40 @@ bool socketOpenAndClose(void)
 
     return true;
 }*/
+
+bool hostCreate(void)
+{
+    Host host("localhost", "80");
+
+    if(host.getAddress() != "127.0.0.1")
+        return false;
+
+    if(host.getNode() != "localhost")
+        return false;
+
+    if(host.getService() != "80")
+        return false;
+    
+    if(host.isPassive() == true)
+        return false;    
+    
+    return true;
+}
+
+bool socketBindLocalhost(void)
+{
+    Socket socket(IPv4, StreamSocket, TCP);
+    Host host("8080");
+
+    socket.bindSocket(host);
+
+    if(!socket.isBinded())
+        return false;   
+
+    socket.closeSocket();
+
+    if(socket.isBinded())
+        return false;   
+
+    return true;
+}

@@ -16,7 +16,7 @@ TagCollection::TagCollection(std::istream& is)
 
 // ----------- PUBLIC INTERFACE ------------
 
-inline const Tag& TagCollection::at(const size_t idx) const
+const Tag& TagCollection::at(const size_t idx) const
 {
     return _tags.at(idx);
 }

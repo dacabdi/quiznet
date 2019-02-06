@@ -3,6 +3,7 @@
 
 #include "Exception.h"
 #include "ISocket.h"
+#include "IHost.h"
 
 #include <istream>
 #include <ostream>
@@ -21,29 +22,15 @@
     #define __DATA_BUFFER_WRITE_SIZE 1024
 #endif
 
-enum SocketType {
-    StreamSocket = SOCK_STREAM,
-    DatagramSocket = SOCK_DGRAM,
-    RawSocket = SOCK_RAW 
-};
-
-enum AddressDomain {
-    IPv4 = AF_INET,
-    IPv6 = AF_INET6
-};
-
-enum Protocol {
-    DefaultProtocol = 0,
-    TCP = IPPROTO_TCP,
-    UDP = IPPROTO_UDP
-};
-
 class Socket : public ISocket
 {
     public :
 
-        Socket(AddressDomain = IPv4, SocketType = StreamSocket, 
-               Protocol = TCP);
+        Socket(void) : Socket(IPv4, StreamSocket, TCP) {};
+
+        Socket(AddressDomain addressDomain = IPv4, 
+               SocketType socketType = StreamSocket, 
+               Protocol protocol = TCP);
 
         ~Socket();
 
@@ -55,8 +42,9 @@ class Socket : public ISocket
         SocketType getSocketType(void) const override;
         void closeSocket(void) override;
         void shutdownSocket(void) override;
-        
-        Socket() = delete;
+        void bindSocket(const IHost& host) override;
+        bool isBinded(void) const override;
+        const IHost& getBindedHost(void) const override;
 
     protected : 
     
@@ -64,10 +52,9 @@ class Socket : public ISocket
         const AddressDomain _domain;
         const SocketType _type;
         const Protocol _protocol;
-        bool open = false;
-
-        void except(const std::string& message, 
-                    bool showSyserror = true);
+        bool _open = false;
+        bool _binded = false;
+        const IHost * _bindedTo = nullptr;
 };
 
 #endif // __SOCKET__H__

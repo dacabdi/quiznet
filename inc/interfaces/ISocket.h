@@ -8,7 +8,6 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-
 // extend for other types
 
 enum SocketType {
@@ -28,6 +27,8 @@ enum Protocol {
     UDP = IPPROTO_UDP
 };
 
+#include "IHost.h"
+
 class ISocket
 {
     public:
@@ -40,11 +41,13 @@ class ISocket
         virtual SocketType getSocketType(void) const = 0;
         virtual void closeSocket(void) = 0;
         virtual void shutdownSocket(void) = 0; 
-        virtual void bindSocket(const * IAddress address) = 0;
+        virtual void bindSocket(const IHost& host) = 0;
+        virtual bool isBinded(void) const = 0;
+        virtual const IHost& getBindedHost(void) const = 0;
         
         virtual ~ISocket(){};
 
-        protected:
+    protected:
 
             ISocket(){};
 };

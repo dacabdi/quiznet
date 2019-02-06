@@ -1,26 +1,26 @@
-#ifndef __IHOSTINFO__H__
-#define __IHOSTINFO__H__
+#ifndef __IHOST__H__
+#define __IHOST__H__
 
 #include <string>
+#include <sys/types.h>
+#include <sys/socketvar.h>
+#include <netdb.h>
 
-using ushort = unsigned short;
-
-enum HostIdType {
-    HostName,
-    IPAddress
-};
-
-class IHostInfo
+class IHost
 {
-    virtual const HostIdType& getType(void) const = 0;
-    virtual bool setType(const HostIdType) = 0;
+    public:
 
-    virtual const std::string& getIdentifier(void) const = 0;
-    virtual bool setIdentifier(const std::string&) = 0;
+        virtual const std::string& getNode(void) const = 0;
+        virtual const std::string getAddress(void) const = 0;
+        virtual const struct addrinfo& getAddressInfo(void) const = 0; 
+        virtual const std::string& getService(void) const = 0;
+        virtual bool isPassive(void) const = 0;
+        
+        virtual ~IHost(){};
 
-    virtual ~IHostInfo();
+    protected:
 
-    IHostInfo() = delete;
+            IHost(){};
 };
 
 #endif // __IHOST__H__

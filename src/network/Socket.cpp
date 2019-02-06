@@ -8,13 +8,20 @@ Socket::Socket(AddressDomain domain, SocketType type, Protocol protocol)
     if (sd < 0) 
         throw Exception("Error opening socket", "Socket::Socket:()");
 
-    open = true;
+    // avoid address already in use
+    int yes=1;
+    if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1) 
+        throw Exception(
+            "Error setting setting SO_REUSEADDR to 1", 
+            "Socket::Socket:()");
+
+    _open = true;
     _sd = sd;
 }
 
 Socket::~Socket()
 {
-    if(open) closeSocket();
+    if(_open) closeSocket();
 }
 
 int Socket::getDescriptor(void) const
@@ -91,7 +98,9 @@ void Socket::closeSocket(void)
     if (close(_sd) != 0)
         throw Exception("Failed to close socket", "Socket::close()");
 
-    open = false;
+    _open = false;
+    _binded = false;
+    _bindedTo = nullptr;
 }
 
 void Socket::shutdownSocket(void)
@@ -99,4 +108,24 @@ void Socket::shutdownSocket(void)
     if (shutdown(_sd, SHUT_RDWR) != 0)
         throw Exception("Error shutting down socket", 
                         "Socket::shutdown()");
+}
+
+void Socket::bindSocket(const IHost& host)
+{
+    const struct addrinfo &res = host.getAddressInfo();
+    int r = bind(_sd, res.ai_addr, res.ai_addrlen);
+    if (r == -1) throw Exception("Failed to bind socket",
+                                 "Socket::bindSocket()");
+    _binded = true;
+    _bindedTo = &host;
+}
+
+bool Socket::isBinded(void) const
+{
+    return _binded;
+}
+
+const IHost& Socket::getBindedHost(void) const
+{
+    return *_bindedTo;
 }

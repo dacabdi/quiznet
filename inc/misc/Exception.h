@@ -27,7 +27,7 @@ class Exception : public std::runtime_error
         
         void init(void)
         {
-            _full = "Where: " + _where + "\n" 
+            _full = "\nWhere: " + _where + "\n" 
                   + "What: " + _what + "\n"
                   + "Extra: " + _extraMsg + "\n";
 

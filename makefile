@@ -156,9 +156,10 @@ test-quizbook.o:
 	$(CCFULL) $(SRCTESTS)/test-quizbook.cpp
 
 # >> test-socket <<
-test-socket.test: subdirs test-socket.o Socket.o
+test-socket.test: subdirs test-socket.o Socket.o Host.o
 	$(CC) \
 	$(BINSUBDIR)/test-socket.o \
+	$(BINSUBDIR)/Host.o \
 	$(BINSUBDIR)/Socket.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-socket.test
@@ -195,6 +196,9 @@ QuizBook.o:
 #------------------------------NETWORK------------------------------------
 Socket.o:
 	$(CCFULL) $(SRCNETWORK)/Socket.cpp
+
+Host.o:
+	$(CCFULL) $(SRCNETWORK)/Host.cpp
 
 #------------------------------EXTRA--------------------------------------
 
