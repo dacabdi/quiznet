@@ -29,49 +29,53 @@ int Socket::getDescriptor(void) const
     return _sd;
 }
 
-
-//TODO: determine if socket has to be open
-
 ssize_t Socket::writeToSocket(std::istream& is)
 {
-    std::streamsize ssize = __DATA_BUFFER_WRITE_SIZE;
+    std::streamsize ssize = __DATA_BUFFER_WRITE;
     ssize_t total = 0, current = 0;
 
-    char buffer[__DATA_BUFFER_WRITE_SIZE];
-    bzero(buffer, __DATA_BUFFER_WRITE_SIZE);
+    char buffer[__DATA_BUFFER_WRITE];
+    bzero(buffer, __DATA_BUFFER_WRITE);
 
     while(!is.eof())
     {
-        is.get(buffer, ssize);
-        current = write(_sd, buffer, ssize);
+        is.get(buffer, ssize, '\0');
+        current = strlen(buffer);
+        current = write(_sd, buffer, current);
 
-        if (current < 0) // check if last reading was error (-1)
+        if (current < (ssize_t)0) // check if last reading was error (-1)
             throw Exception("Error writing to socket", 
                             "Socket::writeToSocket()", 
                             "Last buffered content ["
                             + std::string(buffer) + "]");
 
-        total += current;
+        total += current; // uncount the termination char
     }
 
     return total;
 }
 
-ssize_t Socket::readFromSocket(std::ostream& os)
+ssize_t Socket::readFromSocket(std::ostream& os, ssize_t nbytes)
 {
     ssize_t r = 0;
-    char buffer[__DATA_BUFFER_READ_SIZE];
-    bzero(buffer, __DATA_BUFFER_READ_SIZE);
+    int flags = 0;
 
-    r = read(_sd, buffer, __DATA_BUFFER_READ_SIZE );
-    os << buffer;
-    bzero(buffer, __DATA_BUFFER_READ_SIZE);
+    char * buffer = new char[nbytes+1];
+    bzero(buffer, nbytes+1);
+    r = recv(_sd, buffer, nbytes, flags);
+    buffer[nbytes+1] = '\0';
 
     if (r < 0) // check if last reading was error (-1)
+    {
+        delete [] buffer; // dealloc before excepting
         throw Exception("Error reading from socket", 
                         "Socket::readFromSocket()", 
                         "Last buffered content ["
                         + std::string(buffer) + "]");
+    }
+
+    os << buffer;
+    delete [] buffer;
 
     return r;
 }
@@ -151,8 +155,8 @@ void Socket::acceptConnection(void)
     // the socket to be automatically closed
     // when going out of the scope of this method
     Socket connSocket(newSocket);
-
-    Host host((struct sockaddr *) &peerAddress);
+    struct sockaddr *temp = ((struct sockaddr *)&peerAddress);
+    Host host(temp);
 
     if(onIncomingConnection)
         onIncomingConnection(connSocket, host, this);

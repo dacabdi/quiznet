@@ -30,13 +30,22 @@ enum Protocol {
     UDP = IPPROTO_UDP
 };
 
+#ifndef __DATA_BUFFER_READ
+    #define __DATA_BUFFER_READ 4096
+#endif
+
+#ifndef __DATA_BUFFER_WRITE
+    #define __DATA_BUFFER_WRITE 4096
+#endif
+
 class ISocket
 {
     public:
 
         virtual int getDescriptor(void) const = 0;
         virtual ssize_t writeToSocket(std::istream&) = 0;
-        virtual ssize_t readFromSocket(std::ostream&) = 0;
+        virtual ssize_t readFromSocket(std::ostream&, 
+                                       ssize_t = __DATA_BUFFER_READ) = 0;
         virtual AddressDomain getAddressDomain(void) const = 0;
         virtual Protocol getProtocol(void) const = 0;
         virtual SocketType getSocketType(void) const = 0;

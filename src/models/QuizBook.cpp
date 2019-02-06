@@ -31,7 +31,7 @@ const SolvedQuestion& QuizBook::getRandomQuestion(void) const
     : _questions) keys.push_back(pair.first);
 
     // select an index of the vector randomly and use that key
-    UniformRandom<uint32_t> uf(0, keys.size() - 1);
+    UniformRandom<uint32_t> uf(0, (uint)(keys.size() - 1));
     uint32_t randKeyIdx = uf.generate();
     return getQuestionById(keys[randKeyIdx]);
 }
@@ -103,7 +103,7 @@ std::istream& QuizBook::readFrom(std::istream& is)
 
     while(is >> line)
     {
-        uint32_t id = std::stoul(line); is.get(); // get \n after id
+        uint32_t id = (uint32_t)std::stoul(line); is.get(); // get \n
         SolvedQuestion sq(is);
         
         _questions.emplace(id, sq);

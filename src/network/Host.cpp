@@ -52,6 +52,7 @@ Host::Host(struct sockaddr *info)
     _addr = (struct addrinfo *)malloc(sizeof(*_addr));
     _addr->ai_addr = info;
     _node = getAddress();
+    _created_on_ref = true;
     // TODO get port
 }
 
@@ -91,5 +92,6 @@ bool Host::isPassive(void) const
 
 Host::~Host()
 {
-    freeaddrinfo(_addr);
+    if(!_created_on_ref) 
+        freeaddrinfo(_addr);
 }

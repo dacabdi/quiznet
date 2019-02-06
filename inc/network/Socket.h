@@ -15,14 +15,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#ifndef __DATA_BUFFER_READ_SIZE
-    #define __DATA_BUFFER_READ_SIZE 4096
-#endif
-
-#ifndef __DATA_BUFFER_WRITE_SIZE
-    #define __DATA_BUFFER_WRITE_SIZE 4096
-#endif
-
 class Socket : public ISocket
 {
     public :
@@ -36,11 +28,16 @@ class Socket : public ISocket
         ~Socket();
 
         int getDescriptor(void) const override;
+
         ssize_t writeToSocket(std::istream& is) override;
-        ssize_t readFromSocket(std::ostream& os) override;
+        ssize_t readFromSocket(std::ostream& os, 
+                               ssize_t nbytes = __DATA_BUFFER_READ) 
+                               override;
+
         AddressDomain getAddressDomain(void) const override;
         Protocol getProtocol(void) const override;
         SocketType getSocketType(void) const override;
+
         void closeSocket(void) override;
         void shutdownSocket(void) override;
         void bindSocket(const IHost& host) override;

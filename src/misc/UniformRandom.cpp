@@ -44,6 +44,7 @@ template class UniformRandom<int>;
 template class UniformRandom<long>;
 template class UniformRandom<long long>;
 template class UniformRandom<unsigned short>;
+template class UniformRandom<unsigned char>;
 template class UniformRandom<unsigned int>;
 template class UniformRandom<unsigned long>;
 template class UniformRandom<unsigned long long>;
