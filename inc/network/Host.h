@@ -28,6 +28,8 @@ class Host : public IHost
              AddressDomain addressDomain = IPv4, 
              SocketType socketType = StreamSocket);
 
+        Host(struct sockaddr* info);
+
         const std::string& getNode(void) const override;
         const std::string getAddress(void) const override;
         const struct addrinfo& getAddressInfo(void) const override; 

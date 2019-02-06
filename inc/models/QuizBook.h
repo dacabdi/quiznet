@@ -3,7 +3,7 @@
 
 #include "IQuizBook.h"
 #include "UniformRandom.h" // getRandomQuestion
-#include "utils.h" // getAllKeys
+#include "Utils.h" // getAllKeys
 
 #include <stdexcept>
 #include <functional>

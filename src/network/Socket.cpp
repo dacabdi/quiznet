@@ -59,23 +59,21 @@ ssize_t Socket::writeToSocket(std::istream& is)
 
 ssize_t Socket::readFromSocket(std::ostream& os)
 {
-    ssize_t total = 0, current = 0;
+    ssize_t r = 0;
     char buffer[__DATA_BUFFER_READ_SIZE];
     bzero(buffer, __DATA_BUFFER_READ_SIZE);
 
-    while((current = read(_sd, buffer, __DATA_BUFFER_READ_SIZE )) > 0)
-    {
-        os << buffer;
-        total += current;
-    }
+    r = read(_sd, buffer, __DATA_BUFFER_READ_SIZE );
+    os << buffer;
+    bzero(buffer, __DATA_BUFFER_READ_SIZE);
 
-    if (current < 0) // check if last reading was error (-1)
+    if (r < 0) // check if last reading was error (-1)
         throw Exception("Error reading from socket", 
                         "Socket::readFromSocket()", 
                         "Last buffered content ["
                         + std::string(buffer) + "]");
 
-    return total;
+    return r;
 }
 
 AddressDomain Socket::getAddressDomain(void) const
@@ -128,4 +126,53 @@ bool Socket::isBinded(void) const
 const IHost& Socket::getBindedHost(void) const
 {
     return *_bindedTo;
+}
+
+void Socket::startListening(int backlog)
+{
+    if (listen(_sd, backlog) == -1)
+        throw Exception("Failed to listen on socket",
+                        "Socket::startListening()");
+}
+
+void Socket::acceptConnection(void)
+{
+    struct sockaddr_storage peerAddress;
+    socklen_t peerAddressSize = sizeof peerAddress;
+
+    int newSocket = accept(_sd, (struct sockaddr *)&peerAddress, 
+                            &peerAddressSize);
+
+    if (newSocket == -1)
+       throw Exception("Failed to accept connection on socket",
+                       "Socket::acceptConnection()");
+
+    // wrapping the descriptor around will cause
+    // the socket to be automatically closed
+    // when going out of the scope of this method
+    Socket connSocket(newSocket);
+
+    Host host((struct sockaddr *) &peerAddress);
+
+    if(onIncomingConnection)
+        onIncomingConnection(connSocket, host, this);
+}
+
+void Socket::connectTo(const IHost& host)
+{
+    const struct addrinfo& res = host.getAddressInfo();
+    int c = connect(_sd, res.ai_addr, res.ai_addrlen);
+
+    if (c == -1)
+       throw Exception("Failed to connect to host " + host.getAddress(),
+                       "Socket::acceptConnection()");
+
+    if(onOutgoingConnection)
+        onOutgoingConnection(*this, host, this);
+}
+
+Socket::Socket(int sd)
+{   
+    _open = true;
+    _sd = sd;
 }

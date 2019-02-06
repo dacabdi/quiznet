@@ -9,6 +9,7 @@ bool socketOpenAndClose(void);
 //bool socketWriteAndRead(void);
 bool hostCreate(void);
 bool socketBindLocalhost(void);
+bool testCommunication(void);
 
 void runTest(const std::string& name, bool test(void));
 
@@ -17,6 +18,7 @@ int main(void)
     runTest("socketOpenAndClose", socketOpenAndClose);
     runTest("hostCreate", hostCreate);
     runTest("socketBindLocalhost", socketBindLocalhost);
+    runTest("testCommunication", testCommunication);
 
     return 0; 
 }
@@ -89,7 +91,67 @@ bool socketBindLocalhost(void)
     socket.closeSocket();
 
     if(socket.isBinded())
-        return false;   
+        return false;
+
+    return true;
+}
+
+bool testCommunication(void)
+{
+    pid_t pid = fork();
+
+    if (pid == 0)
+    {
+        // child process (client)
+        Host host("localhost", "8080");
+        Socket socket;
+        socket.onOutgoingConnection = [](
+            ISocket& socket, 
+            const IHost& host, 
+            ISocket* context)
+        {
+            std::cout << "CLIENT: Client connected" << std::endl;
+
+            std::istringstream is("Hello there!");
+            socket.writeToSocket(is);
+
+            std::ostringstream os;
+            socket.readFromSocket(os);
+            std::cout << "CLIENT: server replied -> " << os.str();
+        };
+        std::cout << "CLIENT: now trying to connect" << std::endl;
+        socket.connectTo(host);
+    }
+    else if (pid > 0)
+    {
+        // parent process (server)
+        Host host("8080");
+        Socket socket;
+        socket.onIncomingConnection = [](
+            ISocket& socket, 
+            const IHost& host, 
+            ISocket* context)
+        {
+            std::cout << "SERVER: Server connected" << std::endl;
+            
+            std::ostringstream os;
+            socket.readFromSocket(os);
+            std::cout << "SERVER: client said -> " << os.str();
+            
+            std::istringstream is("Hello back!");
+            socket.writeToSocket(is);
+        };
+        socket.bindSocket(host);
+        socket.startListening();
+        std::cout << "SERVER: now trying to accept" << std::endl;
+        socket.acceptConnection();
+    }
+    else
+    {
+        // fork failed
+        std::cout << "Fork failed on communication test" << std::endl;
+        return false;
+    }
 
     return true;
 }

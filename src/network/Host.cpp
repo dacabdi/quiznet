@@ -33,6 +33,7 @@ Host::Host(const std::string& service,
     _service = service;
 
     struct addrinfo hints;
+    memset(&hints, 0, sizeof hints);
     hints.ai_family = addressDomain;
     hints.ai_socktype = socketType;
     hints.ai_flags = AI_PASSIVE; // suitable for bind
@@ -44,6 +45,14 @@ Host::Host(const std::string& service,
         "Fetching address info (error:" + std::to_string(r) +
         ") " + std::string(gai_strerror(r)), "Host::Host()",
         std::string("node: NULL") + " service: " + service);
+}
+
+Host::Host(struct sockaddr *info)
+{
+    _addr = (struct addrinfo *)malloc(sizeof(*_addr));
+    _addr->ai_addr = info;
+    _node = getAddress();
+    // TODO get port
 }
 
 const std::string& Host::getNode(void) const

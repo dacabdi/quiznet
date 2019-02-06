@@ -1,12 +1,15 @@
 #ifndef __ISOCKET__H__
 #define __ISOCKET__H__
 
+#include "IHost.h"
+
 #include <istream>
 #include <ostream>
 
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <functional>
 
 // extend for other types
 
@@ -27,24 +30,30 @@ enum Protocol {
     UDP = IPPROTO_UDP
 };
 
-#include "IHost.h"
-
 class ISocket
 {
     public:
 
         virtual int getDescriptor(void) const = 0;
-        virtual ssize_t writeToSocket(std::istream& is) = 0;
-        virtual ssize_t readFromSocket(std::ostream& os) = 0;
+        virtual ssize_t writeToSocket(std::istream&) = 0;
+        virtual ssize_t readFromSocket(std::ostream&) = 0;
         virtual AddressDomain getAddressDomain(void) const = 0;
         virtual Protocol getProtocol(void) const = 0;
         virtual SocketType getSocketType(void) const = 0;
         virtual void closeSocket(void) = 0;
         virtual void shutdownSocket(void) = 0; 
-        virtual void bindSocket(const IHost& host) = 0;
+        virtual void bindSocket(const IHost&) = 0;
         virtual bool isBinded(void) const = 0;
         virtual const IHost& getBindedHost(void) const = 0;
+        virtual void startListening(int = 5) = 0;
+        virtual void acceptConnection(void) = 0;
+        virtual void connectTo(const IHost&) = 0;
         
+        std::function<void(ISocket&, const IHost&, ISocket*)> 
+                                        onIncomingConnection;
+        std::function<void(ISocket&, const IHost&, ISocket*)> 
+                                        onOutgoingConnection;
+
         virtual ~ISocket(){};
 
     protected:

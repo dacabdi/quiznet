@@ -4,6 +4,7 @@
 #include "Exception.h"
 #include "ISocket.h"
 #include "IHost.h"
+#include "Host.h"
 
 #include <istream>
 #include <ostream>
@@ -15,11 +16,11 @@
 #include <string.h>
 
 #ifndef __DATA_BUFFER_READ_SIZE
-    #define __DATA_BUFFER_READ_SIZE 1024
+    #define __DATA_BUFFER_READ_SIZE 4096
 #endif
 
 #ifndef __DATA_BUFFER_WRITE_SIZE
-    #define __DATA_BUFFER_WRITE_SIZE 1024
+    #define __DATA_BUFFER_WRITE_SIZE 4096
 #endif
 
 class Socket : public ISocket
@@ -28,9 +29,9 @@ class Socket : public ISocket
 
         Socket(void) : Socket(IPv4, StreamSocket, TCP) {};
 
-        Socket(AddressDomain addressDomain = IPv4, 
-               SocketType socketType = StreamSocket, 
-               Protocol protocol = TCP);
+        Socket(AddressDomain addressDomain, 
+               SocketType socketType, 
+               Protocol protocol);
 
         ~Socket();
 
@@ -45,16 +46,21 @@ class Socket : public ISocket
         void bindSocket(const IHost& host) override;
         bool isBinded(void) const override;
         const IHost& getBindedHost(void) const override;
+        void startListening(int = 5) override;
+        void acceptConnection(void) override;
+        void connectTo(const IHost&) override;
 
     protected : 
     
         int _sd;
-        const AddressDomain _domain;
-        const SocketType _type;
-        const Protocol _protocol;
+        AddressDomain _domain;
+        SocketType _type;
+        Protocol _protocol;
         bool _open = false;
         bool _binded = false;
         const IHost * _bindedTo = nullptr;
+
+        Socket(int);
 };
 
 #endif // __SOCKET__H__
