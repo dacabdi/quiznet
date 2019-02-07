@@ -3,8 +3,10 @@
 
 #include "ITagCollection.h"
 #include "Tag.h"
-#include "utils.h"
+#include "Utils.h"
+
 #include <vector>
+#include <istream>
 #include <sstream>
 
 class TagCollection : public ITagCollection
@@ -13,7 +15,7 @@ class TagCollection : public ITagCollection
 
         TagCollection(){};
         TagCollection(const std::string& str);
-        TagCollection(std::stringstream& ss);
+        TagCollection(std::istream& ss);
 
         // get tags
         const Tag& at(const size_t idx) const override;
@@ -30,7 +32,6 @@ class TagCollection : public ITagCollection
         bool operator!=(const TagCollection& ref) const;
         friend std::ostream& operator<<(
             std::ostream &os, const TagCollection& ref);
-        //const Tag& operator[](const size_t idx) const;
 
     protected:
 

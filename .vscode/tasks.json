@@ -72,10 +72,60 @@
             }
         },
         {
+            "label": "build-test-solvedquestion",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-solvedquestion.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-uniformrandom",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-uniformrandom.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build-test-quizbook",
             "type": "shell",
             "command": "make",
             "args": ["MODE=debug", "test-quizbook.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-socket",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-socket.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-quizserver",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-quizserver.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-quizclient",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-quizclient.test"],
             "group": {
                 "kind": "build",
                 "isDefault": true

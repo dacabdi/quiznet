@@ -3,8 +3,10 @@
 
 #include "IQuestionTitle.h"
 #include <string>
-#include <stdexcept>
+#include <ostream>
+#include <istream>
 #include <sstream>
+#include <stdexcept>
 
 class QuestionTitle : public IQuestionTitle
 {
@@ -12,7 +14,7 @@ class QuestionTitle : public IQuestionTitle
     
         QuestionTitle(){};
         QuestionTitle(const std::string& title);
-        QuestionTitle(std::stringstream& ss);
+        QuestionTitle(std::istream& is);
 
         const std::string& getText(void) const override;
         std::string serialize(void) const override;
@@ -29,7 +31,7 @@ class QuestionTitle : public IQuestionTitle
         std::string _title;
 
         std::string deserialize(const std::string& str);
-        std::string deserialize(std::stringstream& str);
+        std::string deserialize(std::istream& is);
 };
 
 #endif // __IQUESTIONTITLE__H__

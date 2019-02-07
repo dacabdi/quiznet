@@ -7,17 +7,22 @@
 #include "ChoiceCollection.h"
 #include "QuestionTitle.h"
 #include "IQuestion.h"
-#include <stdexcept>
+
+#include <istream>
+#include <ostream>
+#include <sstream>
 
 class Question : public IQuestion
 {
     public:
 
+        Question(){};
+
         // create from a string reading id
         Question(const std::string& str);
 
         // create from stream reading id
-        Question(std::stringstream& ss);
+        Question(std::istream& is);
         
         // create from pieces
         Question(TagCollection tags,
@@ -33,8 +38,8 @@ class Question : public IQuestion
 
         friend std::ostream& operator<<(
             std::ostream &os, const Question& ref);
-        bool operator==(const Question& ref);
-        bool operator!=(const Question& ref);
+        bool operator==(const Question& ref) const;
+        bool operator!=(const Question& ref) const;
 
     protected:
 
@@ -42,7 +47,7 @@ class Question : public IQuestion
         QuestionTitle _questionTitle;
         ChoiceCollection _choices;
 
-        void init(std::stringstream& ss);
+        void init(std::istream& is);
         void init(TagCollection tags,
                   QuestionTitle questionTitel,
                   ChoiceCollection choices);

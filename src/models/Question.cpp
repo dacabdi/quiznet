@@ -4,13 +4,13 @@
 
 Question::Question(const std::string& str)
 {
-    std::stringstream ss(str);
-    init(ss);
+    std::istringstream iss(str);
+    init(iss);
 }
 
-Question::Question(std::stringstream& ss)
+Question::Question(std::istream& is)
 {
-    init(ss);
+    init(is);
 }
 
 Question::Question(TagCollection tags, 
@@ -39,9 +39,9 @@ const ChoiceCollection& Question::getChoices(void) const
 
 std::string Question::serialize(void) const
 {
-    std::stringstream ss;
-    ss << _tags << _questionTitle << _choices << std::flush;
-    return ss.str();
+    std::ostringstream oss;
+    oss << _tags << _questionTitle << _choices << std::flush;
+    return oss.str();
 }
 
 // ------------- OPERATORS --------------------
@@ -52,7 +52,7 @@ std::ostream& operator<<(std::ostream &os, const Question& ref)
     return os;
 }
 
-bool Question::operator==(const Question& ref)
+bool Question::operator==(const Question& ref) const
 {
     return (
            _tags == ref._tags
@@ -61,18 +61,18 @@ bool Question::operator==(const Question& ref)
     );
 }
 
-bool Question::operator!=(const Question& ref)
+bool Question::operator!=(const Question& ref) const
 {
     return !operator==(ref);
 }
 
 // ------------- PRIVATE METHODS --------------
 
-void Question::init(std::stringstream& ss)
+void Question::init(std::istream& is)
 {
-    TagCollection tags(ss);
-    QuestionTitle questionTitle(ss);
-    ChoiceCollection choices(ss);
+    TagCollection tags(is);
+    QuestionTitle questionTitle(is);
+    ChoiceCollection choices(is);
 
     init(tags, questionTitle, choices);
 }

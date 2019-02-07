@@ -1,5 +1,5 @@
-#ifndef __IFULLQUESTION__H__
-#define __IFULLQUESTION__H__
+#ifndef __ISOLVEDQUESTION__H__
+#define __ISOLVEDQUESTION__H__
 
 #include "Question.h"
 #include <string>
@@ -13,7 +13,7 @@
     that the server handles.
 */
 
-class IFullQuestion
+class ISolvedQuestion
 {
     public:
 
@@ -21,7 +21,13 @@ class IFullQuestion
         virtual const Question& getQuestion(void) const = 0;
         virtual std::string serialize(void) const = 0;
 
-        virtual ~IFullQuestion(){};
+        friend std::ostream& operator<<(std::ostream& os, 
+            const ISolvedQuestion& ref){
+                os << ref.serialize();
+                return os;
+            };
+
+        virtual ~ISolvedQuestion(){};
 };
 
-#endif // __IFULLQUESTION__H__/
+#endif // __ISOLVEDQUESTION__H__
