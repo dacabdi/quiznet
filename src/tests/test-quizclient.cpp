@@ -1,5 +1,7 @@
-#include "QuizServer.h"
-#include "QuizBook.h"
+#include "Exception.h"
+#include "QuizClient.h"
+#include "Socket.h"
+#include "Host.h"
 
 #include <iostream>
 #include <ostream>
@@ -13,12 +15,9 @@ void runTest(const std::string& name, bool test(void));
 
 int main(void)
 {   
-    QuizBook qb;
-    Host host("8080");
-    Socket socket(IPv4, StreamSocket, TCP);
-    std::string quizbookFilename = "test-quizserver-db.data";
-    QuizServer server(&qb, &host, &socket, quizbookFilename);
-    server.run();
+    Host host("localhost", "8080");
+    QuizClient client(&host);
+    client.run();
 
     return 0; 
 }

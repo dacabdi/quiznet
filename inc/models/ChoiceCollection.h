@@ -29,6 +29,7 @@ class ChoiceCollection : public IChoiceCollection
 
         // stringify
         std::string serialize(void) const override;
+        std::string getText(void) const override;
 
         // operators
         bool operator==(const ChoiceCollection& ref) const;

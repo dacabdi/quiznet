@@ -120,6 +120,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-test-quizclient",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-quizclient.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

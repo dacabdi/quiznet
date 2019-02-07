@@ -55,9 +55,8 @@ void SolvedQuestion::init(std::istream& is)
 void SolvedQuestion::init(Question question, char solution)
 {
     if(!question.getChoices().hasChoice(solution))
-        throw std::invalid_argument(
-            "SolvedQuestion::init():"
-            "Provided solution is not in the question: " + solution); 
+        throw std::invalid_argument(std::string("SolvedQuestion::init():")
+            + "Provided solution is not in the question: " + solution); 
 
     _question = question;
     _solution = solution;

@@ -21,6 +21,7 @@ class IChoiceCollection
 
         // stringify
         virtual std::string serialize(void) const = 0;
+        virtual std::string getText(void) const = 0;
 
         virtual ~IChoiceCollection(){};
 

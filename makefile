@@ -168,7 +168,7 @@ test-socket.test: subdirs test-socket.o UniformRandom.o Socket.o Host.o
 test-socket.o:
 	$(CCFULL) $(SRCTESTS)/test-socket.cpp
 
-# >> test-socket <<
+# >> test-quizserver <<
 test-quizserver.test: subdirs test-quizserver.o QuizServer.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizserver.o \
@@ -189,6 +189,26 @@ test-quizserver.test: subdirs test-quizserver.o QuizServer.o Socket.o Host.o Qui
 
 test-quizserver.o:
 	$(CCFULL) $(SRCTESTS)/test-quizserver.cpp
+
+# >> test-quizclient <<
+test-quizclient.test: subdirs test-quizclient.o QuizClient.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+	$(CC) \
+	$(BINSUBDIR)/test-quizclient.o \
+	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Host.o \
+	$(BINSUBDIR)/Socket.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-quizclient.test
+
+test-quizclient.o:
+	$(CCFULL) $(SRCTESTS)/test-quizclient.cpp
 
 #------------------------------MODELS-------------------------------------
 
@@ -225,6 +245,9 @@ Host.o:
 
 QuizServer.o:
 	$(CCFULL) $(SRCNETWORK)/QuizServer.cpp
+
+QuizClient.o:
+	$(CCFULL) $(SRCNETWORK)/QuizClient.cpp
 
 
 #------------------------------EXTRA--------------------------------------

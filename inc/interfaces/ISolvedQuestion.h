@@ -21,6 +21,12 @@ class ISolvedQuestion
         virtual const Question& getQuestion(void) const = 0;
         virtual std::string serialize(void) const = 0;
 
+        friend std::ostream& operator<<(std::ostream& os, 
+            const ISolvedQuestion& ref){
+                os << ref.serialize();
+                return os;
+            };
+
         virtual ~ISolvedQuestion(){};
 };
 

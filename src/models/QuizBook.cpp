@@ -21,6 +21,12 @@ const SolvedQuestion& QuizBook::getQuestionById(uint32_t id) const
 
 const SolvedQuestion& QuizBook::getRandomQuestion(void) const
 {
+    uint32_t index;
+    return getRandomQuestion(index);
+}
+
+const SolvedQuestion& QuizBook::getRandomQuestion(uint32_t& id) const
+{
     if(!size())
         throw std::out_of_range("QuizBook::getRandomQuestion():"
                                 "Empty QuizBook.");
@@ -32,8 +38,8 @@ const SolvedQuestion& QuizBook::getRandomQuestion(void) const
 
     // select an index of the vector randomly and use that key
     UniformRandom<uint32_t> uf(0, (uint)(keys.size() - 1));
-    uint32_t randKeyIdx = uf.generate();
-    return getQuestionById(keys[randKeyIdx]);
+    id = uf.generate();
+    return getQuestionById(keys[id]);
 }
 
 uint32_t QuizBook::insertQuestion(const SolvedQuestion question)

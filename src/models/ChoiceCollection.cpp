@@ -59,6 +59,19 @@ std::string ChoiceCollection::serialize(void) const
     return oss.str();
 }
 
+std::string ChoiceCollection::getText(void) const
+{
+    std::ostringstream oss;
+
+    for (const std::pair<const char, const Choice>& pair : _choices)
+    {
+        oss << "(" << pair.first << ") ";
+        oss << pair.second.serialize() << std::endl;
+    }
+
+    return oss.str();
+}
+
 // ------------- PRIVATE METHODS ---------------
 
 void ChoiceCollection::init(std::istream& is)
@@ -102,7 +115,7 @@ std::map<const char, const Choice>
                 throw std::invalid_argument(
                      "ChoiceCollection::deserializeAllChoices():"
                      "Choice letter out of order. "
-                     "Expected (" + std::to_string(currentLetter) +
+                     "Expected (" + std::to_string(currentLetter) + // TODO is not sending character but ascii value
                      ") and received (" + pair.first + ").");
 
             // all checks passed

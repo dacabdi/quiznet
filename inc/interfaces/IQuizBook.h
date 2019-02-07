@@ -5,6 +5,7 @@
 
 #include <string>
 #include <limits>
+#include <functional>
 
 class IQuizBook
 {
@@ -14,6 +15,8 @@ class IQuizBook
         virtual const SolvedQuestion& getQuestionById(
             uint32_t id) const = 0;
         virtual const SolvedQuestion& getRandomQuestion(void) const = 0;
+        virtual const SolvedQuestion& 
+            getRandomQuestion(uint32_t&) const = 0;
         
         // insert a new question
         virtual uint32_t insertQuestion(
@@ -40,6 +43,17 @@ class IQuizBook
 
         // number of questions
         virtual size_t size(void) const = 0;
+
+        friend std::ostream& operator<<(std::ostream& os, 
+            const IQuizBook& ref){
+                os << ref.serialize();
+                return os;
+            }
+
+        // public event handlers (with do nothing stubs)
+        std::function<void(const ISolvedQuestion&, IQuizBook*)> onInsert;
+        std::function<void(ISolvedQuestion&, IQuizBook*)> onDelete;
+        std::function<void(IQuizBook*)> onClear;
 
         virtual ~IQuizBook(){};
 

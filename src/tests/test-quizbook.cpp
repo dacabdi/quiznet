@@ -220,9 +220,7 @@ bool quizBookSaveAndReloadUsingEvents(void)
 {
     QuizBook qb1;
 
-    qb1.onInsert = [] (const SolvedQuestion& q, QuizBook* qb) {
-        std::cout << "Writing new question : " << std::endl;
-        std::cout << q << std::endl;
+    qb1.onInsert = [] (const ISolvedQuestion& q, IQuizBook* qb) {
         std::ofstream file("test-quizbook-output1.data");
         qb->writeTo(file);
         file.close();
