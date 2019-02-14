@@ -1,7 +1,7 @@
 #include "QuizClient.h"
 
 
-QuizClient::QuizClient(IHost *host)
+QuizClient::QuizClient(IHost *host, bool persistent)
 {
     _host = host;
     initHandlers();

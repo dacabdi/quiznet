@@ -17,13 +17,15 @@ class QuizClient
 {
     public:
 
-        QuizClient(IHost *host);
+        QuizClient(IHost *host, bool persistent = true);
+
         void run(std::istream& is = std::cin, 
                  std::ostream& os = std::cout,
                  std::ostream& errs = std::cerr);
 
     protected:
 
+        bool _persistent;
         IHost *_host;
         ISocket *_socket;
 
