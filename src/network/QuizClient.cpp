@@ -37,9 +37,16 @@ void QuizClient::promptLoop(void)
 
         line = line.substr(pos);
         option = line.at(0);
-        if(!_prepareRequest.count(option))
+
+        // special options that do not require requests
+        if(option == 'q' && !_persistent)
+            _running = false;
+        else if (option == 'h') 
+            displayMenu();
+        else if(!_prepareRequest.count(option))
             _error << invalidMsg << std::endl;
         else
+        // options that require requests
             doRequest(option, line);
     }
 }
