@@ -130,6 +130,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-test-persistent",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-persistent.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

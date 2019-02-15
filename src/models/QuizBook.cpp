@@ -138,10 +138,6 @@ std::ostream& QuizBook::serialize(std::ostream& os) const
     std::map<const uint32_t, const SolvedQuestion>::const_iterator it =
     _questions.begin();
 
-    // NOTE: the entire set must not end on an empty line,
-    //       hence a special treatment is given to the first
-    //       question in the map
-
     if(it != _questions.end())
     {
         os << it->first << std::endl << it->second;

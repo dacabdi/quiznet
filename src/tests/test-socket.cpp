@@ -14,7 +14,6 @@ bool hostCreate(void);
 bool hostCreateOnUnavailableHost(void);
 bool socketBindLocalhost(void);
 bool testCommunication(void);
-bool testReadUntil(void);
 bool testCommunicationMultipleRW(void);
 bool testCommunicationMultipleRWBiggerThanBuffer(void);
 bool testCommunicationMultipleRWBiggerThanBufferAbusive(void);
@@ -28,7 +27,6 @@ int main(void)
     runTest("hostCreateOnUnavailableHost", hostCreateOnUnavailableHost);
     runTest("socketBindLocalhost", socketBindLocalhost);
     runTest("testCommunication", testCommunication);
-    runTest("testReadUntil", testReadUntil);
     runTest("testCommunicationMultipleRW", testCommunicationMultipleRW);
     runTest("testCommunicationMultipleRWBiggerThanBuffer",
         testCommunicationMultipleRWBiggerThanBuffer);
@@ -205,148 +203,6 @@ bool testCommunication(void)
             std::ostringstream os;
             socket.readFromSocket(os);
             if(os.str() != clientToServer)
-                result = false;
-            
-            // send a reply to the client
-            std::istringstream is(serverToClient);
-            if(socket.writeToSocket(is) != serverToClientLength)
-                result = false;
-        };
-
-        // continue setting up server
-        socket.bindSocket(host);
-        socket.startListening();
-
-        // tell client process we are ready
-        char ready[] = "ready";
-        int r = write(p[1], ready, strlen(ready));
-        if(r < 0)
-            throw Exception(
-                "Parent process (server) failed to write to pipe", 
-                "testCommunication()");
-        
-        // start accepting connections
-        socket.acceptConnection();
-
-        // ask the client how it went for him
-        char finalStatus[10];
-        r = read(p[0], finalStatus, 10);
-        if(r < 0)
-            throw Exception(
-                "Parent process (server) failed to read from pipe"
-                " final status message",
-                "testCommunication()");
-
-        // if it went well for client also, hurray!
-        if(std::string(finalStatus) != "ok")
-            result = false;
-
-        wait(NULL); // wait for the other process to return
-    }
-    else
-    {
-        // fork failed
-        throw Exception(
-            "Fork failed on communication test", 
-            "testCommunication()");
-    }
-
-    return result;
-}
-
-
-bool testReadUntil(void)
-{
-    std::string clientToServer = "Hello server! This is my "
-                                 "termination client.\n",
-                serverToClient = "Hi there client! I am server.\n";
-    ssize_t clientToServerLength = clientToServer.length(),
-            serverToClientLength = serverToClient.length();
-
-    bool result = true;
-
-    // create pipe for process coordination
-    int p[2]; // p[0] < reads, p[1] < writes
-    int r = pipe(p); 
-
-    if(r < 0)
-        throw Exception("Failed to create pipes", "testCommunication()");
-    
-    pid_t pid = fork();
-
-    if (pid == 0)
-    {
-        // child process (client)
-
-        // setup client
-        Host host("localhost", "8080");
-        Socket socket;
-
-        // setup connection handler
-        socket.onOutgoingConnection = [&](
-            ISocket& socket, 
-            const IHost& host, 
-            ISocket* context)
-        {
-            // send a message to the server
-            std::istringstream is(clientToServer);
-            ssize_t writtenbytes = socket.writeToSocket(is);
-            if(writtenbytes != clientToServerLength)
-                result = false;
-
-            // read server's reply
-            if(socket.readUntil() != serverToClient)
-                result = false;
-        };
-
-        // wait for server ready message
-        char buffer[6];
-        int r = read(p[0], buffer, 5);
-        if(r < 0)
-            throw Exception(
-                "Child process (client) failed to " 
-                "read pipe for ready to accept message", 
-                "testCommunication()");
-
-        // if server ready, sleep for some milliseconds, and then connect
-        if(std::string(buffer) == "ready")
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            socket.connectTo(host);
-        }
-        else
-            result = false;
-
-        // if everything went as expected, tell server's process
-        std::string resultMsg = (result ? "ok" : "failed");
-        r = write(p[1], resultMsg.c_str(), resultMsg.length());
-        if(r < 0)
-            throw Exception(
-                "Child process (client) failed to"
-                " write to pipe final status message", 
-                "testCommunication()");
-
-        exit(EXIT_SUCCESS);
-        
-    }
-    else if (pid > 0)
-    {
-        // parent process (server)
-
-        // setup server
-        Host host("8080");
-        Socket socket;
-
-        // set handler
-        socket.onIncomingConnection = [&](
-            ISocket& socket, 
-            const IHost& host,
-            ISocket* context)
-        {
-            // read clients's message
-            std::string readmsg = socket.readUntil();
-            std::cout << "-" << readmsg << "-" << std::endl;
-            if(readmsg != clientToServer)
                 result = false;
             
             // send a reply to the client

@@ -137,9 +137,10 @@ test-solvedquestion.o:
 	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp
 
 # >> test-quizbook <<
-test-quizbook.test: subdirs copy-test-data test-quizbook.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-quizbook.test: subdirs copy-test-data test-quizbook.o Utils.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizbook.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/QuizBook.o \
 	$(BINSUBDIR)/UniformRandom.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
@@ -213,6 +214,39 @@ test-quizclient.test: subdirs test-quizclient.o Request.o QuizClient.o Socket.o 
 
 test-quizclient.o:
 	$(CCFULL) $(SRCTESTS)/test-quizclient.cpp
+
+# >> test-persistent.test <<
+test-persistent.test: subdirs test-persistent.o Request.o QuizServer.o QuizBook.o QuizClient.o UniformRandom.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
+	$(CC) \
+	$(BINSUBDIR)/test-persistent.o \
+	$(BINSUBDIR)/QuizServer.o \
+	$(BINSUBDIR)/QuizBook.o \
+	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Request.o \
+	$(BINSUBDIR)/Host.o \
+	$(BINSUBDIR)/Socket.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(BINSUBDIR)/Utils.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-persistent.test
+
+test-persistent.o:
+	$(CCFULL) $(SRCTESTS)/test-persistent.cpp
+
+test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
+	$(BINSUBDIR)/test-choice.test
+	$(BINSUBDIR)/test-tag.test
+	$(BINSUBDIR)/test-questiontitle.test
+	$(BINSUBDIR)/test-question.test
+	$(BINSUBDIR)/test-solvedquestion.test
+	$(BINSUBDIR)/test-quizbook.test
 
 #------------------------------MODELS-------------------------------------
 

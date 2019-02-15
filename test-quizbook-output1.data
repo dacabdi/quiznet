@@ -39,33 +39,3 @@ hostname to IP address resolution
 .
 .
 d
-
-57
-network, protocols,layered
-Which of these does not belong in the Internet protocol stack model
-.
-(a) presentation
-.
-(b) transport
-.
-(c) link
-.
-(d) network
-.
-.
-a
-
-89
-architecture, design
-BitTorrent is an example of
-.
-(a) P2P
-.
-(b) client/server
-.
-(c) hierarchy
-.
-(d) hybrid
-.
-.
-d
