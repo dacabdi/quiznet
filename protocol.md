@@ -6,7 +6,7 @@
 
 ### General request especification ###
 
-All *Requests* must adherer to the following syntactic specification
+All *Requests* must adhere to the following syntactic specification
 
 ```text
 type( length\n
