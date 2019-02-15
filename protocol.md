@@ -16,13 +16,13 @@ body\n)?
 |Field|Syntax|Semantics|Optional|
 |---|---|---|---|
 |`type`|Only **one** character from a-z|Indicates the type of request|No, all requests must have a `type` field|
-|`length`|A decimal nonnegative integer|Describes the length of the request's `body` in bytes|Yes, an empty request is not expected to describe a length|
-|`body`|Any number of ASCII characters|Request's body and payload|Yes, empty requests are allowed|
+|`length`|A decimal nonnegative integer|Describes the length of the request's `body` in bytes|No, an empty request is expected to include a 0 length|
+|`body`|Any number of ASCII characters|Request's body and payload|Yes, but 0 length must be indicated|
 
 More precisely,
 
 ```EBNF
-request = type , (' ' , length\n , body\n)?
+request = type , ' ' , length\n , (body\n)?
         | type , id
         ;
 type    = a-z
@@ -96,7 +96,8 @@ Expect an `NOTFND` error response if question doest not exist, or a `INVQID` if 
 Request a random question.
 
 ```plain-text
-r \n
+r 0\n
+\n
 ```
 
 Expect an `EMPTYQ` error response if the server has an empty quiz book.
@@ -118,7 +119,8 @@ Expect a `NOTFND` error if question does not exist or a `CHNFND` if the question
 Kill server process.
 
 ```plain-text
-k\n
+k 0\n
+\n
 ```
 
 ---
@@ -143,7 +145,7 @@ The content fo the body of the response will depend on the particular request th
 Error responses along with error codes and extra information.
 
 ```plain-text
-e\n
+e length\n
 [number]\n
 [symbol]\n
 [message]\n.\n
