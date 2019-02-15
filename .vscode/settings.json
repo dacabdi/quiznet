@@ -33,7 +33,14 @@
         "optional": "c",
         "tuple": "c",
         "utility": "c",
-        "deque": "cpp"
+        "deque": "cpp",
+        "functional": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "memory": "cpp",
+        "numeric": "cpp",
+        "ratio": "cpp",
+        "thread": "cpp"
     },
     "editor.fontSize": 16,
     "editor.rulers":[74]

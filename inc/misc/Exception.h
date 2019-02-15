@@ -8,8 +8,53 @@
 #include <errno.h>
 #include <string.h>
 
+#include "Error.h"
+
 #include <stdexcept>
 #include <string>
+#include <sstream>
+
+
+
+class ProtocolException : public std::runtime_error
+{
+    protected:
+        
+        const size_t _number;
+        const std::string _extra;
+        const std::string _what;
+        std::string _full;
+        
+        void init(void)
+        {
+            std::ostringstream oss;
+            ErrorMessage err = Errors.at(_number);
+
+            oss << "e" << std::endl;
+            oss << std::to_string(_number) << std::endl;
+            oss << err.symbol << std::endl;
+            oss << err.message << std::endl << "." << std::endl;
+            oss << _extra << std::endl << "." << std::endl;
+
+            _full = oss.str();
+        }
+
+    public:
+    
+        ProtocolException(ssize_t number, const std::string& extra = "")
+        :   std::runtime_error(""),
+            _number(number),
+            _extra(extra)
+        {
+            init();
+        };
+
+    	const char * what () const throw ()
+        {
+            return _full.c_str();
+        }
+};
+
 
 class Exception : public std::runtime_error
 {

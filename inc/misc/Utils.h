@@ -4,12 +4,15 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sstream>
 
 namespace utils
 {
     std::vector<std::string> split(
         const std::string& str,
         const std::string& delimiter = ",");
+
+    std::string escape(const std::string& ref);
 
     // templated functions cannot be defined in object files
     template<typename K, typename V>

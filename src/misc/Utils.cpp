@@ -19,3 +19,29 @@ std::vector<std::string> utils::split(
 
     return output;
 }
+
+
+std::string utils::escape(const std::string& ref)
+{
+    std::ostringstream oss;
+    for (const char* char_p = ref.c_str(); *char_p != '\0'; char_p++)
+    {
+        switch (*char_p)
+        {
+            case '\a':  oss << "\\a"; break;
+            case '\b':  oss << "\\b"; break;
+            case '\f':  oss << "\\f"; break;
+            case '\n':  oss << "\\n"; break;
+            case '\r':  oss << "\\r"; break;
+            case '\t':  oss << "\\t"; break;
+            case '\v':  oss << "\\v"; break;
+            case '\\':  oss << "\\\\"; break;
+            case '\'':  oss << "\\'"; break;
+            case '\"':  oss << "\\\""; break;
+            case '\?':  oss << "\\\?"; break;
+            default: oss << *char_p;
+        }
+    }
+        
+    return oss.str();
+}

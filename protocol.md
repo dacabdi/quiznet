@@ -17,7 +17,7 @@ body\n)?
 |---|---|---|---|
 |`type`|Only **one** character from a-z|Indicates the type of request|No, all requests must have a `type` field|
 |`length`|A decimal nonnegative integer|Describes the length of the request's `body` in bytes|Yes, an empty request is not expected to describe a length|
-|`body`|Any number of ASCII characters|Request's body and payload|Yes, empty requests are allowd|
+|`body`|Any number of ASCII characters|Request's body and payload|Yes, empty requests are allowed|
 
 More precisely,
 

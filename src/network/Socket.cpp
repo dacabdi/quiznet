@@ -55,15 +55,18 @@ ssize_t Socket::writeToSocket(std::istream& is)
     return total;
 }
 
-ssize_t Socket::readFromSocket(std::ostream& os, ssize_t nbytes)
+ssize_t Socket::writeToSocket(const std::string& s)
+{
+    std::istringstream iss(s);
+    return writeToSocket(iss);
+}
+
+ssize_t Socket::readFromSocket(char *buffer, ssize_t nbytes)
 {
     ssize_t r = 0;
     int flags = 0;
 
-    char * buffer = new char[nbytes+1];
-    bzero(buffer, nbytes+1);
     r = recv(_sd, buffer, nbytes, flags);
-    buffer[nbytes+1] = '\0';
 
     if (r < 0) // check if last reading was error (-1)
     {
@@ -74,10 +77,49 @@ ssize_t Socket::readFromSocket(std::ostream& os, ssize_t nbytes)
                         + std::string(buffer) + "]");
     }
 
-    os << buffer;
+    return r;
+}
+
+ssize_t Socket::readFromSocket(std::string& stringBuffer, ssize_t nbytes)
+{
+    // allocate buffer with an extra char for termination
+    char * buffer = new char[nbytes+1];
+    bzero(buffer, nbytes+1);
+    ssize_t read = 0;
+    ssize_t totalRead = 0;
+    stringBuffer = "";
+
+    while((read = readFromSocket(buffer, nbytes)) == nbytes)
+    {
+        totalRead += read;
+        buffer[nbytes] = '\0';
+        stringBuffer.append(buffer);
+        bzero(buffer, nbytes+1);
+    }
+
+    totalRead += read;
+    buffer[nbytes] = '\0';
+    stringBuffer.append(buffer);
+
     delete [] buffer;
 
-    return r;
+    return read;
+}
+
+std::string Socket::readFromSocket(void) 
+{
+    std::string buffer = "";
+    readFromSocket(buffer);
+    return buffer;
+}
+
+ssize_t Socket::readFromSocket(std::ostream& os, ssize_t nbytes)
+{
+    std::string stringBuffer = "";
+    ssize_t read = readFromSocket(stringBuffer, nbytes);
+    os << stringBuffer;
+
+    return read;
 }
 
 AddressDomain Socket::getAddressDomain(void) const

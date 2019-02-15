@@ -18,6 +18,9 @@ int main(void)
     Socket socket(IPv4, StreamSocket, TCP);
     std::string quizbookFilename = "test-quizserver-db.data";
     QuizServer server(&qb, &host, &socket, quizbookFilename);
+    server.setLogger([&](const std::string& str){
+        std::cout << str << std::flush;
+    });
     server.run();
 
     return 0; 

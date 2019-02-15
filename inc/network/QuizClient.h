@@ -7,36 +7,45 @@
 #include "Socket.h"
 #include "Question.h"
 #include "SolvedQuestion.h"
+#include "Request.h"
+#include "Utils.h"
 
 #include <string>
 #include <iostream>
 #include <limits>
 #include <sstream>
 
+
 class QuizClient
 {
     public:
 
-        QuizClient(IHost *host, bool persistent = true);
+        QuizClient(IHost *host, bool persistent = true,
+                   std::istream& input = std::cin, 
+                   std::ostream& output = std::cout, 
+                   std::ostream& error = std::cerr);
 
-        void run(std::istream& is = std::cin, 
-                 std::ostream& os = std::cout,
-                 std::ostream& errs = std::cerr);
+        void run();
 
     protected:
 
+        std::istream& _input;
+        std::ostream& _output;
+        std::ostream& _error;
+
         bool _persistent;
-        IHost *_host;
-        ISocket *_socket;
+        IHost *_host = nullptr;
+        ISocket *_socket = nullptr;
+        QuizClient* _qc = nullptr;
 
         std::map<const char, 
-        std::function<void(char option,
-                           std::istream&, 
-                           std::ostream&,
-                           std::ostream&,
-                           QuizClient*)>> _handlers;
+        std::function<std::string (void)>> _prepareRequest;
+        std::function<void (const struct Response&)> _handleResponse;
 
-        void initHandlers(void);
+        void doRequest(char option);
+        struct Response sendAndReceive(const std::string& request);    
+        struct Response parseResponse(ISocket& socket);
+        void init(void);
 };
 
 #endif // __QUIZCLIENT__H__
