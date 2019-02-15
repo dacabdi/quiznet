@@ -96,7 +96,7 @@ Expect an `NOTFND` error response if question doest not exist, or a `INVQID` if 
 Request a random question.
 
 ```plain-text
-r\n
+r \n
 ```
 
 Expect an `EMPTYQ` error response if the server has an empty quiz book.
@@ -143,7 +143,9 @@ The content fo the body of the response will depend on the particular request th
 Error responses along with error codes and extra information.
 
 ```plain-text
-e [number]\n
+e\n
+[number]\n
+[symbol]\n
 [message]\n.\n
 [extra]\n.\n
 ```
@@ -151,9 +153,10 @@ e [number]\n
 |no|symbol|message|extra|
 |---|---|---|---|
 |0|`UNKERR`|Unkown error|Exception message, if any|
-|1|`NOTFND`|Question `[question-id]` not found|None|
+|1|`NOTFND`|Question not found|`[question-id]` provided|
 |2|`MALQUE`|Malformed question body|Exception message, if any|
-|3|`CHNFND`|Choice `[choice]` does not exist in question `[question-id]`|None|
+|3|`CHNFND`|Choice does not exist in question|`[choice]` and `[question-id]`|
 |4|`UNKREQ`|Server does not know how to handle request type|Received request type|
 |5|`INVQID`|Invalid format for question id provided|Provided id|
 |6|`EMPTYQ`|Empty quiz book|None|
+|7|`REQTSZ`|Request type length must be one character|Type provided|
