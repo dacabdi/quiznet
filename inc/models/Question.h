@@ -35,6 +35,7 @@ class Question : public IQuestion
         const QuestionTitle& getQuestionTitle(void) const override;
         const ChoiceCollection& getChoices(void) const override;
         std::string serialize(void) const override;
+        std::string present(void) const override;
 
         friend std::ostream& operator<<(
             std::ostream &os, const Question& ref);

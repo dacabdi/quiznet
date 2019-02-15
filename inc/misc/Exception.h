@@ -14,8 +14,6 @@
 #include <string>
 #include <sstream>
 
-
-
 class ProtocolException : public std::runtime_error
 {
     protected:
@@ -30,7 +28,6 @@ class ProtocolException : public std::runtime_error
             std::ostringstream oss;
             ErrorMessage err = Errors.at(_number);
 
-            oss << "e" << std::endl;
             oss << std::to_string(_number) << std::endl;
             oss << err.symbol << std::endl;
             oss << err.message << std::endl << "." << std::endl;
@@ -54,7 +51,6 @@ class ProtocolException : public std::runtime_error
             return _full.c_str();
         }
 };
-
 
 class Exception : public std::runtime_error
 {

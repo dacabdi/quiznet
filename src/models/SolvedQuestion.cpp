@@ -32,7 +32,7 @@ const Question& SolvedQuestion::getQuestion(void) const
 std::string SolvedQuestion::serialize(void) const
 {
     std::ostringstream oss;
-    oss << _question << _solution << std::flush;
+    oss << _question << _solution << std::endl;
     return oss.str();
 }
 
@@ -54,9 +54,12 @@ void SolvedQuestion::init(std::istream& is)
 
 void SolvedQuestion::init(Question question, char solution)
 {
-    if(!question.getChoices().hasChoice(solution))
-        throw std::invalid_argument(std::string("SolvedQuestion::init():")
-            + "Provided solution is not in the question: " + solution); 
+    if(!question.getChoices().hasChoice(solution)){ 
+        std::string temp = ""; temp.push_back(solution);
+        throw Exception("Provided solution " + temp +
+                        " does not exist in the question.",
+                        "SolvedQuestion::init()", "", false);
+    }
 
     _question = question;
     _solution = solution;
@@ -64,10 +67,16 @@ void SolvedQuestion::init(Question question, char solution)
 
 char SolvedQuestion::deserializeSolution(std::istream& is) const
 {
-    // allows for more complex formatting if needed
-    char solution;
-    is.get(solution);
-    return solution;
+    std::string solutionLine = "";
+    std::getline(is, solutionLine);
+
+    if(solutionLine.length() != 1)
+        throw std::invalid_argument(
+            std::string("SolvedQuestion::deserializeSolution():")
+            + "Length error formatting. Solution line read: " 
+            + solutionLine); 
+    
+    return solutionLine.front();
 }
 
 // --------------- OPERATORS -----------------

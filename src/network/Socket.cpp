@@ -211,7 +211,7 @@ void Socket::connectTo(const IHost& host)
 
     if (c == -1)
        throw Exception("Failed to connect to host " + host.getAddress(),
-                       "Socket::acceptConnection()");
+                       "Socket::connectTo()");
 
     if(onOutgoingConnection)
         onOutgoingConnection(*this, host, this);

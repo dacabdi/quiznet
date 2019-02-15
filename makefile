@@ -119,10 +119,10 @@ test-question.o:
 	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
 # >> test-solvedquestion <<
-test-solvedquestion.test: subdirs test-solvedquestion.o utils.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-solvedquestion.test: subdirs test-solvedquestion.o Utils.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-solvedquestion.o \
-	$(BINSUBDIR)/utils.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
 	$(BINSUBDIR)/Question.o \
 	$(BINSUBDIR)/TagCollection.o \
@@ -169,10 +169,11 @@ test-socket.o:
 	$(CCFULL) $(SRCTESTS)/test-socket.cpp
 
 # >> test-quizserver <<
-test-quizserver.test: subdirs test-quizserver.o QuizServer.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
+test-quizserver.test: subdirs test-quizserver.o Request.o QuizServer.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizserver.o \
 	$(BINSUBDIR)/QuizServer.o \
+	$(BINSUBDIR)/Request.o \
 	$(BINSUBDIR)/Host.o \
 	$(BINSUBDIR)/Socket.o \
 	$(BINSUBDIR)/QuizBook.o \
@@ -192,10 +193,11 @@ test-quizserver.o:
 	$(CCFULL) $(SRCTESTS)/test-quizserver.cpp
 
 # >> test-quizclient <<
-test-quizclient.test: subdirs test-quizclient.o QuizClient.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
+test-quizclient.test: subdirs test-quizclient.o Request.o QuizClient.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizclient.o \
 	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Request.o \
 	$(BINSUBDIR)/Host.o \
 	$(BINSUBDIR)/Socket.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
@@ -250,6 +252,9 @@ QuizServer.o:
 
 QuizClient.o:
 	$(CCFULL) $(SRCNETWORK)/QuizClient.cpp
+
+Request.o:
+	$(CCFULL) $(SRCNETWORK)/Request.cpp
 
 
 #------------------------------EXTRA--------------------------------------

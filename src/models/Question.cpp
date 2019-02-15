@@ -44,6 +44,14 @@ std::string Question::serialize(void) const
     return oss.str();
 }
 
+std::string Question::present(void) const
+{
+    std::ostringstream oss;
+    oss << _questionTitle.getText() << std::endl;
+    oss << _choices.getText() << std::flush;
+    return oss.str();
+}
+
 // ------------- OPERATORS --------------------
 
 std::ostream& operator<<(std::ostream &os, const Question& ref)

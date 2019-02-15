@@ -34,17 +34,21 @@ class QuizClient
         std::ostream& _error;
 
         bool _persistent;
+        bool _running;
+
         IHost *_host = nullptr;
         ISocket *_socket = nullptr;
         QuizClient* _qc = nullptr;
 
         std::map<const char, 
-        std::function<std::string (void)>> _prepareRequest;
-        std::function<void (const struct Response&)> _handleResponse;
+        std::function<Request (const std::string&)>> _prepareRequest;
+        std::function<void (const Response&)> _handleResponse;
 
-        void doRequest(char option);
-        struct Response sendAndReceive(const std::string& request);    
-        struct Response parseResponse(ISocket& socket);
+        void doRequest(char option, const std::string&);
+        void promptLoop(void);
+
+        Response sendAndReceive(Request& request);    
+        Response parseResponse(ISocket& socket);
         void init(void);
 };
 

@@ -23,7 +23,8 @@ class QuizServer
         QuizServer(IQuizBook* quizbook, 
                    IHost* host, 
                    ISocket* socket,
-                   const std::string& filename);
+                   const std::string& filename,
+                   bool persistent = true);
 
         void setLogger(std::function<void (const std::string&)> logger);
         void setLoggerVerbose(bool verbose = true);
@@ -39,27 +40,31 @@ class QuizServer
         IHost* _host;
         IQuizBook* _quizbook;
         ISocket* _socket;
+
+        
         
         std::string _filename;
         bool _running = false;
+        
+        bool _persistent;           // persistent connection mode
+        bool _clientAlive = false;  // client alive for persistent conn 
 
         // request handlers
         std::map<const char,
-        std::function<std::string (const Body&)>> _reqHandlers;
+        std::function<Response (const Request&)>> _handlers;
         
         std::function<void (const std::string&)> _log = 
         [&](const std::string& str) {};
         bool _verbose = false;
 
+        void exchange(ISocket& socket);
+        void persistentSession(ISocket &socket);
+
         void setRequestHandlers(void);
         void onChange(IQuizBook* book);
 
-        std::string processRequest(ISocket& socket);
-        struct Request readRequest(ISocket& socket);
-        struct Body readBody(const std::string&);
-        char readType(const std::string&);
-        
-        std::string formOkResponse(const std::string& body = "");
+        Response attendRequest(ISocket& socket);
+        Request readRequest(ISocket& socket);
 };
 
 #endif // __QUIZSERVER__H__

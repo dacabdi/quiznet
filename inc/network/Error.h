@@ -2,6 +2,7 @@
 #define __ERROR__H__
 
 #include <map>
+#include <sstream>
 
 #define UNKERR 0
 #define NOTFND 1

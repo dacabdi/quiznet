@@ -1,6 +1,7 @@
 #ifndef __SOLVEDQUESTION__H__
 #define __SOLVEDQUESTION__H__
 
+#include "Exception.h"
 #include "Question.h"
 #include "ISolvedQuestion.h"
 #include <string>
