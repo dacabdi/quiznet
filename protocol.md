@@ -9,8 +9,8 @@
 All *Requests* must adhere to the following syntactic specification
 
 ```text
-type( length\n
-body\n)?
+type length\n
+body\n
 ```
 
 |Field|Syntax|Semantics|Optional|
