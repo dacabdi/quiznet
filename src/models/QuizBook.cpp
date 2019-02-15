@@ -16,6 +16,10 @@ QuizBook::QuizBook(std::istream& is)
 
 const SolvedQuestion& QuizBook::getQuestionById(uint32_t id) const
 {
+    if(!hasQuestion(id)) 
+        throw Exception("Question id " + std::to_string(id) + " does not exist.",
+                        "QuizBook::getQuestionById()", "", false);
+
     return _questions.at(id);
 }
 
@@ -37,9 +41,10 @@ const SolvedQuestion& QuizBook::getRandomQuestion(uint32_t& id) const
     : _questions) keys.push_back(pair.first);
 
     // select an index of the vector randomly and use that key
-    UniformRandom<uint32_t> uf(0, (uint)(keys.size() - 1));
-    id = uf.generate();
-    return getQuestionById(keys[id]);
+    UniformRandom<uint32_t> uf(0, (uint32_t)(keys.size() - 1));
+    uint32_t keyId = uf.generate();
+    id = keys[keyId];
+    return getQuestionById(id);
 }
 
 uint32_t QuizBook::insertQuestion(const SolvedQuestion question)
@@ -74,12 +79,12 @@ uint32_t QuizBook::insertQuestion(uint32_t id,
 SolvedQuestion QuizBook::deleteQuestionById(const uint32_t id)
 {
     // make a copy for the event handler
-    SolvedQuestion deletedQuestion = _questions.at(id);
+    SolvedQuestion deletedQuestion = getQuestionById(id);
     
     // delete and check whether the deletion happened
     if(!_questions.erase(id))
-        throw std::runtime_error("QuizBook::deleteQuestionById():"
-            "Question id does not exist");
+        throw Exception("Question id " + std::to_string(id) + " does not exist.",
+                        "QuizBook::deleteQuestionById()", "", false);
 
     // call onDelete handler with a copy of the question
     if(onDelete) onDelete(deletedQuestion, this);
@@ -132,10 +137,6 @@ std::ostream& QuizBook::serialize(std::ostream& os) const
 {
     std::map<const uint32_t, const SolvedQuestion>::const_iterator it =
     _questions.begin();
-
-    // NOTE: the entire set must not end on an empty line,
-    //       hence a special treatment is given to the first
-    //       question in the map
 
     if(it != _questions.end())
     {

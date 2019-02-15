@@ -17,6 +17,7 @@ class IQuestion
         virtual const QuestionTitle& getQuestionTitle(void) const = 0;
         virtual const ChoiceCollection& getChoices(void) const = 0;                    
         virtual std::string serialize(void) const = 0;
+        virtual std::string present(void) const = 0;
 
         virtual ~IQuestion(){};
 

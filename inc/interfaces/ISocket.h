@@ -44,8 +44,14 @@ class ISocket
 
         virtual int getDescriptor(void) const = 0;
         virtual ssize_t writeToSocket(std::istream&) = 0;
+        virtual ssize_t writeToSocket(const std::string&) = 0;
+        virtual ssize_t readFromSocket(char *buffer, 
+                                       ssize_t = __DATA_BUFFER_READ) = 0;
+        virtual ssize_t readFromSocket(std::string& stringBuffer, 
+                                ssize_t nbytes = __DATA_BUFFER_READ) = 0;
         virtual ssize_t readFromSocket(std::ostream&, 
                                        ssize_t = __DATA_BUFFER_READ) = 0;
+        virtual std::string readFromSocket(void) = 0;
         virtual AddressDomain getAddressDomain(void) const = 0;
         virtual Protocol getProtocol(void) const = 0;
         virtual SocketType getSocketType(void) const = 0;

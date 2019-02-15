@@ -5,10 +5,12 @@
 #include "ISocket.h"
 #include "IHost.h"
 #include "Host.h"
+#include "Escape.h"
 
 #include <istream>
 #include <ostream>
 #include <string>
+#include <sstream>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -30,9 +32,15 @@ class Socket : public ISocket
         int getDescriptor(void) const override;
 
         ssize_t writeToSocket(std::istream& is) override;
+        ssize_t writeToSocket(const std::string& s) override;
+
+        ssize_t readFromSocket(char *buffer, 
+                            ssize_t = __DATA_BUFFER_READ) override;
+        ssize_t readFromSocket(std::string& stringBuffer, 
+                            ssize_t nbytes = __DATA_BUFFER_READ) override;
         ssize_t readFromSocket(std::ostream& os, 
-                               ssize_t nbytes = __DATA_BUFFER_READ) 
-                               override;
+                           ssize_t nbytes = __DATA_BUFFER_READ) override;
+        std::string readFromSocket(void) override;
 
         AddressDomain getAddressDomain(void) const override;
         Protocol getProtocol(void) const override;

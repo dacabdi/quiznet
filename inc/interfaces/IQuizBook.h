@@ -1,6 +1,7 @@
 #ifndef __IQUIZBOOK__H__
 #define __IQUIZBOOK__H__
 
+#include "Exception.h"
 #include "SolvedQuestion.h"
 
 #include <string>

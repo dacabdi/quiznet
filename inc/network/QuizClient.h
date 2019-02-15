@@ -7,34 +7,49 @@
 #include "Socket.h"
 #include "Question.h"
 #include "SolvedQuestion.h"
+#include "Request.h"
+#include "Utils.h"
 
 #include <string>
 #include <iostream>
 #include <limits>
 #include <sstream>
 
+
 class QuizClient
 {
     public:
 
-        QuizClient(IHost *host);
-        void run(std::istream& is = std::cin, 
-                 std::ostream& os = std::cout,
-                 std::ostream& errs = std::cerr);
+        QuizClient(IHost *host, bool persistent = true,
+                   std::istream& input = std::cin, 
+                   std::ostream& output = std::cout, 
+                   std::ostream& error = std::cerr);
+
+        void run();
 
     protected:
 
-        IHost *_host;
-        ISocket *_socket;
+        std::istream& _input;
+        std::ostream& _output;
+        std::ostream& _error;
+
+        bool _persistent;
+        bool _running;
+
+        IHost *_host = nullptr;
+        ISocket *_socket = nullptr;
+        QuizClient* _qc = nullptr;
 
         std::map<const char, 
-        std::function<void(char option,
-                           std::istream&, 
-                           std::ostream&,
-                           std::ostream&,
-                           QuizClient*)>> _handlers;
+        std::function<Request (const std::string&)>> _prepareRequest;
+        std::function<void (const Response&)> _handleResponse;
 
-        void initHandlers(void);
+        void doRequest(char option, const std::string&);
+        void promptLoop(void);
+
+        Response sendAndReceive(Request& request);    
+        Response parseResponse(ISocket& socket);
+        void init(void);
 };
 
 #endif // __QUIZCLIENT__H__

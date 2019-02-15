@@ -253,7 +253,6 @@ bool testCommunication(void)
 }
 
 
-
 bool testCommunicationMultipleRW(void)
 {
     std::string clientToServer = "Hello server! This is client.\n"

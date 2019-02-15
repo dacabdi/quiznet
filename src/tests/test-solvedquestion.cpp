@@ -67,7 +67,7 @@ bool solvedQuestionProgrammaticallyGoldenCase(void)
         "(d) Benjamin Franklin\n"
         ".\n"
         ".\n"
-        "c");
+        "c\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -122,7 +122,7 @@ bool solvedQuestionProgrammaticallyTwoChoices(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "b");
+        "b\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -175,7 +175,7 @@ bool solvedQuestionProgrammaticallyMultilineTitle(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "a");
+        "a\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -232,7 +232,7 @@ bool solvedQuestionStringGoldenCase(void)
         "(d) Benjamin Franklin\n"
         ".\n"
         ".\n"
-        "c");
+        "c\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -285,7 +285,7 @@ bool solvedQuestionStringTwoChoices(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "a");
+        "a\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -334,7 +334,7 @@ bool solvedQuestionProgrammaticallySolutionIsNotAChoice(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "c");
+        "c\n");
 
     TagCollection tags("presidents, US history");
     QuestionTitle questionTitle(
@@ -368,7 +368,7 @@ bool solvedQuestionStringSolutionIsNotAChoice(void)
         "(b) UDP\n"
         ".\n"
         ".\n"
-        "c"
+        "c\n"
     );
 
     try
@@ -392,7 +392,7 @@ bool solvedQuestionProgrammaticallyEquality(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "a");
+        "a\n");
     
     SolvedQuestion sq1(s);
     SolvedQuestion sq2(s);
@@ -413,7 +413,7 @@ bool solvedQuestionProgrammaticallyUnequal(void)
         "(b) Abraham Lincoln\n"
         ".\n"
         ".\n"
-        "a");
+        "a\n");
     
     std::string s2("presidents, US history\n"
         "Which is the first president of the USA\n"
@@ -425,7 +425,7 @@ bool solvedQuestionProgrammaticallyUnequal(void)
         "(c) George Washington\n"
         ".\n"
         ".\n"
-        "a");
+        "a\n");
     
     SolvedQuestion sq1(s1);
     SolvedQuestion sq2(s2);

@@ -111,12 +111,15 @@ std::map<const char, const Choice>
                     "ChoiceCollection::deserializeAllChoices():"
                     "Repeated choice letter:" + pair.first);
 
-            if (pair.first != currentLetter)
+            if (pair.first != currentLetter) {
+                std::string expected = "";
+                expected.push_back(currentLetter);
                 throw std::invalid_argument(
                      "ChoiceCollection::deserializeAllChoices():"
                      "Choice letter out of order. "
-                     "Expected (" + std::to_string(currentLetter) + // TODO is not sending character but ascii value
+                     "Expected (" + expected +
                      ") and received (" + pair.first + ").");
+            }
 
             // all checks passed
             choices.insert(pair);

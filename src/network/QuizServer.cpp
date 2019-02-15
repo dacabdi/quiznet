@@ -3,12 +3,14 @@
 QuizServer::QuizServer(IQuizBook* quizbook, 
                        IHost* host, 
                        ISocket* socket,
-                       const std::string& filename)
+                       const std::string& filename,
+                       bool persistent)
 {
     _host = host;
     _quizbook = quizbook;
     _socket = socket;
     _filename = filename;
+    _persistent = persistent;
 
     // before setting handlers,
     // reset quizbook and load with file
@@ -16,194 +18,282 @@ QuizServer::QuizServer(IQuizBook* quizbook,
     std::ifstream ifs(_filename);
     _quizbook->readFrom(ifs);
 
-    // set handlers ------------------------------------------------------
-
-    _socket->onIncomingConnection = [&]
-    (ISocket& socket, const IHost& host, ISocket* context) {
-        serveRequest(socket, host, context);
-    }; // set handler
-
+    // set quizbook event handlers
     _quizbook->onInsert = [&](const ISolvedQuestion& question, 
-                              IQuizBook* book)
-    {
-        changeHandler(question, book);
-    };
-
+                              IQuizBook* book) { onChange(book); };
     _quizbook->onDelete = [&](ISolvedQuestion& question, 
-                              IQuizBook* book)
-    {
-        // this reference to the deleted question will cease to exist
-        // after the event is handled, if a copy is needed, it has to
-        // be created
-        changeHandler(question, book);
-    };
+                              IQuizBook* book) { onChange(book); };
+    _quizbook->onClear  = [&](IQuizBook* book) { onChange(book); };
 
-    _quizbook->onClear = [&](IQuizBook* book)
-    {
-        clearHandler(book);
-    };
-
+    // set each request type handler
     setRequestHandlers();
+
+    // set incoming connection on socket handler
+    _socket->onIncomingConnection = [&]
+    (ISocket& socket, const IHost& host, ISocket* context) 
+    {
+        _log("\n>>> Incoming connection from " 
+             + host.getAddress() + " <<<\n\n");
+        
+        _clientAlive = true;
+
+        try {    
+            if(_persistent) persistentSession(socket);
+            else            exchange(socket);
+        } catch(const std::exception& e) {
+            _log("\nClient left without notice!\n");
+            if(_verbose) _log(std::string(e.what()) + "\n");
+        }
+
+        _clientAlive = false;
+        
+        _log("\n>>> Connection ended <<<\n\n");
+    };    
 }
 
-
-void QuizServer::changeHandler(const ISolvedQuestion& question, 
-                              IQuizBook* book)
+void QuizServer::exchange(ISocket& socket)
 {
-    std::ofstream file(_filename, std::ios::out);
-    book->writeTo(file);
-    file.close();
+    _log("Awaiting request...\n");
+    Response response = attendRequest(socket);
+    _log("Sending response... \n");
+    socket.writeToSocket(response.serialize());
+    _log("Done sending response\n\n");
 }
 
-void QuizServer::clearHandler(IQuizBook* book)
+void QuizServer::persistentSession(ISocket& socket)
 {
-    std::ofstream file(_filename, std::ios::out);
-    book->writeTo(file);
-    file.close();
+    while(_running && _clientAlive)
+    {
+        exchange(socket);
+    }
 }
 
-QuizServer::~QuizServer(){}
+void QuizServer::setLogger(std::function<void (const std::string&)> logger)
+{
+    _log = logger;
+}
 
 void QuizServer::run(void)
 {
+    _log("<><><><> Starting QuizNet Server <><><><>\n");
+        
+    // bind
+    _log("Binding... ");
     _socket->bindSocket(*(_host));
+    _log("[OK]\n");
+    
+    // listen
+    _log("Listening on port " + _host->getService() + "... ");
     _socket->startListening();
+    _log("[OK]\n");
 
     _running = true;
     while(_running)
+    {
+        _log("Awaiting connection... \n\n");
         _socket->acceptConnection();
+    }
 }
 
-void QuizServer::serveRequest(ISocket& socket, const IHost& host, ISocket* context)
+void QuizServer::onChange(IQuizBook* book)
 {
-    // read type of request
-    std::ostringstream os;
-    socket.readFromSocket(os, 1); // only one character
-    std::string typeStr = os.str();
-    char type = typeStr.front();
-    // call appropiate handler
-    (_reqHandlers.at(type))(socket, host, context); // TODO check if handler exists and handle gracefully
+    // open the file ...
+    std::ofstream file(_filename, std::ios::out);
+    book->writeTo(file); //... and write quizbook to it
+    file.close();
+}
+
+Response QuizServer::attendRequest(ISocket& socket)
+{       
+    Request request;
+    // try to parse request
+    try {
+        request = readRequest(socket);
+    }
+    catch(const ProtocolException& e) {
+        _log("Failed to parse request!\n");
+        if(_verbose){
+            _log(  "-=-=- Exception begin -=-=-\n");
+            _log(e.what());
+            _log("\n-=-=-= Exception end =-=-=-");
+        }
+        return Response('e', std::string(e.what()));
+    }
+
+    // try
+    _log("Composing response...\n");
+    Response response;
+    try {
+        response = (_handlers.at(request.getType()))(request);
+    } catch (const ProtocolException& e) {
+        _log("Failed to compose response!\n");
+        if(_verbose){
+            _log(  "-=-=- Exception begin -=-=-\n");
+            _log(e.what());
+            _log("\n-=-=-= Exception end =-=-=-");
+        }
+        return Response('e', std::string(e.what()));
+    }
+
+    if(_verbose) _log("Response: " + response.serialize() + "\n");
+        _log("Done composing response\n");
+
+    return response;
+}
+
+Request QuizServer::readRequest(ISocket& socket)
+{
+    _log("Reading request...\n");
+    std::string buffer = socket.readFromSocket();
+    _log("Request read.\n");
+
+    // detect if reading 0, if so, consider client dropped
+    // https://stackoverflow.com/questions/283375/detecting-tcp-client-disconnect
+    if(!buffer.length())
+        throw Exception("Client dropped without notice", 
+                        "QuizServer::readRequest", "", false);
+
+    _log("Parsing request...\n");
+    Request request(buffer);
+    _log("Request parsed.\n");
+
+    // log content and type
+    _log("Type: " + request.getTypeAsString() + "\n");
+    _log("Content length: " 
+        + std::to_string(request.getBody().getLength()) + "\n");
+    if(_verbose)
+        _log("Contents: "
+        + utils::escape((request.getBody().getContent()) + "\n"));
+
+    return request;
 }
 
 void QuizServer::setRequestHandlers(void)
 {
-    //p -> put a question in the bank
-    _reqHandlers.emplace('p', 
-    [&](ISocket& socket, const IHost& host, ISocket* context){
-        // read question until \n.\n
-        std::string buff = "";
-        std::string term = "\n.\n";
-        size_t tL = term.length();
-        
-        do
-        {
-            std::ostringstream os;
-            socket.readFromSocket(os);
-            buff.append(os.str());
-        }while(buff.substr(buff.length() - tL - 1, tL) != term);
-
-        // drop leading end-of-line from option input
-        if(buff.front() == '\n') buff = buff.substr(1);
-
-        // try to create question... if if fails... send back message
-        std::istringstream is;
+    // p -> put a question in the bank
+    _handlers.emplace('p', [&](const Request& request) -> Response
+    {
+        std::string content = request.getBody().getContent();
         try {
-            SolvedQuestion q(buff);
-            uint32_t id = _quizbook->insertQuestion(q);
-            is = std::istringstream(std::to_string(id));
+            // create question
+            SolvedQuestion question(content);
+            uint32_t id = _quizbook->insertQuestion(question);
+            return Response('o', std::to_string(id));
+        } catch (const Exception& e) {
+            throw ProtocolException(MALQUE, e.what());
         } catch (const std::exception& e) {
-            is = std::istringstream("Invalid format" 
-                                    + std::string(e.what()));
+            throw ProtocolException(UNKERR, 
+            "Content: {" + utils::escape(content) + "}\n"
+            "Internal Exception: " + std::string(e.what()));
         }
-
-        socket.writeToSocket(is);
     });
 
     //d -> delete a question from the bank
-    _reqHandlers.emplace('d', 
-    [&](ISocket& socket, const IHost& host, ISocket* context){
-        std::string buff = "";
-        do
-        {
-            std::ostringstream os;
-            socket.readFromSocket(os);
-            buff.append(os.str());
-        }while(buff.back() != '\n');
-
-        buff.erase(buff.find_last_not_of(" \n\r\t")+1);
-        buff = buff.substr(buff.find_first_not_of(" \n\r\t"));
-
-        // try to delete question, if it fails, report back
-        std::istringstream is;
+    _handlers.emplace('d', [&](const Request& request) -> Response
+    {    
+        std::string content = request.getBody().getContent();
         try {
-            uint32_t id = (uint32_t)std::stoul(buff);
+            uint32_t id = (uint32_t)std::stoul(content);
             _quizbook->deleteQuestionById(id);
-            is = std::istringstream(std::string("Deleted question ") 
-                                    + std::to_string(id));
+            return Response('o', "Deleted question " + std::to_string(id));
+        } catch (const Exception& e) {
+            throw ProtocolException(NOTFND, 
+            "Question id provided {" + utils::escape(content) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
         } catch (const std::exception& e) {
-            is = std::istringstream(std::string("Error: question ") 
-                                    + buff + " not found.");
+            throw ProtocolException(UNKERR, 
+            "Question id provided {" + utils::escape(content) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
         }
-
-        socket.writeToSocket(is);
     });
 
     //g -> get a question from the bank
-    _reqHandlers.emplace('g', 
-    [&](ISocket& socket, const IHost& host, ISocket* context){
-        std::string buff = "";
-        do
-        {
-            std::ostringstream os;
-            socket.readFromSocket(os);
-            buff.append(os.str());
-        }while(buff.back() != '\n');
-
-        buff.erase(buff.find_last_not_of(" \n\r\t")+1);
-        buff = buff.substr(buff.find_first_not_of(" \n\r\t"));
-
-        // try to get question, if it fails, report back
-        std::istringstream is;
+    _handlers.emplace('g', [&](const Request& request) -> Response
+    {   
+        std::string content = request.getBody().getContent();
         try {
-            uint32_t id = (uint32_t)std::stoul(buff);
+            uint32_t id = (uint32_t)std::stoul(content);
             SolvedQuestion q = _quizbook->getQuestionById(id);
-            is = std::istringstream(q.serialize());
+            return Response('o', q.serialize());
+        } catch (const Exception& e) {
+            throw ProtocolException(NOTFND, 
+            "Question id provided {" + utils::escape(content) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
         } catch (const std::exception& e) {
-            is = std::istringstream(std::string("Error: question ") 
-                                    + buff + " not found.");
+            throw ProtocolException(UNKERR, 
+            "Question id provided {" + utils::escape(content) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
+        }
+    });
+
+    //c -> check a solution
+    _handlers.emplace('c', [&](const Request& request) -> Response
+    {   
+        std::string content = request.getBody().getContent();
+        
+        std::istringstream iss(content);
+        std::string idString = "";
+        std::getline(iss, idString);
+        std::string choiceString = "";
+        std::getline(iss, choiceString);
+
+        char choice = choiceString.front();
+
+        SolvedQuestion question;
+
+        try {
+            uint32_t id = (uint32_t)std::stoul(content);
+            question = _quizbook->getQuestionById(id);
+        } catch (const Exception& e) {
+            throw ProtocolException(NOTFND, 
+            "Question id provided {" + utils::escape(idString) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
+        } catch (const std::exception& e) {
+            throw ProtocolException(UNKERR, 
+            "Question id provided {" + utils::escape(idString) + "}\n"+
+            "Internal Exception: " + std::string(e.what()));
         }
 
-        socket.writeToSocket(is);
+        if(!question.getQuestion().getChoices().hasChoice(choice))
+        {
+            throw ProtocolException(CHNFND, 
+            "Choice id provided {" + utils::escape(choiceString) + "}\n");
+        }
+
+        if(question.getSolution() == choice)
+            return Response('o', "Correct");
+        else    
+            return Response('o', "Incorrect");
     });
 
     //r -> get a random question from the bank
-    _reqHandlers.emplace('r', 
-    [&](ISocket& socket, const IHost& host, ISocket* context){
-        // try to get question, if it fails, report back
-        std::istringstream is;
-        SolvedQuestion q;
+    _handlers.emplace('r', [&](const Request& request) -> Response
+    {
         try {
             uint32_t id;
-            q = _quizbook->getRandomQuestion(id);
-            is = std::istringstream(
-                std::to_string(id) + "\n" + q.getQuestion().serialize());
+            Question question = _quizbook->getRandomQuestion(id).getQuestion();
+            return Response('o', std::to_string(id) + "\n" + question.serialize());
+        } catch (const Exception& e) {
+            throw ProtocolException(EMPTYQ, "The QuizBook is empty!");
         } catch (const std::exception& e) {
-            is = std::istringstream("Error: There are no questions.");
+            throw ProtocolException(UNKERR, 
+            "Attempting to retrieve random question");
         }
+    });
 
-        socket.writeToSocket(is);
+    // q -> quit client
+    _handlers.emplace('q', [&](const Request& request) -> Response
+    {
+        _log("Client requested to disconnect.\n");
+        _clientAlive = false;
+        return Response('o', "OK");
+    });
 
-        // read response
-        std::ostringstream choiceOss;
-        socket.readFromSocket(choiceOss);
-        char choice = choiceOss.str().front();
-        
-        std::string response = "Incorrect";
-        if(q.getSolution() == choice)
-            response = "Correct";
-        
-        std::istringstream responseIss(response);
-        socket.writeToSocket(responseIss);
+    // k -> kill server from client
+    _handlers.emplace('k', [&](const Request& request) -> Response
+    {
+        _log("Server received a kill request.\n");
+        _running = false;
+        return Response('o', "OK");
     });
 }
-

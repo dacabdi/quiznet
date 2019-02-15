@@ -119,10 +119,10 @@ test-question.o:
 	$(CCFULL) $(SRCTESTS)/test-question.cpp
 
 # >> test-solvedquestion <<
-test-solvedquestion.test: subdirs test-solvedquestion.o utils.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-solvedquestion.test: subdirs test-solvedquestion.o Utils.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-solvedquestion.o \
-	$(BINSUBDIR)/utils.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
 	$(BINSUBDIR)/Question.o \
 	$(BINSUBDIR)/TagCollection.o \
@@ -137,9 +137,10 @@ test-solvedquestion.o:
 	$(CCFULL) $(SRCTESTS)/test-solvedquestion.cpp
 
 # >> test-quizbook <<
-test-quizbook.test: subdirs copy-test-data test-quizbook.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-quizbook.test: subdirs copy-test-data test-quizbook.o Utils.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizbook.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/QuizBook.o \
 	$(BINSUBDIR)/UniformRandom.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
@@ -169,10 +170,11 @@ test-socket.o:
 	$(CCFULL) $(SRCTESTS)/test-socket.cpp
 
 # >> test-quizserver <<
-test-quizserver.test: subdirs test-quizserver.o QuizServer.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-quizserver.test: subdirs test-quizserver.o Request.o QuizServer.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizserver.o \
 	$(BINSUBDIR)/QuizServer.o \
+	$(BINSUBDIR)/Request.o \
 	$(BINSUBDIR)/Host.o \
 	$(BINSUBDIR)/Socket.o \
 	$(BINSUBDIR)/QuizBook.o \
@@ -184,6 +186,7 @@ test-quizserver.test: subdirs test-quizserver.o QuizServer.o Socket.o Host.o Qui
 	$(BINSUBDIR)/QuestionTitle.o \
 	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/Utils.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-quizserver.test
 
@@ -191,10 +194,11 @@ test-quizserver.o:
 	$(CCFULL) $(SRCTESTS)/test-quizserver.cpp
 
 # >> test-quizclient <<
-test-quizclient.test: subdirs test-quizclient.o QuizClient.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o
+test-quizclient.test: subdirs test-quizclient.o Request.o QuizClient.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
 	$(BINSUBDIR)/test-quizclient.o \
 	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Request.o \
 	$(BINSUBDIR)/Host.o \
 	$(BINSUBDIR)/Socket.o \
 	$(BINSUBDIR)/SolvedQuestion.o \
@@ -204,11 +208,45 @@ test-quizclient.test: subdirs test-quizclient.o QuizClient.o Socket.o Host.o Sol
 	$(BINSUBDIR)/QuestionTitle.o \
 	$(BINSUBDIR)/ChoiceCollection.o \
 	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/Utils.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/test-quizclient.test
 
 test-quizclient.o:
 	$(CCFULL) $(SRCTESTS)/test-quizclient.cpp
+
+# >> test-persistent.test <<
+test-persistent.test: subdirs test-persistent.o Request.o QuizServer.o QuizBook.o QuizClient.o UniformRandom.o Socket.o Host.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
+	$(CC) \
+	$(BINSUBDIR)/test-persistent.o \
+	$(BINSUBDIR)/QuizServer.o \
+	$(BINSUBDIR)/QuizBook.o \
+	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Request.o \
+	$(BINSUBDIR)/Host.o \
+	$(BINSUBDIR)/Socket.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(BINSUBDIR)/Utils.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-persistent.test
+
+test-persistent.o:
+	$(CCFULL) $(SRCTESTS)/test-persistent.cpp
+
+test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
+	$(BINSUBDIR)/test-choice.test
+	$(BINSUBDIR)/test-tag.test
+	$(BINSUBDIR)/test-questiontitle.test
+	$(BINSUBDIR)/test-question.test
+	$(BINSUBDIR)/test-solvedquestion.test
+	$(BINSUBDIR)/test-quizbook.test
 
 #------------------------------MODELS-------------------------------------
 
@@ -249,11 +287,14 @@ QuizServer.o:
 QuizClient.o:
 	$(CCFULL) $(SRCNETWORK)/QuizClient.cpp
 
+Request.o:
+	$(CCFULL) $(SRCNETWORK)/Request.cpp
+
 
 #------------------------------EXTRA--------------------------------------
 
-utils.o:
-	$(CCFULL) $(SRCMISC)/utils.cpp
+Utils.o:
+	$(CCFULL) $(SRCMISC)/Utils.cpp
 
 UniformRandom.o:
 	$(CCFULL) $(SRCMISC)/UniformRandom.cpp
