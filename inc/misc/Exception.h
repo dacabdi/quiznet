@@ -54,7 +54,7 @@ class ProtocolException : public std::runtime_error
 
 class Exception : public std::runtime_error
 {
-    protected:
+    public:
         
         const std::string _what;
         const std::string _where;
@@ -63,9 +63,11 @@ class Exception : public std::runtime_error
         int _errnoInt;
         std::string _errno;
         std::string _errstr;
-        
+
+    protected:    
+    
         std::string _full;
-        
+
         void init(void)
         {
             _full = "\nWhere: " + _where + "\n" 

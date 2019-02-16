@@ -1,6 +1,7 @@
 #ifndef __QUIZBOOK__H__
 #define __QUIZBOOK__H__
 
+#include "Exception.h"
 #include "IQuizBook.h"
 #include "UniformRandom.h" // getRandomQuestion
 #include "Utils.h" // getAllKeys

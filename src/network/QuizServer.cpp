@@ -3,14 +3,12 @@
 QuizServer::QuizServer(IQuizBook* quizbook, 
                        IHost* host, 
                        ISocket* socket,
-                       const std::string& filename,
-                       bool persistent)
+                       const std::string& filename)
 {
     _host = host;
     _quizbook = quizbook;
     _socket = socket;
     _filename = filename;
-    _persistent = persistent;
 
     // before setting handlers,
     // reset quizbook and load with file
@@ -32,22 +30,69 @@ QuizServer::QuizServer(IQuizBook* quizbook,
     _socket->onIncomingConnection = [&]
     (ISocket& socket, const IHost& host, ISocket* context) 
     {
-        _log("\n>>> Incoming connection from " 
-             + host.getAddress() + " <<<\n\n");
-        
-        _clientAlive = true;
+        _log("\n-=-=-=-=-=- Incoming connection from " 
+             + host.getAddress() + " -=-=-=-=-=-\n\n");
 
-        try {    
-            if(_persistent) persistentSession(socket);
-            else            exchange(socket);
-        } catch(const std::exception& e) {
-            _log("\nClient left without notice!\n");
+        _clientOn = true;
+        
+// ======== NEGOTIATE SESSION TYPE =======================================
+        
+        bool _sessionNegotiated = false;
+        
+        // determine client type
+        bool _persistent = false;
+        try
+        {
+            _log("Negotiating session...\n");
+            Request greetings(socket.readFromSocket());
+            if(greetings.getType() == 's') 
+            {
+                _log("Client wants " 
+                + greetings.getBody().getContent() + ".\n");
+
+                std::string responseContent = "";
+                if(greetings.getBody().getContent() == "persistent")
+                {
+                    responseContent = "persistent";
+                    _persistent = true;
+                }
+                else if (greetings.getBody().getContent() == "nonpersistent")
+                {
+                    responseContent = "nonpersistent";
+                    _persistent = false;
+                } // TODO:  validate that client
+                  // actually asked for nonpersistent
+                  // this takes it implicitly
+                Response response('o', responseContent);
+                socket.writeToSocket(response.serialize());
+                _sessionNegotiated = true;
+                _log("Session negotiated succesfully!\n\n");
+            } else {
+                _log("Could not negotiate session, wrong type of request!\n");
+                if (_verbose)
+                    _log("Received this: "
+                    + utils::escape(greetings.serialize()));
+            }
+        } catch (const std::exception& e) {
+            _log("Client left without notice during session negotiation!\n");
             if(_verbose) _log(std::string(e.what()) + "\n");
         }
 
-        _clientAlive = false;
+// ======== RUN SESSION ==================================================
+
+        // communicate
+        if(_sessionNegotiated)
+            try {    
+                if(_persistent) persistentSession(socket);
+                else            exchange(socket);
+            } catch(const std::exception& e) {
+                _log("\nClient left without notice!\n");
+                if(_verbose) _log(std::string(e.what()) + "\n");
+            }
+
+        _clientOn = false;
         
-        _log("\n>>> Connection ended <<<\n\n");
+        _log("\n-=-=-=-=-=-=-=-=- Connection ended -=-=-=-=-=-=-=-=-\n\n");
     };    
 }
 
@@ -62,7 +107,7 @@ void QuizServer::exchange(ISocket& socket)
 
 void QuizServer::persistentSession(ISocket& socket)
 {
-    while(_running && _clientAlive)
+    while(_running && _clientOn)
     {
         exchange(socket);
     }
@@ -75,7 +120,7 @@ void QuizServer::setLogger(std::function<void (const std::string&)> logger)
 
 void QuizServer::run(void)
 {
-    _log("<><><><> Starting QuizNet Server <><><><>\n");
+    _log("<><><><><><><><><> Starting QuizNet Server <><><><><><><><><>\n\n");
         
     // bind
     _log("Binding... ");
@@ -90,7 +135,7 @@ void QuizServer::run(void)
     _running = true;
     while(_running)
     {
-        _log("Awaiting connection... \n\n");
+        _log("Accepting connection...\n");
         _socket->acceptConnection();
     }
 }
@@ -115,7 +160,7 @@ Response QuizServer::attendRequest(ISocket& socket)
         if(_verbose){
             _log(  "-=-=- Exception begin -=-=-\n");
             _log(e.what());
-            _log("\n-=-=-= Exception end =-=-=-");
+            _log("\n-=-=- Exception end -=-=-\n");
         }
         return Response('e', std::string(e.what()));
     }
@@ -126,17 +171,18 @@ Response QuizServer::attendRequest(ISocket& socket)
     try {
         response = (_handlers.at(request.getType()))(request);
     } catch (const ProtocolException& e) {
-        _log("Failed to compose response!\n");
+        _log("Error composing response!\n");
         if(_verbose){
-            _log(  "-=-=- Exception begin -=-=-\n");
+            _log(  "\n-=-=- Exception begin -=-=-\n");
             _log(e.what());
-            _log("\n-=-=-= Exception end =-=-=-");
+            _log("\n-=-=-= Exception end =-=-=-\n\n");
         }
+        _log("Composing error response...\n");
         return Response('e', std::string(e.what()));
     }
 
-    if(_verbose) _log("Response: " + response.serialize() + "\n");
-        _log("Done composing response\n");
+    if(_verbose) _log("Response: " + utils::escape(response.serialize()) + "\n");
+    _log("Done composing response\n");
 
     return response;
 }
@@ -162,8 +208,8 @@ Request QuizServer::readRequest(ISocket& socket)
     _log("Content length: " 
         + std::to_string(request.getBody().getLength()) + "\n");
     if(_verbose)
-        _log("Contents: "
-        + utils::escape((request.getBody().getContent()) + "\n"));
+        _log("Content: "
+        + utils::escape(request.getBody().getContent()) + "\n");
 
     return request;
 }
@@ -285,7 +331,7 @@ void QuizServer::setRequestHandlers(void)
     _handlers.emplace('q', [&](const Request& request) -> Response
     {
         _log("Client requested to disconnect.\n");
-        _clientAlive = false;
+        _clientOn = false;
         return Response('o', "OK");
     });
 

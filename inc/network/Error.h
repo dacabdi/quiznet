@@ -12,6 +12,7 @@
 #define INVQID 5
 #define EMPTYQ 6
 #define REQTSZ 7
+#define FAILGT 8
 
 struct ErrorMessage {
     size_t number;
@@ -21,14 +22,15 @@ struct ErrorMessage {
 };
 
 const static std::map<size_t, ErrorMessage> Errors = {
-    {0, {0, "UNKERR", "Unkown error", ""}},
-    {1, {1, "NOTFND", "Question not found", ""}},
-    {2, {2, "MALQUE", "Malformed question body", ""}},
-    {3, {3, "CHNFND", "Choice does not exist in question", ""}},
-    {4, {4, "UNKREQ", "Server does not know how to handle request type", ""}},
-    {5, {5, "INVQID", "Invalid format for question id provided", ""}},
-    {6, {6, "EMPTYQ", "Empty quiz book", ""}},
-    {7, {7, "REQTSZ", "Request type length must be one character", ""}}
+    {UNKERR, {UNKERR, "UNKERR", "Unkown error", ""}},
+    {NOTFND, {NOTFND, "NOTFND", "Question not found", ""}},
+    {MALQUE, {MALQUE, "MALQUE", "Malformed question body", ""}},
+    {CHNFND, {CHNFND, "CHNFND", "Choice does not exist in question", ""}},
+    {UNKREQ, {UNKREQ, "UNKREQ", "Server does not know how to handle request type", ""}},
+    {INVQID, {INVQID, "INVQID", "Invalid format for question id provided", ""}},
+    {EMPTYQ, {EMPTYQ, "EMPTYQ", "Empty quiz book", ""}},
+    {REQTSZ, {REQTSZ, "REQTSZ", "Request type length must be one character", ""}},
+    {FAILGT, {FAILGT, "FAILGT", "Failed to negotiate session.", ""}}
 };
 
 #endif

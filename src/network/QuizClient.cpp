@@ -20,6 +20,8 @@ std::ostream& error)
 
 void QuizClient::promptLoop(void)
 {
+    _output << _menu;
+
     char option = '\0';
     std::string prompt = "> ";
     std::string invalidMsg = "Invalid option, please try again.";
@@ -31,7 +33,7 @@ void QuizClient::promptLoop(void)
         std::string line = "";
         std::getline(_input, line);
         
-        ssize_t pos = line.find_first_not_of(" \t\n\r");
+        size_t pos = line.find_first_not_of(" \t\n\r");
         if(pos == std::string::npos)
             continue;
 
@@ -42,7 +44,7 @@ void QuizClient::promptLoop(void)
         if(option == 'q' && !_persistent)
             _running = false;
         else if (option == 'h') 
-            displayMenu();
+            _output << _menu;
         else if(!_prepareRequest.count(option))
             _error << invalidMsg << std::endl;
         else
@@ -51,31 +53,60 @@ void QuizClient::promptLoop(void)
     }
 }
 
-void QuizClient::run(void)
+void QuizClient::negotiateSession(ISocket& socket, std::string content)
 {
-    // if connection mode is persistent, then open transport layer already
+    Request greetings('s', content);
+    socket.writeToSocket(greetings.serialize());
+    std::string responseString = socket.readFromSocket();
+    Response response(responseString);
+    if(response.getType() != 'o' 
+    || response.getBody().getContent() != content)
+        throw ProtocolException(FAILGT);
+}
+
+void QuizClient::setup(void)
+{
+    _running = false;
+
+    // if connection mode is persistent, then open transport already
     if(_persistent)
     {
-        // TODO declare to server that session is persistent
-        //      do some sort of handshaking
-
+        std::cout << "Client is setup to use persistent connections.\n" 
+                  << std::endl;
         try
         {
-            _output << "Using persistent connection to server." << std::endl;
             _socket = new Socket(IPv4, StreamSocket, TCP);
+            _output << "Connecting..." << std::endl;
             _socket->connectTo(*_host);
             _output << "Connected to " << _host->getAddress() 
-                    << ":" << _host->getService() << std::endl;    
+                    << ":" << _host->getService() << std::endl;
         } catch(const std::exception& e) {
-            _output << "Failed to connect to server: " << std::flush;
+            _error << "Failed to connect to server: " << std::flush;
             _error << e.what() << std::flush;
-            _output << "Stopping client!" << std::endl;
+            _error << "Stopping client!" << std::endl;
             return;
         }
-    }
-    
-    _running = true;
 
+        try 
+        {
+            _output << "Negotiating persistent connection." 
+                    << std::endl;
+            negotiateSession(*_socket, "persistent");
+            _output << "Connection setup.\n\n" 
+                    << std::endl;
+            _running = true;
+        } catch (const ProtocolException& e) {
+            _error << "Failed to negotiate persistent session, exiting!"
+                   << std::endl;
+        }
+    } else {
+        _running = true;
+    }
+}
+
+void QuizClient::run(void)
+{
+    setup();
     promptLoop();
 }
 
@@ -94,8 +125,16 @@ void QuizClient::doRequest(char option , const std::string& line)
     Response response; 
     try {
         response = sendAndReceive(request);
+    } catch (const ProtocolException& e) {
+        _error << "Could not send or receive:\n" 
+               << std::string(e.what()) << std::endl;
+        return;
+    } catch (const Exception& e) {
+        _error << "Could not send or receive:\n"
+               << e._what << std::endl;
+        return;
     } catch (const std::exception& e) {
-        _error << "Failed to send or receive request: " 
+        _error << "Could not send or receive:\n" 
                << std::string(e.what()) << std::endl;
         return;
     }
@@ -117,13 +156,13 @@ Response QuizClient::sendAndReceive(Request& request)
     {
         // create new socket and connect
         Socket socket(IPv4, StreamSocket, TCP);
-        socket.onOutgoingConnection = [&](
-        ISocket& socket, const IHost& host, ISocket* context){
-            socket.writeToSocket(request.serialize());
-            response = parseResponse(socket);
-        };
         // try to connect
         socket.connectTo(*_host);
+        // negotiate session
+        negotiateSession(socket, "nonpersistent");
+        // send and receive
+        socket.writeToSocket(request.serialize());
+        response = parseResponse(socket);
     }
 
     return response;
@@ -133,9 +172,20 @@ Response QuizClient::parseResponse(ISocket& socket)
 {
     // read response
     std::string buffer = socket.readFromSocket();
+    
+    // only known indication that server might have left
+    if(_persistent && !buffer.length())
+    {
+        _running = false;
+        
+        throw Exception(
+            "Server left without notice on persistent mode.",
+            "QuizClient::parseResponse()",
+            "", false);
+    }
+
     return Response(buffer);
 }
-
 
 void QuizClient::init(void)
 {
@@ -148,7 +198,7 @@ void QuizClient::init(void)
         // set handler
         _handleResponse = [&](const Response& res) {
             switch (res.getType()) {
-                case 'e' : _error   << "Server error!" 
+                case 'e' : _error   << "Server error!\n" 
                                     << res.getBody().getContent();
                 break;
                 case 'o' : _output << res.getBody().getContent();
@@ -176,7 +226,7 @@ void QuizClient::init(void)
                                 _error << "Question not found. "
                                        << err.extra << std::endl;
                             else
-                                _error << "Server error!" 
+                                _error << "Server error!\n" 
                                        << content;
                 break;
                 case 'o' : _output << content;
@@ -203,7 +253,7 @@ void QuizClient::init(void)
                                 _error << "Question not found. "
                                        << err.extra;
                             else
-                                _error << "Server error!" 
+                                _error << "Server error!\n" 
                                        << content;
                 break;
                 case 'o' : _output << content;
@@ -225,10 +275,10 @@ void QuizClient::init(void)
         // set handler
         _handleResponse = [&](const Response& res) {
             switch (res.getType()) {
-                case 'e' : _error   << "Server error!" 
+                case 'e' : _error   << "Server error!\n" 
                                     << res.getBody().getContent();
                 break;
-                case 'o' : _output << "Server OK to leave!";
+                case 'o' : _output << "\nDisconnecting from server!";
                            _running = false;
                 break;
             }
@@ -276,7 +326,7 @@ void QuizClient::init(void)
                                 _error << "Choice not found. "
                                        << err.extra << std::endl;
                             else
-                                _error << "Server error!" 
+                                _error << "Server error!\n" 
                                        << content;
                 break;
                 case 'o' : _output << content << std::endl;
@@ -295,9 +345,16 @@ void QuizClient::init(void)
         // set handler
         _handleResponse = [&](const Response& res) {
             std::string content = res.getBody().getContent();
+            ErrorMessage err;
+            
             switch (res.getType()) {
-                case 'e' : _error   << "Server error!" 
-                                    << res.getBody().getContent();
+                case 'e' : 
+                            err = utils::deserializeError(content);
+                            if(err.number == EMPTYQ)
+                                _error  << err.extra;
+                            else
+                                _error  << "Server error!\n" 
+                                        << res.getBody().getContent();
                 break;
                 case 'o' : 
 
@@ -332,7 +389,7 @@ void QuizClient::init(void)
         // set handler
         _handleResponse = [&](const Response& res) {
             switch (res.getType()) {
-                case 'e' : _error   << "Server error!" 
+                case 'e' : _error   << "Server error!\n" 
                                     << res.getBody().getContent();
                 break;
                 case 'o' : _output << "Server going down!";
