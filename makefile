@@ -36,7 +36,7 @@ CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
 
 #------------------------------GENERAL------------------------------------
 
-all: clean server.app client.app
+all: clean server.app client.app ship clean
 
 subdirs:
 	mkdir -p $(BINSUBDIR)
@@ -49,6 +49,15 @@ subdirs-debug:
 
 clean:
 	rm -rvf $(BINBASEDIR)/
+	rm -rfv ./qserver
+	rm -rfv ./qclient
+	rm -rfv *.data
+
+ship:
+	cp $(BINSUBDIR)/server.app ./qserver
+	cp $(BINSUBDIR)/client.app ./qclient
+	chmod +x qserver
+	chmod +x qclient
 
 #------------------------------TESTS--------------------------------------
 
@@ -299,46 +308,53 @@ Utils.o:
 UniformRandom.o:
 	$(CCFULL) $(SRCMISC)/UniformRandom.cpp
 
+#------------------------------SERVER-------------------------------------
 
-
-
-
-
-# SERVER
-
-# link server
-server.app: subdirs server.o Server.o EchoServer.o
+# server.app
+server.app: subdirs server.o QuizServer.o Request.o Socket.o Host.o QuizBook.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
+	$(BINSUBDIR)/QuizServer.o \
+	$(BINSUBDIR)/Request.o \
+	$(BINSUBDIR)/Socket.o \
+	$(BINSUBDIR)/Host.o \
+	$(BINSUBDIR)/QuizBook.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/server.o \
-	$(BINSUBDIR)/Server.o \
-	$(BINSUBDIR)/EchoServer.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/server.app
 
-# dependencies
 server.o:
-	$(CCFULL)/server.cpp
+	$(CCFULL) $(SRCDIR)/server.cpp
 
-Server.o:
-	$(CCFULL)/Server.cpp
+#------------------------------CLIENT-------------------------------------
 
-EchoServer.o:
-	$(CCFULL)/EchoServer.cpp
-
-
-
-
-# CLIENT
-
-client.app: subdirs client.o Client.o
+# client.app
+client.app: subdirs client.o QuizClient.o Request.o Socket.o Host.o UniformRandom.o SolvedQuestion.o Question.o TagCollection.o Tag.o QuestionTitle.o ChoiceCollection.o Choice.o Utils.o
 	$(CC) \
+	$(BINSUBDIR)/QuizClient.o \
+	$(BINSUBDIR)/Request.o \
+	$(BINSUBDIR)/Socket.o \
+	$(BINSUBDIR)/Host.o \
+	$(BINSUBDIR)/UniformRandom.o \
+	$(BINSUBDIR)/SolvedQuestion.o \
+	$(BINSUBDIR)/Question.o \
+	$(BINSUBDIR)/TagCollection.o \
+	$(BINSUBDIR)/Tag.o \
+	$(BINSUBDIR)/QuestionTitle.o \
+	$(BINSUBDIR)/ChoiceCollection.o \
+	$(BINSUBDIR)/Choice.o \
+	$(BINSUBDIR)/Utils.o \
 	$(BINSUBDIR)/client.o \
-	$(BINSUBDIR)/Client.o \
 	$(INCLUDE) \
 	-o $(BINSUBDIR)/client.app
 
 client.o:
-	$(CCFULL)/client.cpp
-
-Client.o:
-	$(CCFULL)/Client.cpp
+	$(CCFULL) $(SRCDIR)/client.cpp

@@ -32,8 +32,9 @@ const SolvedQuestion& QuizBook::getRandomQuestion(void) const
 const SolvedQuestion& QuizBook::getRandomQuestion(uint32_t& id) const
 {
     if(!size())
-        throw std::out_of_range("QuizBook::getRandomQuestion():"
-                                "Empty QuizBook.");
+        throw Exception("Empty Quizbook!",
+                        "QuizBook::getRandomQuestion()",
+                        "", false);
 
     // create a vector with all the keys
     std::vector<uint32_t> keys;

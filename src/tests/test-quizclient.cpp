@@ -16,7 +16,7 @@ void runTest(const std::string& name, bool test(void));
 int main(void)
 {   
     Host host("localhost", "8080");
-    QuizClient client(&host, true);
+    QuizClient client(&host, false);
     client.run();
 
     return 0; 
