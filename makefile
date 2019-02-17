@@ -290,6 +290,16 @@ test-thread.test : subdirs test-thread.o
 test-thread.o : 
 	$(CCFULL) $(SRCTESTS)/test-thread.cpp
 
+# >> test-getopt.test <<
+test-getopt.test : subdirs test-getopt.o
+	$(CC) \
+	$(BINSUBDIR)/test-getopt.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-getopt.test
+
+test-getopt.o : 
+	$(CCFULL) $(SRCTESTS)/test-getopt.cpp
+
 #------------------------------MODELS-------------------------------------
 
 Choice.o:
