@@ -30,9 +30,12 @@ QuizServer::QuizServer(IQuizBook* quizbook,
     _socket->onIncomingConnection = [&]
     (ISocket& socket, const IHost& host, ISocket* context) 
     {
-        _log("\n-=-=-=-=- Incoming connection from " 
-             + socket.getAddress() + ":"
-             + std::to_string(socket.getPort()) + " -=-=-=-=-\n\n");
+        _log("\n-=-=-=-=-=-=-=- Incoming connection -=-=-=-=-=-=-=-\n\n");
+
+        _log("[On : " + socket.getAddress() + ":" 
+                      + std::to_string(socket.getPort()) + "]");
+        _log("<-[From : " + host.getAddressAndPort() + "]\n\n");
+        
 
         _clientOn = true;
         

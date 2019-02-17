@@ -46,7 +46,10 @@ int main(int argc, char *argv[])
 
     std::cout << "\n------------------ Initialization settings";
     std::cout <<  " ------------------\n" << std::endl;
-    std::cout << "\tPort         : " << (port == "0" ? "Any" : port) 
+    std::cout << "\tPort         : " 
+              << (port == "0" 
+              ? "Non-specified, will let OS assign a port" 
+              : port)
                                      << std::endl;
     std::cout << "\tRepository   : " << quizbookFilename << std::endl;
     std::cout << "\tVerbose      : " << verbose << std::endl << std::endl;
