@@ -314,6 +314,28 @@
                 }
             ],
             "preLaunchTask": "build-test-persistent"
+        },
+        {
+            "name": "launch-test-thread",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/debug/test-thread.test",
+            "args": [""],
+            "stopAtEntry": false,
+            "miDebuggerPath": "gdb",
+            "cwd": "${workspaceFolder}/bin/debug/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "launchCompleteCommand": "exec-run",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build-test-thread"
         }
     ]
 }

@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {   
     std::string usage(
-    "Usage: qserver PORT [repository] [verbose]\n"
+    "Usage: qserver [PORT] [repository] [verbose]\n"
     "\nParameters:\n\n"
     "\tPORT       : Port to run on.\n"
     "\trepository : Path to file for quiz repository.\n"

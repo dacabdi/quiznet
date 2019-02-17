@@ -36,7 +36,11 @@ CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
 
 #------------------------------GENERAL------------------------------------
 
-all: clean server.app client.app ship clean
+all: clean qclient qserver ship clean
+
+qclient: clean-qclient 
+
+# subdirectories
 
 subdirs:
 	mkdir -p $(BINSUBDIR)
@@ -47,17 +51,30 @@ subdirs-release:
 subdirs-debug:
 	mkdir -p $(DEBUGSUBDIR)
 
+
+# clean ups
+
 clean:
 	rm -rvf $(BINBASEDIR)/
+	
+clean-qserver:
 	rm -rfv ./qserver
-	rm -rfv ./qclient
 	rm -rfv *.data
 
-ship:
+clean-qclient:
+	rm -rfv ./qclient
+
+# ships the applications
+
+ship: ship-qclient ship-qserver
+
+ship-qserver: 
 	cp $(BINSUBDIR)/server.app ./qserver
-	cp $(BINSUBDIR)/client.app ./qclient
 	chmod +x qserver
-	chmod +x qclient
+
+ship-qclient:
+	cp $(BINSUBDIR)/client.app ./qclient
+	chmod +x qclient	
 
 #------------------------------TESTS--------------------------------------
 
@@ -249,6 +266,7 @@ test-persistent.test: subdirs test-persistent.o Request.o QuizServer.o QuizBook.
 test-persistent.o:
 	$(CCFULL) $(SRCTESTS)/test-persistent.cpp
 
+# >> test-all.test <<
 test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
 	$(BINSUBDIR)/test-choice.test
 	$(BINSUBDIR)/test-tag.test
@@ -256,6 +274,17 @@ test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-quest
 	$(BINSUBDIR)/test-question.test
 	$(BINSUBDIR)/test-solvedquestion.test
 	$(BINSUBDIR)/test-quizbook.test
+
+# >> test-thread.test <<
+test-thread.test : clean subdirs test-thread.o
+	$(CC) \
+	$(BINSUBDIR)/test-thread.o \
+	$(INCLUDE) \
+	-pthread \
+	-o $(BINSUBDIR)/test-thread.test
+
+test-thread.o : 
+	$(CCFULL) $(SRCTESTS)/test-thread.cpp
 
 #------------------------------MODELS-------------------------------------
 
