@@ -48,12 +48,14 @@ class Socket : public ISocket
 
         void closeSocket(void) override;
         void shutdownSocket(void) override;
-        void bindSocket(const IHost& host) override;
+        void bindSocket(IHost& host) override;
         bool isBinded(void) const override;
         const IHost& getBindedHost(void) const override;
         void startListening(int = 5) override;
         void acceptConnection(void) override;
-        void connectTo(const IHost&) override;
+        void connectTo(IHost&) override;
+        uint16_t getPort(void) const override;
+        std::string getAddress(void) const override;
 
     protected : 
     

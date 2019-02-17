@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     "\trepository : Path to file for quiz repository.\n"
     "\tverbose    : Display requests and responses.\n\n");
 
-    std::string port = "8080";
+    std::string port = "0";
     if(argc == 2)
         port = std::string(argv[1]);
     
@@ -46,12 +46,13 @@ int main(int argc, char *argv[])
 
     std::cout << "\n------------------ Initialization settings";
     std::cout <<  " ------------------\n" << std::endl;
-    std::cout << "\tPort         : " << port << std::endl;
+    std::cout << "\tPort         : " << (port == "0" ? "Any" : port) 
+                                     << std::endl;
     std::cout << "\tRepository   : " << quizbookFilename << std::endl;
     std::cout << "\tVerbose      : " << verbose << std::endl << std::endl;
 
     QuizBook quizbook;
-    Host host(argv[1]);
+    Host host(port);
     Socket socket(IPv4, StreamSocket, TCP);
     
     QuizServer server(&quizbook, &host, &socket, quizbookFilename);
