@@ -36,9 +36,11 @@ CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
 
 #------------------------------GENERAL------------------------------------
 
-all: clean qclient qserver ship clean
+all: clean-qclient clean-qserver client.app server.app ship-qclient ship-qserver clean-bin 
 
-qclient: clean-qclient 
+qclient: clean-qclient client.app ship-qclient clean-bin
+
+qserver: clean-qserver server.app ship-qserver clean-bin
 
 # subdirectories
 
@@ -54,7 +56,9 @@ subdirs-debug:
 
 # clean ups
 
-clean:
+clean: clean-bin clean-qserver clean-qclient
+
+clean-bin:
 	rm -rvf $(BINBASEDIR)/
 	
 clean-qserver:
@@ -267,7 +271,7 @@ test-persistent.o:
 	$(CCFULL) $(SRCTESTS)/test-persistent.cpp
 
 # >> test-all.test <<
-test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
+test-all: clean-bin subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
 	$(BINSUBDIR)/test-choice.test
 	$(BINSUBDIR)/test-tag.test
 	$(BINSUBDIR)/test-questiontitle.test
@@ -276,7 +280,7 @@ test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-quest
 	$(BINSUBDIR)/test-quizbook.test
 
 # >> test-thread.test <<
-test-thread.test : clean subdirs test-thread.o
+test-thread.test : subdirs test-thread.o
 	$(CC) \
 	$(BINSUBDIR)/test-thread.o \
 	$(INCLUDE) \

@@ -9,16 +9,14 @@ int main(int argc, char *argv[])
     std::string usage(
     "Usage: qserver [PORT] [repository] [verbose]\n"
     "\nParameters:\n\n"
-    "\tPORT       : Port to run on.\n"
+    "\tPORT       : Port to run on. Automatically assigned (0) by default.\n"
     "\trepository : Path to file for quiz repository.\n"
     "\tverbose    : Display requests and responses.\n\n");
 
-    if(argc < 2) {
-        std::cerr << "ERROR: Please specify server's port." << std::endl;
-        std::cout << usage << std::flush;
-        exit(EXIT_FAILURE);
-    }
-
+    std::string port = "8080";
+    if(argc == 2)
+        port = std::string(argv[1]);
+    
     std::string quizbookFilename = "quizserver-repo.data";
 
     // if file provided
@@ -48,7 +46,7 @@ int main(int argc, char *argv[])
 
     std::cout << "\n------------------ Initialization settings";
     std::cout <<  " ------------------\n" << std::endl;
-    std::cout << "\tPort         : " << argv[1] << std::endl;
+    std::cout << "\tPort         : " << port << std::endl;
     std::cout << "\tRepository   : " << quizbookFilename << std::endl;
     std::cout << "\tVerbose      : " << verbose << std::endl << std::endl;
 
