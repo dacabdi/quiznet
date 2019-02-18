@@ -40,7 +40,7 @@ struct {
 
 static struct option longOptions[] = { // program's long options --option
 //  { "optionname"   , argument-req, &flag-to-set                   , v }
-    { "nonpersistent", no_argument , &globalParams.flagNonPersistent, 0 },
+    { "nonpersistent", no_argument , &globalParams.flagNonPersistent, 1 },
     { "help"         , no_argument , &globalParams.flagDisplayHelp  , 1 },
     { NULL           , no_argument , NULL                           , 0 }
 };

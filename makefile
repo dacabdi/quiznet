@@ -78,7 +78,7 @@ ship-qserver:
 
 ship-qclient:
 	cp $(BINSUBDIR)/client.app ./qclient
-	chmod +x qclient	
+	chmod +x qclient
 
 #------------------------------TESTS--------------------------------------
 

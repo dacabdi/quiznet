@@ -220,7 +220,7 @@ int main(int argc, char * const argv[])
     std::cout << constants::welcome << std::endl;
     std::cout << displayInitSettings() << std::endl;
 
-    /*QuizBook quizbook;
+    QuizBook quizbook;
     Host host(std::to_string(globalParams.paramPort));
     Socket socket(IPv4, StreamSocket, TCP);
     
@@ -244,7 +244,7 @@ int main(int argc, char * const argv[])
     server.run();
 
     // be polite
-    std::cout << "\nServer out!\nBh-Bh-Bye! :( \n" << std::endl;*/
+    std::cout << "\nServer out!\nBh-Bh-Bye! :( \n" << std::endl;
 
     exit(EXIT_SUCCESS);
 }
