@@ -342,7 +342,11 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/debug/test-getopt.test",
-            "args": [""],
+            "args": [
+                "localhost", 
+                "8080", 
+                "-per"
+            ],
             "stopAtEntry": false,
             "miDebuggerPath": "gdb",
             "cwd": "${workspaceFolder}/bin/debug/",

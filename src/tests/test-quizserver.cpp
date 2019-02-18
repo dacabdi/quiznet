@@ -14,7 +14,7 @@ void runTest(const std::string& name, bool test(void));
 int main(void)
 {   
     QuizBook qb;
-    Host host("8080");
+    Host host(8080);
     Socket socket(IPv4, StreamSocket, TCP);
     std::string quizbookFilename = "test-quizserver-db.data";
     QuizServer server(&qb, &host, &socket, quizbookFilename);
