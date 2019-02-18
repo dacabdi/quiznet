@@ -22,8 +22,7 @@ body\n)?
 More precisely,
 
 ```EBNF
-request = type , ' ' , length\n , (body\n)?
-        | type , id
+request = type , ' ' , length, '\n' , (body)? '\n'
         ;
 type    = a-z
         ;
