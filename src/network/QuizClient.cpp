@@ -78,8 +78,8 @@ void QuizClient::setup(void)
             _socket = new Socket(IPv4, StreamSocket, TCP);
             _output << "Connecting..." << std::endl;
             _socket->connectTo(*_host);
-            _output << "Connected to " << _host->getAddress() 
-                    << ":" << _host->getService() << std::endl;
+            _output << "Connected to " << _socket->getAddress() 
+                    << ":" << _host->getPort() << std::endl;
         } catch(const std::exception& e) {
             _error << "Failed to connect to server: " << std::flush;
             _error << e.what() << std::flush;

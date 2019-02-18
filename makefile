@@ -36,7 +36,13 @@ CCFULL=$(CC) $(CFLAGS) -I$(INCLUDE) -o $(BINSUBDIR)/$@ -c
 
 #------------------------------GENERAL------------------------------------
 
-all: clean server.app client.app ship clean
+all: clean-qclient clean-qserver client.app server.app ship-qclient ship-qserver clean-bin 
+
+qclient: clean-qclient client.app ship-qclient clean-bin
+
+qserver: clean-qserver server.app ship-qserver clean-bin
+
+# subdirectories
 
 subdirs:
 	mkdir -p $(BINSUBDIR)
@@ -47,16 +53,31 @@ subdirs-release:
 subdirs-debug:
 	mkdir -p $(DEBUGSUBDIR)
 
-clean:
+
+# clean ups
+
+clean: clean-bin clean-qserver clean-qclient
+
+clean-bin:
 	rm -rvf $(BINBASEDIR)/
+	
+clean-qserver:
 	rm -rfv ./qserver
-	rm -rfv ./qclient
 	rm -rfv *.data
 
-ship:
+clean-qclient:
+	rm -rfv ./qclient
+
+# ships the applications
+
+ship: ship-qclient ship-qserver
+
+ship-qserver: 
 	cp $(BINSUBDIR)/server.app ./qserver
-	cp $(BINSUBDIR)/client.app ./qclient
 	chmod +x qserver
+
+ship-qclient:
+	cp $(BINSUBDIR)/client.app ./qclient
 	chmod +x qclient
 
 #------------------------------TESTS--------------------------------------
@@ -249,13 +270,35 @@ test-persistent.test: subdirs test-persistent.o Request.o QuizServer.o QuizBook.
 test-persistent.o:
 	$(CCFULL) $(SRCTESTS)/test-persistent.cpp
 
-test-all: clean subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
+# >> test-all.test <<
+test-all: clean-bin subdirs copy-test-data test-choice.test test-tag.test test-questiontitle.test test-question.test test-solvedquestion.test test-quizbook.test test-socket.test
 	$(BINSUBDIR)/test-choice.test
 	$(BINSUBDIR)/test-tag.test
 	$(BINSUBDIR)/test-questiontitle.test
 	$(BINSUBDIR)/test-question.test
 	$(BINSUBDIR)/test-solvedquestion.test
 	$(BINSUBDIR)/test-quizbook.test
+
+# >> test-thread.test <<
+test-thread.test : subdirs test-thread.o
+	$(CC) \
+	$(BINSUBDIR)/test-thread.o \
+	$(INCLUDE) \
+	-pthread \
+	-o $(BINSUBDIR)/test-thread.test
+
+test-thread.o : 
+	$(CCFULL) $(SRCTESTS)/test-thread.cpp
+
+# >> test-getopt.test <<
+test-getopt.test : subdirs test-getopt.o
+	$(CC) \
+	$(BINSUBDIR)/test-getopt.o \
+	$(INCLUDE) \
+	-o $(BINSUBDIR)/test-getopt.test
+
+test-getopt.o : 
+	$(CCFULL) $(SRCTESTS)/test-getopt.cpp
 
 #------------------------------MODELS-------------------------------------
 

@@ -30,8 +30,23 @@ QuizServer::QuizServer(IQuizBook* quizbook,
     _socket->onIncomingConnection = [&]
     (ISocket& socket, const IHost& host, ISocket* context) 
     {
-        _log("\n-=-=-=-=-=- Incoming connection from " 
-             + host.getAddress() + " -=-=-=-=-=-\n\n");
+        _log("\n-=-=-=-=-=-=-=- Incoming connection -=-=-=-=-=-=-=-\n\n");
+
+        std::cout << "[ ON   : " << std::right << std::setw(16) 
+                                 << socket.getAddress() << ":"
+                                 << std::left << std::setw(5)
+                                 << socket.getPort()
+                                 << " ]";
+
+        std::cout << " <- " << std::flush;
+
+        std::cout << "[ FROM : " << std::right << std::setw(16) 
+                                 << host.getAddress() << ":"
+                                 << std::left << std::setw(5)
+                                 << host.getPort()
+                                 << " ]\n";
+        
+        std::cout << std::flush;
 
         _clientOn = true;
         
@@ -43,7 +58,7 @@ QuizServer::QuizServer(IQuizBook* quizbook,
         bool _persistent = false;
         try
         {
-            _log("Negotiating session...\n");
+            _log("\nNegotiating session...\n");
             Request greetings(socket.readFromSocket());
             if(greetings.getType() == 's') 
             {
@@ -120,17 +135,21 @@ void QuizServer::setLogger(std::function<void (const std::string&)> logger)
 
 void QuizServer::run(void)
 {
-    _log("<><><><><><><><><> Starting QuizNet Server <><><><><><><><><>\n\n");
+    std::cout << "<><><><><><><><><>"
+              << " Starting QuizNet Server"
+              << " <><><><><><><><><>\n\n"
+              << std::flush;
         
     // bind
-    _log("Binding... ");
     _socket->bindSocket(*(_host));
-    _log("[OK]\n");
-    
     // listen
-    _log("Listening on port " + _host->getService() + "... ");
     _socket->startListening();
-    _log("[OK]\n");
+
+    std::cout << "Listening on " 
+              << _socket->getAddress()
+              << ":"
+              << _socket->getPort()
+              << std::endl << std::endl;
 
     _running = true;
     while(_running)

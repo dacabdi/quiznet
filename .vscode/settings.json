@@ -40,7 +40,8 @@
         "memory": "cpp",
         "numeric": "cpp",
         "ratio": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "iomanip": "cpp"
     },
     "editor.fontSize": 16,
     "editor.rulers":[74]

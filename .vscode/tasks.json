@@ -140,6 +140,26 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build-test-thread",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-thread.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-test-getopt",
+            "type": "shell",
+            "command": "make",
+            "args": ["MODE=debug", "test-getopt.test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

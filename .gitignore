@@ -36,3 +36,7 @@
 
 # Discarded code
 /x
+
+# qclient and qserver builds
+qclient
+qserver

@@ -57,12 +57,14 @@ class ISocket
         virtual SocketType getSocketType(void) const = 0;
         virtual void closeSocket(void) = 0;
         virtual void shutdownSocket(void) = 0; 
-        virtual void bindSocket(const IHost&) = 0;
+        virtual void bindSocket(IHost&) = 0;
         virtual bool isBinded(void) const = 0;
         virtual const IHost& getBindedHost(void) const = 0;
         virtual void startListening(int = 5) = 0;
         virtual void acceptConnection(void) = 0;
-        virtual void connectTo(const IHost&) = 0;
+        virtual void connectTo(IHost&) = 0;
+        virtual uint16_t getPort(void) const = 0;
+        virtual std::string getAddress(void) const = 0;
         
         std::function<void(ISocket&, const IHost&, ISocket*)> 
                                         onIncomingConnection;

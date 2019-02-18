@@ -1,5 +1,11 @@
 #include "Socket.h"
 
+Socket::Socket(int sd)
+{   
+    _open = true;
+    _sd = sd;
+}
+
 Socket::Socket(AddressDomain domain, SocketType type, Protocol protocol)
 : _domain(domain), _type(type), _protocol(protocol)
 {
@@ -154,10 +160,10 @@ void Socket::shutdownSocket(void)
                         "Socket::shutdown()");
 }
 
-void Socket::bindSocket(const IHost& host)
+void Socket::bindSocket(IHost& host)
 {
-    const struct addrinfo &res = host.getAddressInfo();
-    int r = bind(_sd, res.ai_addr, res.ai_addrlen);
+    struct addrinfo *res = host.getAddressInfo();
+    int r = bind(_sd, res->ai_addr, res->ai_addrlen);
     if (r == -1) throw Exception("Failed to bind socket",
                                  "Socket::bindSocket()");
     _binded = true;
@@ -204,10 +210,10 @@ void Socket::acceptConnection(void)
         onIncomingConnection(connSocket, host, this);
 }
 
-void Socket::connectTo(const IHost& host)
+void Socket::connectTo(IHost& host)
 {
-    const struct addrinfo& res = host.getAddressInfo();
-    int c = connect(_sd, res.ai_addr, res.ai_addrlen);
+    struct addrinfo* res = host.getAddressInfo();
+    int c = connect(_sd, res->ai_addr, res->ai_addrlen);
 
     if (c == -1)
        throw Exception("Failed to connect to host " + host.getAddress(),
@@ -217,8 +223,24 @@ void Socket::connectTo(const IHost& host)
         onOutgoingConnection(*this, host, this);
 }
 
-Socket::Socket(int sd)
-{   
-    _open = true;
-    _sd = sd;
+uint16_t Socket::getPort(void) const
+{
+    struct sockaddr_in sin;
+    socklen_t len = sizeof(sin);
+    if (getsockname(_sd, (struct sockaddr *)&sin, &len) == -1)
+        throw Exception("Couldn't obtain socket name.",
+                        "Socket::getPort()");
+    
+    return ntohs(sin.sin_port);
+}
+
+std::string Socket::getAddress(void) const
+{
+    struct sockaddr_in sin;
+    socklen_t len = sizeof(sin);
+    if (getsockname(_sd, (struct sockaddr *)&sin, &len) == -1)
+        throw Exception("Couldn't obtain socket name.",
+                        "Socket::getPort()");
+    
+    return inet_ntoa(sin.sin_addr);
 }

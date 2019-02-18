@@ -119,7 +119,7 @@ bool basicInteraction(void)
         Host host("8080");
         Socket socket(IPv4, StreamSocket, TCP);
         std::string quizbookFilename = "test-persistent-db.data";
-        QuizServer server(&qb, &host, &socket, quizbookFilename, true);
+        QuizServer server(&qb, &host, &socket, quizbookFilename);
         /*server.setLogger([&](const std::string& str){
             std::cout << str << std::flush;
         });*/

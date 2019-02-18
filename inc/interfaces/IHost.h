@@ -12,7 +12,9 @@ class IHost
 
         virtual const std::string& getNode(void) const = 0;
         virtual const std::string getAddress(void) const = 0;
-        virtual const struct addrinfo& getAddressInfo(void) const = 0; 
+        virtual const uint16_t getPort(void) const = 0;
+        virtual const std::string getAddressAndPort(void) const = 0;
+        virtual struct addrinfo* getAddressInfo(void) = 0; 
         virtual const std::string& getService(void) const = 0;
         virtual bool isPassive(void) const = 0;
         

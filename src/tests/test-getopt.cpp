@@ -1,11 +1,6 @@
-#include "Exception.h"
-#include "QuizClient.h"
-#include "Host.h"
-
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <sstream>
 
 #include <stdlib.h>     /* for exit         */
 #include <unistd.h>     /* for getopt       */
@@ -24,10 +19,6 @@ namespace constants {
     "OPTIONS:\n"
     " -n --nonpersistent       run in non-persistent connection mode\n"
     " -h --help                display usage help and exit\n");
-    static const std::string welcome(
-    "\n\n/==============================================\\\n"
-        "|                QuizNet Client                |\n"
-       "\\==============================================/\n");
 }
 
 struct {
@@ -40,7 +31,7 @@ struct {
 
 static struct option longOptions[] = { // program's long options --option
 //  { "optionname"   , argument-req, &flag-to-set                   , v }
-    { "nonpersistent", no_argument , &globalParams.flagNonPersistent, 1 },
+    { "nonpersistent", no_argument , &globalParams.flagNonPersistent, 0 },
     { "help"         , no_argument , &globalParams.flagDisplayHelp  , 1 },
     { NULL           , no_argument , NULL                           , 0 }
 };
@@ -48,26 +39,6 @@ static struct option longOptions[] = { // program's long options --option
 void displayUsage(void)
 {
     std::cout << constants::usage << std::flush;
-}
-
-std::string displayInitSettings(void)
-{
-    std::ostringstream oss;
-
-    std::string flagNonPersistentString = 
-    (globalParams.flagNonPersistent ? "Non-persistent" : "Persistent");
-
-    oss << "\n\n------------ Initialization settings" 
-        <<     "-----------\n" << std::endl;
-    
-    oss << "\tTarget host : " 
-        << globalParams.paramTargetHost << std::endl;
-    oss << "\tTarget port : "
-        << globalParams.paramTargetPort << std::endl;
-    oss << "\tPersistency : " 
-        << flagNonPersistentString << " connection mode\n" << std::endl;
-
-    return oss.str();
 }
 
 uint16_t parsePortNumber(const char * const arg)
@@ -88,9 +59,6 @@ uint16_t parsePortNumber(const char * const arg)
 
 int main(int argc, char * const argv[])
 {
-
-//--------------------READ-PARAMS-AND-OPTIONS-----------------------------
-
     // get options
     int currentOption = 0;
     int optionIndex   = 0;      // set by getopt_long
@@ -179,24 +147,6 @@ int main(int argc, char * const argv[])
     globalParams.paramTargetHost = argv[optind++];
     // get port (must be a 16 bits number, TODO: enforce uint16_t)
     globalParams.paramTargetPort = parsePortNumber(argv[optind]);
-
-//--------------------MAIN-PROGRAM----------------------------------------
-    
-    std::cout << constants::welcome     << std::flush;
-    std::cout << displayInitSettings()  << std::flush;
-
-    // build a host object
-    Host host(globalParams.paramTargetHost, 
-              std::to_string(globalParams.paramTargetPort));
-
-    // create the client object
-    QuizClient client(&host, !globalParams.flagNonPersistent);
-
-    // run the client!
-    client.run();
-
-    // ...be polite
-    std::cout << "\nBh-Bh-Bye! :( \n" << std::endl;
 
     exit(EXIT_SUCCESS);
 }

@@ -32,7 +32,9 @@ class Host : public IHost
 
         const std::string& getNode(void) const override;
         const std::string getAddress(void) const override;
-        const struct addrinfo& getAddressInfo(void) const override;
+        const uint16_t getPort(void) const override;
+        const std::string getAddressAndPort(void) const override;
+        struct addrinfo* getAddressInfo(void) override;
         const std::string& getService(void) const override;
         bool isPassive(void) const override;
 
@@ -45,6 +47,8 @@ class Host : public IHost
         struct addrinfo *_addr;
         bool _passive = false;
         bool _created_on_ref = false;
+
+        in_port_t getInPort(void) const;
 
         Host(){};
 };

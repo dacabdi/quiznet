@@ -22,7 +22,8 @@ Host::Host(const std::string& node, const std::string& service,
     if(r) throw Exception(
         "Fetching address info (error:" + std::to_string(r) +
         ") " + std::string(gai_strerror(r)), "Host::Host()",
-        std::string("node: ") + node + " service: " + service);
+        std::string("node: ") + node + " service: " 
+        + (service == "0" ? "Any" : service));
 }
 
 Host::Host(const std::string& service,
@@ -44,7 +45,8 @@ Host::Host(const std::string& service,
     if(r) throw Exception(
         "Fetching address info (error:" + std::to_string(r) +
         ") " + std::string(gai_strerror(r)), "Host::Host()",
-        std::string("node: NULL") + " service: " + service);
+        std::string("node: ") + _node + " service: " 
+        + (service == "0" ? "Any" : service));
 }
 
 Host::Host(struct sockaddr *info)
@@ -55,6 +57,7 @@ Host::Host(struct sockaddr *info)
     _created_on_ref = true;
     // TODO get port
 }
+
 
 const std::string& Host::getNode(void) const
 {
@@ -75,9 +78,19 @@ const std::string Host::getAddress(void) const
     return std::string(str);
 }
 
-const struct addrinfo& Host::getAddressInfo(void) const
+const std::string Host::getAddressAndPort(void) const
 {
-    return *_addr;
+    return getAddress() + ":" + std::to_string(getPort());
+}
+
+struct addrinfo* Host::getAddressInfo(void)
+{
+    return _addr;
+}
+
+const uint16_t Host::getPort(void) const
+{
+    return ntohs(getInPort());
 }
 
 const std::string& Host::getService(void) const
@@ -88,6 +101,11 @@ const std::string& Host::getService(void) const
 bool Host::isPassive(void) const
 {
     return _passive;
+}
+
+in_port_t Host::getInPort(void) const
+{
+    return (((struct sockaddr_in*)(_addr->ai_addr))->sin_port);
 }
 
 Host::~Host()
