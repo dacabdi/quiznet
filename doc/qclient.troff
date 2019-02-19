@@ -1,3 +1,4 @@
+.ll 60
 .TH qclient 1 "Feb 18, 2019" "version 1.0"
 .SH NAME
 qclient \- QuizNet client application

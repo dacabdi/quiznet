@@ -1,3 +1,4 @@
+.ll 60
 .TH qbank 5 "Feb 18, 2019" "version 1.0"
 .SH NAME
 qbank.qnb \- QuizNet repository/bank of questions
