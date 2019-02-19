@@ -15,7 +15,7 @@
 #define NON_OPTIONAL_PARAMS 0
 
 namespace constants {
-    static const char        *optString = ":p:f:l:vh"; // options's string
+    static const char        *optString = ":p:f:l:Vvh"; // options's string
     static const std::string  usage(
     "USAGE  : qserver [OPTIONS]\n"
     "         Please notice that unless POSIXLY_CORRECT is set,\n"
@@ -30,22 +30,31 @@ namespace constants {
     "                                the OS randomly assign a free port\n"
     "  -f PATH --filename=PATH       file to use as questions repositor,\n"
     "                                the file will be created if it doesn't\n"
-    "                                exists. default PATH=./\"qserver-repo.data\"\n"
+    "                                exists. default PATH=./\"qbank.qnb\"\n"
     "  -l (yes|no) --log=(yes|no)    log to stdout server's activity. this\n"
     "                                option is \"yes\" by default.\n"
-    "  -v --verbose                  the server will log requests and responses\n"
+    "  -V --verbose                  the server will log requests and responses\n"
     "                                to stdout, must be used in conjunction\n"
     "                                with -l=yes (--log=yes), disabled by default\n"
     "  -h --help                     display usage help and exit\n");
     static const std::string welcome(
     "\n\n/==============================================\\\n"
-        "|                QuizNet Server                |\n"
+        "|              QuizNet Server v1.0             |\n"
        "\\==============================================/\n");
+    static const std::string version(
+        "qserver v1.0\n"
+        "QuizNet Server Application\n"
+        "Written by David Cabrera @ dacabdi89@ufl.edu\n"
+        "University of Florida, CISE Department\n"
+        "Networking Fundamentals, Spring 2019\n"
+        "Project 1 (server application)\n"
+    );
 }
 
 struct {
     // program flags and parameters
-    int         flagDisplayHelp   = 0 ;                   // display help and exit
+    int         flagDisplayHelp   = 0                  ;  // display help and exit
+    int         flagDisplayVer    = 0                  ;  // display version and exit
     int         flagLog           = 1                  ;  // log activity
     int         flagVerbose       = 0                  ;  // verbose (display req and res)
     std::string paramRepoFilename = "qserver-repo.data";  // quiz book file
@@ -58,6 +67,7 @@ static struct option longOptions[] = { // program's long options --option
     { "filename" , required_argument , NULL                          , 1 },
     { "log"      , required_argument , NULL                          , 1 },
     { "verbose"  , no_argument       , &globalParams.flagVerbose     , 1 },
+    { "version"  , no_argument       , &globalParams.flagDisplayVer  , 1 },
     { "help"     , no_argument       , &globalParams.flagDisplayHelp , 1 },
     { NULL       , no_argument       , NULL                          , 0 }
 };
@@ -65,6 +75,11 @@ static struct option longOptions[] = { // program's long options --option
 void displayUsage(void)
 {
     std::cout << constants::usage << std::flush;
+}
+
+void displayVersion(void)
+{
+    std::cout << constants::version << std::flush;
 }
 
 std::string displayInitSettings(void)
@@ -181,7 +196,7 @@ int main(int argc, char * const argv[])
 
             break;
 
-            case 'v' :
+            case 'V' :
 
                 globalParams.flagVerbose = 1;
 
@@ -195,7 +210,7 @@ int main(int argc, char * const argv[])
             break;
 
             case 1 : 
-                
+
                 // long options with NULL flag
                 if(        strcmp("port"    , longOptions[optionIndex].name ) == 0)
                     globalParams.paramPort = parsePortNumber(optarg);
@@ -204,12 +219,20 @@ int main(int argc, char * const argv[])
                 else if (  strcmp("log"     , longOptions[optionIndex].name ) == 0)
                     globalParams.flagLog = (strcmp("yes", optarg) == 0 ? 1 : 0);
             
+            case 'v' : // version
+                displayVersion();
+                exit(EXIT_SUCCESS);
+            break;
+
             case 0 : // for long options
-                     // without parameters
+                     // with NULL flags
 
                 if(globalParams.flagDisplayHelp)
                 {
                     displayUsage();
+                    exit(EXIT_SUCCESS);
+                } else if (globalParams.flagDisplayVer) {
+                    displayVersion();
                     exit(EXIT_SUCCESS);
                 }
 

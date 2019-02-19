@@ -14,7 +14,7 @@
 #define NON_OPTIONAL_PARAMS 2
 
 namespace constants {
-    static const char        *optString = ":nh"; // options's string
+    static const char        *optString = ":nhv"; // options's string
     static const std::string  usage(
     "USAGE  : qclient [OPTIONS] TARGETHOST [OPTIONS] PORT [OPTIONS]\n"
     "         Please notice that unless POSIXLY_CORRECT is set,\n"
@@ -23,16 +23,26 @@ namespace constants {
     "         to server TARGETHOST:PORT\n\n"
     "OPTIONS:\n"
     " -n --nonpersistent       run in non-persistent connection mode\n"
-    " -h --help                display usage help and exit\n");
+    " -h --help                display usage help and exit\n"
+    " -v --version             display version and exit\n");
     static const std::string welcome(
     "\n\n/==============================================\\\n"
-        "|                QuizNet Client                |\n"
+        "|              QuizNet Client v1.0             |\n"
        "\\==============================================/\n");
+    static const std::string version(
+        "qclient v1.0\n"
+        "QuizNet Client Application\n"
+        "Written by David Cabrera @ dacabdi89@ufl.edu\n"
+        "University of Florida, CISE Department\n"
+        "Networking Fundamentals, Spring 2019\n"
+        "Project 1 (client application)\n"
+    );
 }
 
 struct {
     // program flags and parameters
     int         flagDisplayHelp   = 0 ;  // display help and exit
+    int         flagDisplayVer    = 0 ;
     int         flagNonPersistent = 0 ;  // default persistent conn mode
     std::string paramTargetHost   = "";  // server's ip or hostname 
     uint16_t    paramTargetPort   = 0 ;  // server's port   
@@ -41,6 +51,7 @@ struct {
 static struct option longOptions[] = { // program's long options --option
 //  { "optionname"   , argument-req, &flag-to-set                   , v }
     { "nonpersistent", no_argument , &globalParams.flagNonPersistent, 1 },
+    { "version"      , no_argument , &globalParams.flagDisplayVer   , 1 },
     { "help"         , no_argument , &globalParams.flagDisplayHelp  , 1 },
     { NULL           , no_argument , NULL                           , 0 }
 };
@@ -48,6 +59,11 @@ static struct option longOptions[] = { // program's long options --option
 void displayUsage(void)
 {
     std::cout << constants::usage << std::flush;
+}
+
+void displayVersion(void)
+{
+    std::cout << constants::version << std::flush;
 }
 
 std::string displayInitSettings(void)
@@ -149,12 +165,20 @@ int main(int argc, char * const argv[])
                 exit(EXIT_SUCCESS);
             break;
 
+            case 'v' : // version
+                displayVersion();
+                exit(EXIT_SUCCESS);
+            break;
+
             case 0 : // for long options
                      // with NULL flags
 
                 if(globalParams.flagDisplayHelp)
                 {
                     displayUsage();
+                    exit(EXIT_SUCCESS);
+                } else if (globalParams.flagDisplayVer) {
+                    displayVersion();
                     exit(EXIT_SUCCESS);
                 }
 

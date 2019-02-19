@@ -64,21 +64,33 @@ clean-bin:
 clean-qserver:
 	rm -rfv ./qserver
 	rm -rfv *.data
+	rm -rfv qserver.1
+	rm -rfv qbank.5
 
 clean-qclient:
 	rm -rfv ./qclient
+	rm -rfv qclient.1
 
 # ships the applications
 
 ship: ship-qclient ship-qserver
 
-ship-qserver: 
+ship-qserver: manual-qserver
 	cp $(BINSUBDIR)/server.app ./qserver
 	chmod +x qserver
 
-ship-qclient:
+ship-qclient: manual-qclient
 	cp $(BINSUBDIR)/client.app ./qclient
 	chmod +x qclient
+
+# manual entries
+
+manual-qserver:
+	groff -man -Tascii ./doc/qserver.troff > qserver.1
+	groff -man -Tascii ./doc/qbank.troff > qbank.5
+
+manual-qclient:
+	groff -man -Tascii ./doc/qclient.troff > qclient.1
 
 #------------------------------TESTS--------------------------------------
 

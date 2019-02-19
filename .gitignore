@@ -40,3 +40,7 @@
 # qclient and qserver builds
 qclient
 qserver
+
+# manual entries
+*.1
+*.5
