@@ -3,6 +3,8 @@ CNT4007C - **Project 1**
 David Cabrera
 dacabdi89@ufl.edu
 
+**NOTE: This PDF file was generated from mark-down**
+
 # QUIZNET #
 
 ---
@@ -31,6 +33,13 @@ Use option `-h` on both executables for further usage details.
 The server application provides ample levels of logging and verbosity.
 
 Refer to the corresponding manual entries for details.
+
+#### MANUAL ENTRIES ####
+
+Due to the inability to run `man -l manual-entry` on the `storm.cise.ufl.edu`
+host, the command to properly visualize the manual entry will be,
+
+`$ nroff -Tascii -man [file] | less`
 
 ---
 
@@ -254,7 +263,9 @@ Customized exception objects have been provided for `ProtocolException` and
 of errors, allowing to distinguish between the two types of problems.
 
 Both client and server are robust and can survive (graciously) the other party
-leaving the session.
+leaving the session. These endpoints will use protocol specifications
+to communicate each other exceptions and errors and handle them appropiately.
+Refer to the _Protocol Specification_ session for more details.
 
 #### ADDITIONAL FEATURES ####
 

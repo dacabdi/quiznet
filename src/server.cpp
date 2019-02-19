@@ -219,6 +219,8 @@ int main(int argc, char * const argv[])
                 else if (  strcmp("log"     , longOptions[optionIndex].name ) == 0)
                     globalParams.flagLog = (strcmp("yes", optarg) == 0 ? 1 : 0);
             
+            break;
+
             case 'v' : // version
                 displayVersion();
                 exit(EXIT_SUCCESS);
