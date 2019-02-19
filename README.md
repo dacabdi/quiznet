@@ -3,7 +3,7 @@ CNT4007C - **Project 1**
 David Cabrera
 dacabdi89@ufl.edu
 
-**NOTE: This PDF file was generated from mark-down**
+**NOTE:** This PDF file was automatically generated from the README.md file of the **private** GitHub repository that hosts the code.
 
 # QUIZNET #
 
@@ -14,30 +14,38 @@ dacabdi89@ufl.edu
 #### BUILDING ####
 
 To build the solution you can either,
-- `make all` to build both `qclient` and `qserver`
-- `make qclient`
-- `make qserver`
+- `$ make qclient`,
+- `$ make qserver`,
+- or `$ make all` to build both applications.
 
-The `makefile` provides comprehensive recipes to run tests, compile in debug
-mode, or produce manual entries. To run in debug mode set `MODE=debug` before
-calling on `make`.
+The `makefile` provides comprehensive recipes to run tests, compile in debug mode with no optimizations, or produce manual entries. To run in debug mode set `MODE=debug` before calling on `make`. See `makefile` for more details.
 
 #### RUNNING ####
 
-The applications can be run as per specifications.
+The applications can be run as per the specifications of the project. After building the solution, you can run the server application by issuing the command
 
-**Please note** that both `qclient` and `qserver` have been implemented with
-POSIX command line options using `getopt` and `getopt_long`. 
+`$ ./qserver`
+
+standing on the same subdirectory where the `make` command was issued.
+
+Similarly, the client application can be started by issuing the command,
+
+`./qclient TARGETHOST PORT`.
+
+Please note that both `qclient` and `qserver` have been implemented using POSIX command line options with `getopt` and `getopt_long`. 
 Use option `-h` on both executables for further usage details.
 
-The server application provides ample levels of logging and verbosity.
+Run `qclient` with the option `--nonpersistent` or `-n` for non persistent mode (See _Additional Features_ section).
+
+The server application provides logging and verbosity options.
+Run with `--verbose` or `-v` for complete escaped reporting of
+serialized representations of both requests and responses.
 
 Refer to the corresponding manual entries for details.
 
 #### MANUAL ENTRIES ####
 
-Due to the inability to run `man -l manual-entry` on the `storm.cise.ufl.edu`
-host, the command to properly visualize the manual entry will be,
+Due to the inability to run `man -l manual-entry` on the `storm.cise.ufl.edu` host, the command to properly visualize the manual entry will be,
 
 `$ nroff -Tascii -man [file] | less`
 
@@ -45,9 +53,9 @@ host, the command to properly visualize the manual entry will be,
 
 ## PROTOCOL SPECIFICATION ##
 
-Before any request or response, the client must perform an application level
-handshake routing by which it gives notice to the server on the type of session
-(persistent vs non persistent) and other relevant information.
+Before any request or response, the client MUST perform an application level _handshake_ by which it gives notice to the server on the type of session (persistent vs non persistent) it wishes to establish, as well as any other relevant information required to maintain the session.
+
+The client should initiate the handshake on the FIRST request made to the server for each connection. It will send a type `s` request containing the parameters in the `body`.
 
 ### REQUESTS ###
 
@@ -79,9 +87,20 @@ body    = ? any sequence of chars ?
         ;
 ```
 
-If the server knows how to handle the type of request, the request is properly formed, and is processed successfully, the server will respond according to specifications. Otherwise, an error response will be returned. If the error is due to an unrecognized type of request, the error type will be `UNKREQ`.
+If the server _knows_ how to handle the incoming type of request and the request is processed succesfully, a type `o` OK response will be sent to the client carrying any requested data.
+
+Otherwise, a type `e` ERROR response will be returned. If the error is due to an unrecognized type of request, the error type will be numbered `UNKREQ`.
 
 #### TYPES OF REQUESTS ####
+
+##### HANDSHAKE #####
+
+Also know as _greeting_ or _session negotionation_ this is the FIRST request made over each session. It lets the server get ready for the upcoming requests.
+
+```plain-text
+s length\n
+parameters\n
+```
 
 ##### POST #####
 
@@ -113,7 +132,7 @@ Please observe that the server will enforce the following rules
 3. The `choice-character` value is a unique a-z character, the choices must be in alphabetic order, and the first choice must be `a`.
 4. The `correct-answer` provided must exist in the set of choices.
 
-Expect an error response if any of this rules is violated. The error is likely to indicate in the extra field, what kind of violation took place.
+Expect an error response if any of this rules is violated. The error is likely to indicate what kind of violation took place by providing information in the `extra` field of the error response.
 
 ##### DELETE #####
 
@@ -169,11 +188,22 @@ k 0\n
 \n
 ```
 
+##### QUIT #####
+
+Inform the server that the client wishes to leave.
+
+```plain-text
+q 0\n
+\n
+```
+
+This request is relevant only to _persistent_ connections.
+
 ---
 
 ### RESPONSES ###
 
-All _responses_ will come in two types, OK responses indicating a successful request and ERROR responses along with information on the failure.
+All responses will come in two types, OK (type `o`) responses indicating a successful request and ERROR (type `e`) responses along with information on the failure.
 
 #### TYPES OF RESPONSES ####
 
@@ -184,7 +214,7 @@ o length\n
 body\n
 ```
 
-The content fo the body of the response will depend on the particular request that unleashed the response.
+The content fo the body of the response will depend on the particular request that caused the response.
 
 ##### ERROR #####
 
@@ -213,59 +243,50 @@ e length\n
 
 ## IMPLEMENTATION ##
 
-The entire solution was implemented in C++ in an OOP style. Wrappers interfaces,
-and data models were written around the networking routines and the data
-representation.
+### General description ###
 
-Objects `Socket` and `Host` provide wrappers with all types of operations
-around the file descriptors and hosts representations used by the
-operating system.
+The solution was implemented in C++. Wrappers interfaces, and data models were written around the networking routines and the data representation. This approach allowed to develop the application abstracting the data management and ensuring integrity across the code.
 
-`QuizServer` is an abstraction of the entire server and takes in a
-host representation to determine where it is running and a socket object
-to work with. It takes care or calling methods that wrap around `bind`, `listen`,
-and `accept`. The object uses a map keyed on characters to callables
-that handle each corresponding type of request and produce a `Response`
-object that is then serialized and sent back to the client.
+The implementation is divided in three major areas, networking, data models, and other types (exceptions, escaping functions, etc).
 
-`QuizServer` also takes a `QuizBook` object with a data model representation
-of the questions read and written to the question bank file (refer to the 
-section 5 of the manual for file format information.)
+### Networking ###
 
-On the other hand, the `QuizClient` object follows a similar pattern
-of an internal map keyed on characters and containing callables that
-are emplaced on initialization. This callables handle server responses
-and perform all kind of appropiate operations depending on the response.
+Objects `Socket` and `Host` provide wrappers with all types of operations around the file descriptors and hosts representations used by the operating system. Using this abstractions allowed to gain some leverage over the complexity of the structures used at the Operating System level.
 
-All sorts of serializable and deserializable data representation models
-were written to abstract the string level manipulation, both for networking
-related objects such as requests and responses, or data related objects,
-such as tag collections, choices, or questions. Refer to the source files 
-for more implementation details, including stream operators overloading
-and constructors that take in serialized representations of the objects
-and generate the deserialized representation.
+#### `QuizServer` ####
 
-This methodology allowed to standardize and defer the responsability of serializing
-and deserializing down to the data layer, abstracting control from the data
-representation.
+`QuizServer` is an abstraction of the set of services provided by the server application. Upon construction it receives it receives a host
+host representation and a socket object to work with. Internally, when the method `run` is called, the object takes care of the typical initialization routing of the `Socket` object, namely, it calls methods that wrap around `bind`, `listen`, and `accept`. 
 
-Before a persistent session, or a non persistent as well, the client performs
-an application level handshaking with the server that negotiates the session
-parameters and puts the server on ready state. This negotiation at the moment
-takes care mainly of giving notice to the server of whether the client
-wants to establish a persistent or non persistent session.
+Internally, the object uses a hash map pairing characters to callables. This approach allowed to drop new request/response procedures at-will if the specifications of the protocol so required. That is, the procedure that takes care of forming the response to a type `p` request, is a callable keyed on the char `'p'` of the `_handlers` map. Similarly, each corresponding procedure takes in a `Request` object and produces a `Response` object that is then serialized and sent back to the client. The handlers are typically _lamba expressions_, this provides _ad-hoc_ request handling emplacement.
 
-The serialization to file (question bank) has been implemented on a writethrough
-fashion to prevent data loss if the server side crashes.
+If any error were to occur, it is properly identified and reported back to the client by building a type `e` `Response` containing, usually, content that mirrors the exception that was raised on the server side.
 
-Customized exception objects have been provided for `ProtocolException` and
-`NetworkException`. These exception objects provide granularity in the catching
-of errors, allowing to distinguish between the two types of problems.
+`QuizServer` also takes a `QuizBook` object with a data model representation of the questions read/written to/from the question bank file (refer to the section 5 of the manual for file format information). All the entity manipulations are mediated by the `QuizBook` interface.
 
-Both client and server are robust and can survive (graciously) the other party
-leaving the session. These endpoints will use protocol specifications
-to communicate each other exceptions and errors and handle them appropiately.
-Refer to the _Protocol Specification_ session for more details.
+`QuizServer`, as per the protocol specifications, expects the client to perform a brief handshake, where it specifies the type of connection it desires to establish. This handshaking can be used in the future to communicate other relevant parameters.
+
+#### `QuizClient` ####
+
+On the other hand, the `QuizClient` utilizes a similar pattern of matching characters to callables. Each handler will take in the line and data introduced over standard input and build a `Request` object to relay back to the server. Before returning the object, it sets a `std::function` typed method with a _lambda expression_ that will handle the response once the servers replies.
+
+`QuizClient` will create a `Socket` object if it functions on _persistent_ mode. Otherwise, it will instantiate a new one over each request.
+
+Please notice that `QuizClient` performs a brief application level handshake (or session negotiation) with the server to give notice of the connection mode and other relevant information.
+
+### Data Models ###
+
+For every component of a question, the question itself, and the entire quiz book, objects defining its interfaceable contracts were implemented. Using this approach the serialization and deserialization of the models became a centralized issue, facilitating bug tracking and standardization.
+
+Each object validates its input and enforces data requirements. All cases provide overloaded stream operators to allow easy output, verification, and serialization.
+
+To avoid data loss on server crashes, the `QuizBook` works on the file using a writethrough approach.
+
+Data models include `Tag`, `TagCollection`, `Choice`, `ChoiceCollection`, `Question`, `QuestionSolved` (containing a question along with a verified solution), etc.
+
+### Exceptions ###
+
+Customized exception objects have been provided for `ProtocolException` and `NetworkException`. These exception objects provide granularity in the catching of errors, allowing to distinguish between the two types of problems. Both client and server are robust and can survive (graciously) the other party leaving the session. These endpoints will use protocol specifications to communicate each other exceptions and errors and handle them appropiately. Refer to the _Protocol Specification_ session for more details.
 
 #### ADDITIONAL FEATURES ####
 
